@@ -43,6 +43,7 @@ class DataClass {
             { range: [(this.lonRange[0] + this.lonRange[1]) / 2, this.lonRange[1]], weight: this.latLonWeights[1] }  // Less weight in the upper half
         ];
     
+        
         for (let i = 0; i < this.N; i++) {
             const name = this.weightedRandomChoice(this.nameArray, this.nameWeights);
     
