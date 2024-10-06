@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport data visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-tile@1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mapStyle.css">
+    <link rel="stylesheet" href="css/filters.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="stylesheet" href="css/linechart.css">
+    <link rel="stylesheet" href="css/toggleButton.css">
+    <!-- include data.js -->
+    <script src="js/dataHandling/data.js"></script>
+    <script src="js/linechart/positionLabels.js"></script>
+    <script src="js/linechart/linechart.js"></script>
+    <script src="js/linechart/subLineChart.js"></script>
+    <!-- include zoomableMap.js -->
+    <script src="js/dataFiltering/dataFiltering.js"></script>
+    <script src="js/map/map.js"></script>
+    <script src="js/map/selection.js"></script>
+    <script src="js/constants/constants.js"></script>
+    <script src="js/region/region.js"></script>
+
+
+
+
+    <script src="js/table/table.js"></script>
+
+
+
+
+</head>
+
+<body>
+    <script>
+        //Load data from dataHandling
+        const names = eventNames;
+        const latitudeRange = [50.08, 50.12];  // Example lat range
+        const longitudeRange = [14.23, 14.28];  // Example lon range
+        const nameWeights = [0.8, 0.1, 0.1,0.1,0.05,0.05,0.05,0.05]; // Event A will be more common
+        const latLonWeights = [1, 0.3]; // Increase frequency near the lower lat range and mid-longitude
+        const seed = '12345';
+
+        var dataHandler = new DataClass(250, names, latitudeRange, longitudeRange, nameWeights, latLonWeights, seed);
+        var data = dataHandler.getData();
+        var chartData = [];
+        var linechart;
+        var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
+
+        const predefinedColors = d3.schemeCategory10;
+        const colorMapping = {};
+
+        const uniqueNames = [...new Set(data.map(d => d.properties.name))];
+        uniqueNames.forEach((name, index) => {
+            colorMapping[name] = predefinedColors[index % predefinedColors.length];
+        });
+
+        //var result = dataHandler.getSelectedEventCounts();
+        //console.log(result);
+        //console.log(data);
+
+    </script>
+    <div class="main-container">
+
+        <!-- <div class="top-panel">
+            <h1>Airport data visualization</h1>
+        </div> -->
+
+        <div class="container">
+            <div class="column column-1">
+                <div class="row data-filters">
+                    <div class="name-time">
+                        <div class = "filterHeader">Choose visualization type</div>
+                        <div class="change-name-time" id="change-name-time">
+                            <input type="radio" id="time" name="visualization" value="time" checked>
+                            <label for="time">Time</label>
+                            <input type="radio" id="name" name="visualization" value="name">
+                            <label for="name">Name</label>
+                        </div>
+                        <div id="color-visualization" style="display:none;">
+                            <div id="color-scale" class="color-scale"></div>
+                            <div class="color-scale-selector">
+                                <div class="center-label">Choose Color Scale:</div>
+                                <select id="colorScale">
+                                    <option value="interpolateViridis">Viridis</option>
+                                    <option value="interpolateInferno">Inferno</option>
+                                    <option value="interpolateMagma">Magma</option>
+                                    <option value="interpolatePlasma">Plasma</option>
+                                    <option value="interpolateCividis">Cividis</option>
+                                    <option value="interpolateCool">Cool</option>
+                                    <option value="interpolateWarm">Warm</option>
+                                    <option value="interpolateCubehelixDefault">Cubehelix</option>
+                                    <option value="interpolateRainbow">Rainbow</option>
+                                    <option value="interpolateSinebow">Sinebow</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter">
+                        <div class = "filterHeader">Choose time and events</div>
+                        <div class="filterBox">
+                            <label for="time-filter">Filter by Time:</label>
+                            <div class="time-filter">
+                                <select id="time-filter" name="time">
+                                    <option value="past-7-days">Past 7 Days</option>
+                                    <option value="past-30-days" selected>Past 30 Days</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                                <div class="custom-time" id="custom-time">
+                                    <label for="start-date">From</label>
+                                    <input type="date" id="start-date" name="start-date">
+                                    <label for="end-date">To</label>
+                                    <input type="date" id="end-date" name="end-date">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filterBox">
+                            <label for="event-type">Filter by Event Type:</label>
+                            <div id="dropdown" class="dropdown-content">
+                                <div class="search-select-container">
+                                    <input type="text" id="search-event-types" placeholder="Search event types...">
+
+                                </div>
+                                <div class="hide-group">
+                                    <div class="checkbox-group">
+                                    </div>
+                                    <div class="button-group">
+                                        <button id="confirm-selection">OK</button>
+                                        <button id="select-all" class="select-all-button">Select All</button>
+                                        <button id="reset-filters">Reset Filters</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div id="active-filters" class="active-filters">
+                            <h3>Active Filters:</h3>
+                            <p id="active-time-filter">Time Filter: None</p>
+                            <p id="active-event-types">Event Types: None</p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- <div class="filter-buttons">
+                        <button id="apply-filters">Apply Filters</button>
+                        <script>
+                            document.getElementById("apply-filters").style.display = "none";
+                        </script>
+                    </div> -->
+                    
+                    <!-- Section to display the applied filters -->
+
+
+                </div>
+
+
+
+                <div class="row table-row">
+                    <div class="table-container">
+                        <table>
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <script>tabulate(data, tableInfo);</script>
+                </div>
+            </div>
+            <div class="column column-2">
+                <div class="row row-1">
+                    <!-- <div class="dynamicChartName">Název</div> -->
+
+                    <div id="my_dataviz"><span class="mainChart-label">
+                            <div class="toggleButtonWrapper">
+                                <button id="toggleButton">See More</button>
+                                <div id="eventSelection">
+                                    <!-- Dynamically populated checkboxes will go here -->
+                                </div>
+                            </div>
+                        </span> </div>
+
+                    <div id="hiddenCharts" class="hidden">
+                        <div class="text-block">Text Block 1</div>
+                        <div class="text-block">Text Block 2</div>
+                        <div class="text-block">Text Block 3</div>
+                    </div>
+                    <div id="fixed-labels-container"></div>
+                </div>
+                <div class="row row-2">
+
+                    <svg id="map"></svg>
+                    <div id="tooltip"></div>
+                    <script>
+                        zoomableMap = new ZoomableMap();
+
+                        //zoomableMap.applyUpdates();
+                    </script>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script src="js/linechart/seeMoreLinecharts.js"></script>
+
+</body>
+
+</html>

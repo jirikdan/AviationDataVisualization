@@ -1,0 +1,145 @@
+.hidden {
+    display: none;
+}
+
+#my_dataviz{
+    display: flex;
+    align-items: center;
+    margin-bottom: 0px;
+    padding: 0px;
+    background-color:#fff;
+    border-radius: 5px;
+    border: 1px solid #333;
+    margin: 10px;
+    width: 100%;
+    overflow: visible;
+}
+
+.hidden-ticks .tick text {
+    display: none;
+}
+
+.hidden-ticks .tick line {
+    display: none;
+}
+
+#hiddenCharts {
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    background-color: rgb(232, 231, 231);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    border: 1px solid #333;
+}
+
+
+/* .bottom-labels{
+    margin-right: 200px;
+} */
+
+
+.chart-label, .mainChart-label {
+    padding: 10px;
+}
+
+
+
+#hiddenCharts::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+#hiddenCharts::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background of the scrollbar track */
+    border-radius: 10px; /* Rounded corners on the scrollbar track */
+}
+
+#hiddenCharts::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners on the scrollbar thumb */
+    border: 2px solid #f1f1f1; /* Adds a border around the thumb */
+}
+
+#hiddenCharts::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker thumb when hovered */
+}
+
+
+.column-2 .row-1 {
+    border: 2px solid #333;
+    /* Solid border with a custom color */
+    border-radius: 5px;
+    /* Rounded corners */
+    background-color: #d7d1d1;
+
+}
+
+
+
+.x-axis path,
+.y-axis path {
+    stroke: black;
+    fill: none;
+    stroke-width: 5px;
+    display: none;
+}
+
+.grid .domain {
+
+    stroke-width: 2px;
+    
+}
+
+.grid .tick line:first-child {
+    stroke: rgb(0, 0, 0); 
+    stroke-width: 3px; 
+    stroke-dasharray: 2.5;
+    
+}
+
+
+.myArea {
+    stroke-width: 3;
+}
+
+.chart-container{
+    display: flex;
+    align-items: center;
+    margin-bottom: /*0px;*/ 0px;
+    
+}
+
+
+
+.chart-label {
+    margin-right: 15px;
+    /* Adjust spacing between label and chart */
+    width: 80px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    /* Adjust text color if necessary */
+    overflow: hidden;
+}
+
+.mainChart-label {
+    margin-right: 15px;
+    /* Adjust spacing between label and chart */
+    width: 80px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    /* Adjust text color if necessary */
+    overflow: hidden;
+}
+
+.myArea:hover {
+    filter: brightness(1);
+}
+
+
+.label-div{
+    white-space: nowrap;
+}

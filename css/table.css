@@ -1,0 +1,115 @@
+.table-container {
+    max-height: 360px;
+    overflow-y: scroll;
+    border-radius: 2px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0px 0;
+    /* Remove or comment out the following lines to make scrollbar visible */
+    /* -ms-overflow-style: none;  Hide scrollbar in IE and Edge */
+    /* scrollbar-width: none;  Hide scrollbar in Firefox */
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Header styling */
+table thead tr.firstTR, table thead tr.filter-row {
+    background-color: #175819;
+    color: white;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+table thead tr.filter-row {
+    background-color: #e3e3e3; /* Different background for the filter row */
+    top: 40px; /* Adjust based on the height of the firstTR */
+    z-index: 2; /* Ensure it stays above the first row */
+
+}
+
+table thead th {
+    padding: 12px 15px;
+    background-color: inherit;
+}
+
+/* Body styling */
+table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+table tbody tr:last-of-type {
+    border-bottom: 2px solid #4CAF50;
+}
+
+table tbody td {
+    padding: 12px 15px;
+}
+
+/* Button styling */
+table tbody td button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+table tbody td button:hover {
+    background-color: #d32f2f;
+}
+
+/* Filter styling */
+.filter-row th {
+    padding: 5px;
+}
+
+.filter-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+table tbody tr.highlighted {
+    background-color: yellow !important; /* Ensures the highlighted color overrides other styles */
+}
+
+.row {
+    background-color: #d7d1d1;
+    border: 2px solid #333;
+    border-radius: 5px;
+}
+
+
+
+.table-container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background of the scrollbar track */
+    border-radius: 10px; /* Rounded corners on the scrollbar track */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners on the scrollbar thumb */
+    border: 2px solid #f1f1f1; /* Adds a border around the thumb */
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker thumb when hovered */
+}
