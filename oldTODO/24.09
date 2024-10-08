@@ -1,0 +1,17 @@
+test by měl odhalit největší nedostatky
+participant by měl myslet nahlas
+souhlas před nahráním hlasu, obličeje(mimika) a jeho obrazovky
+vytvořit X úkolů a sledovat jak se s tím vypořádá
+když si neví rady, tak jim lehce pomoci, vrátit je k návodu.
+zaznamenat si časy cca kdy se dělo něco zajímavého(nebo zpětné vazby) - u každého participanta
+participanti jsou anonymně
+Dotazník po testování - "Likertova škála" 5 cca možností
+    - z tohoto se dělá pak třeba bar chart
+    - škála ve prostřed šedá vlevo červená vpravo zelená
+    - pod každou otázkou udělat takle obarvenej bar chart, kde je pak jasný jak se to obecně líbilo či nelíbilo
+Snažit se formulovat otázky tak, aby souhlasím souhlasilo s pozitivem a to by se nemělo měnit u dalších otázek.
+Při testu se uživatelů ptát, jak by to udělali lépe.
+
+Nejdříve udělat test na méně lidech. (2).
+V manuálu je dobré říct uživatelům, jakou roli na letišti mají.
+Teoreticky načítat data z databáse než z filu.

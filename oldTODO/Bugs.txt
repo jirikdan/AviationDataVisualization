@@ -1,0 +1,1 @@
+Opravit tabulku, nereaguje na aplikaci filterů. Zrušení filterů atd.

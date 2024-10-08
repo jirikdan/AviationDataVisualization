@@ -1,0 +1,10 @@
+Nechat to někoho otestovat
+Vytvořit víc realistická data
+Vytvořit si scénář testování - otestovat každou komponentu (vytvořit úlohy pro jednotlivé komponenty)
+Ve wordu udělat popis pro uživatele o funkčnosti celé aplikace, uživatelé si to vyzkouší. Udělat manuál.
+Vytvořit úlohy pro uživatele na různých datasetech. Vytvořit otázky, které by měly být schopné odpovědět pomocí aplikace.
+Opakující se problém u lidí, je problém u UI. 
+Pokud mají problémy, tak jak by to změnili??
+Chtělo by to přidat reaktivnost pokud je otevřená subLinecharts, když se něco změní, aby to reagovalo, například pokud se odeberou nějaký typy eventů.
+Přidávání jednotlivých bodů pomocí kliknutí nefunguje - tak funguje xd
+

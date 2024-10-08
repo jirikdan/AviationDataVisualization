@@ -1,0 +1,5 @@
+jde zamknout minimalní velikost prohlížece?
+při zmenšení přidat scrollbary
+přidat popisky podosy, vycentrovat.
+výpočty v kaskádových stylech 100% -200px +30%
+prostě ten graf nějak předelej na procenta

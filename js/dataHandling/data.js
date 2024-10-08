@@ -262,4 +262,26 @@ class DataClass {
         // Return a unique list of event types from nameArray
         return [...new Set(this.nameArray)];
     }
+
+
+    loadJSONFromFile(filePath) {
+        fetch(filePath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Parse the JSON from the response
+            })
+            .then(data => {
+                console.log("Data loaded successfully:", data);
+                // Now you can manipulate the data, e.g., print event names
+                data.forEach(event => {
+                    console.log(`Event Name: ${event.properties.name}, Coordinates: ${event.geometry.coordinates}`);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading the JSON file:", error);
+            });
+    }
+
 }
