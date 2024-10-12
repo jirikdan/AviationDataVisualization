@@ -1,7 +1,8 @@
 BUGS TO FIX
-- [ ] Change in filters does not propagate into sublinecharts
+- [X] Change in filters does not propagate into sublinecharts
 - [ ] Default order in subcharts should be descending
 - [ ] Table data should dynamically update to filters and be sorted by Default
+- [ ] Table data should be ordered
 - [ ] (Table remove button double check)
 - [ ] Gray points disable tooltip
 - [ ] Points when highlighted and unhighlighted gets either gray or really light almost unvisible (opacity changes probably) they don't return to the state before highlighting
@@ -9,3 +10,4 @@ BUGS TO FIX
 - [ ] SubLinecharts should have all same maximum
 - [ ] Change of filters bugs highlighting points (resets)
 - [ ] Double colored border for highlighted
+

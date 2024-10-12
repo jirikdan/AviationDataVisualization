@@ -1,0 +1,10 @@
+- Vertical stacked bar chart
+najdi "matplotlib vertical stacked bar chart" a jdi do obrázků
+- vychýlená verze by mohla být zajímavá, zarovnaná podle středu prostě.
+V textu diplomky popisovat prototypy. Implementace a testování 1. prototypu, pak druhého atd...
+    - User centered descending
+    - vysvětlit proč nebyl papírový prototyp a proč byl použit hned code prototyp - experti z letiště nemají čas. a pro tuto vizualizaci to prostě nedává moc smysl (vizualizace dat)
+    - oponent je Míkovec, je třeba mu to vysvětlit.
+Knihy na Ebookcentral
+-Effective prototyping for software makers
+-making data visualization O. Riley

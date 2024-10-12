@@ -4,14 +4,16 @@ let selectedEventTypes = {};
 // Array to store the order of selected event types
 let eventOrder = [];
 
-document.getElementById('toggleButton').addEventListener('click', function() {
+document.getElementById('toggleButton').addEventListener('click', function () {
     var hiddenTexts = document.getElementById('hiddenCharts');
     var eventSelection = document.getElementById('eventSelection');
+    var fixedLabelContainer = document.getElementById('fixed-labels-container');
 
     if (hiddenTexts.classList.contains('hidden')) {
         // Show hidden charts and event selection
         hiddenTexts.classList.remove('hidden');
         eventSelection.classList.remove('hidden');
+        fixedLabelContainer.classList.remove('hidden');
         this.textContent = 'Close';
 
         // Populate the eventSelection div with checkboxes
@@ -20,12 +22,12 @@ document.getElementById('toggleButton').addEventListener('click', function() {
         lineChart.xAxis.attr("class", "x-axis hidden-ticks");
         lineChart.xGrid.attr("class", "grid");
         createMoreLineCharts();
-        offsetFixedLabelContainer();
 
     } else {
         // Hide hidden charts and event selection
         hiddenTexts.classList.add('hidden');
         eventSelection.classList.add('hidden');
+        fixedLabelContainer.classList.add('hidden');
         this.textContent = 'See More';
         lineChart.subLineCharts = [];
         lineChart.xAxis.attr("class", "x-axis");
@@ -37,6 +39,8 @@ function populateEventSelection() {
     const activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
+
+
 
     // Create "hide/unhide all" button
     const hideAllContainer = document.createElement('div');
@@ -50,7 +54,7 @@ function populateEventSelection() {
     // Initially hide all checkboxes except the button
     let isHidden = true;
 
-    hideAllButton.addEventListener('click', function() {
+    hideAllButton.addEventListener('click', function () {
         isHidden = !isHidden;
         eventSelection.querySelectorAll('.checkbox-container:not(.hide-all-container)').forEach(container => {
             container.style.display = isHidden ? 'none' : 'flex';
@@ -79,9 +83,9 @@ function populateEventSelection() {
         checkbox.checked = selectedEventTypes[eventType] !== undefined ? selectedEventTypes[eventType] : true;
 
         // Save the state when checkbox is clicked
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             selectedEventTypes[eventType] = checkbox.checked;
-            createMoreLineCharts(); // Update charts when selection changes
+            updateOrderOfLineCharts(); // Update charts when selection changes
         });
 
         const label = document.createElement('label');
@@ -100,23 +104,21 @@ function populateEventSelection() {
     // Make the eventSelection div sortable
     new Sortable(eventSelection, {
         animation: 150,
-        onEnd: function(evt) {
+        onEnd: function (evt) {
             // Update the eventOrder array with the new order
             eventOrder = Array.from(eventSelection.children)
-                              .filter(container => !container.classList.contains('hide-all-container'))
-                              .map(container => container.dataset.eventType);
-            createMoreLineCharts(); // Update charts when order changes
+                .filter(container => !container.classList.contains('hide-all-container'))
+                .map(container => container.dataset.eventType);
+            updateOrderOfLineCharts(); // Update charts when order changes
         }
     });
 }
 
 
-
-
-
-function createMoreLineCharts() {
+function updateOrderOfLineCharts() {
+    console.log('Updating order of line charts');
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
-    
+
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
 
     const container = document.getElementById('hiddenCharts');
@@ -142,7 +144,59 @@ function createMoreLineCharts() {
 
         chartContainer.appendChild(label); // Append the label next to the chart
         chartContainer.appendChild(newDiv);
-        
+
+        container.appendChild(chartContainer);
+
+        const subChartData = dataHandler.getEventTypeData(eventType);
+        const isLastChart = index === selectedTypes.length - 1;
+        const subLineChart = new SubLineChart(`#linechart_${index}`, eventType, lineChart, isLastChart);
+        subLineChart.renderChart(subChartData);
+        lineChart.subLineCharts.push(subLineChart);
+        subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
+        subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
+        subLineChart.area
+            .select('.myArea')
+            .transition()
+            .attr("d", subLineChart.areaGenerator)
+            .style("fill", colorMapping[eventType]) // Apply color to the chart area
+            .style("stroke", colorMapping[eventType]); // Apply color to the chart line
+        subLineChart.updateGridlines();
+    });
+}
+
+
+
+function createMoreLineCharts() {
+    populateEventSelection(); // Update the event selection div with the current state
+    console.log('Creating more line charts');
+    const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
+
+    const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
+
+    const container = document.getElementById('hiddenCharts');
+    container.innerHTML = ''; // Clear the container before adding new charts
+
+    selectedTypes.forEach((eventType, index) => {
+        const chartContainer = document.createElement('div');
+        chartContainer.classList.add('chart-container');
+
+        const label = document.createElement('span');
+        label.classList.add('chart-label');
+        label.textContent = eventType;
+
+        // Set the color of the label based on the event type
+        label.style.color = colorMapping[eventType];
+
+        const newDiv = document.createElement('div');
+        newDiv.id = `linechart_${index}`;
+        newDiv.classList.add('linechart');
+
+        // Set background color for the chart container if desired
+        chartContainer.style.backgroundColor = colorMapping[eventType] + '15'; // Slightly transparent background
+
+        chartContainer.appendChild(label); // Append the label next to the chart
+        chartContainer.appendChild(newDiv);
+
         container.appendChild(chartContainer);
 
         const subChartData = dataHandler.getEventTypeData(eventType);

@@ -41,7 +41,7 @@ class SubLineChart {
 
         this.xAxis = this.linechartSvg.append("g")
             .attr("transform", `translate(0,${this.height})`)
-            .attr("class", this.isLastChart ? "x-axis" : "x-axis hidden-ticks");
+            .attr("class", this.isLastChart ? "x-axis hidden-ticks" : "x-axis hidden-ticks"); //remove hidden-ticks to show x-axis
 
         this.y = d3.scaleLinear()
             .range([this.height, 0]);
@@ -148,7 +148,7 @@ class SubLineChart {
         // Append vertical grid lines for each tick and create labels
         var fixedLabelsContainer = d3.select('#fixed-labels-container');
         fixedLabelsContainer.selectAll("div").remove(); // Remove previous divs to avoid overlaps
-        fixedLabelsContainer.style("display", "inline-block"); // Ensure the container is displayed as inline-block
+        //fixedLabelsContainer.style("display", "inline-block"); // Ensure the container is displayed as inline-block
 
         tickValues.concat(start, end).forEach((tickValue, i) => {
             const isStartOrEnd = (tickValue === start || tickValue === end);
