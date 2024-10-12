@@ -36,22 +36,20 @@ document.getElementById('toggleButton').addEventListener('click', function () {
 });
 
 function populateEventSelection() {
-    const activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
+    const eventCounts = dataHandler.getSelectedEventCounts().eventCounts; // Assuming this contains event counts
+    const activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes; // Fetch active event types
+
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
 
-
-
     // Create "hide/unhide all" button
     const hideAllContainer = document.createElement('div');
-    //hideAllContainer.classList.add('checkbox-container');
     hideAllContainer.classList.add('hide-all-container'); // Additional class for custom styling
 
     const hideAllButton = document.createElement('button');
     hideAllButton.id = 'hideAllButton';
     hideAllButton.textContent = 'Sort'; // Start with "Unhide All"
 
-    // Initially hide all checkboxes except the button
     let isHidden = true;
 
     hideAllButton.addEventListener('click', function () {
@@ -65,9 +63,10 @@ function populateEventSelection() {
     hideAllContainer.appendChild(hideAllButton);
     eventSelection.appendChild(hideAllContainer);
 
-    // Use eventOrder to maintain the order, or initialize if empty
-    const orderedEventTypes = eventOrder.length ? eventOrder : activeEventTypes;
+    // Sort event types by their occurrence count in descending order
+    const orderedEventTypes = activeEventTypes.sort((a, b) => eventCounts[b] - eventCounts[a]);
 
+    // Use sorted event types to maintain the order
     orderedEventTypes.forEach((eventType, index) => {
         const checkboxContainer = document.createElement('div');
         checkboxContainer.classList.add('checkbox-container');
@@ -90,13 +89,12 @@ function populateEventSelection() {
 
         const label = document.createElement('label');
         label.htmlFor = `eventCheckbox_${index}`;
-        label.textContent = eventType;
+        label.textContent = `${eventType} (${eventCounts[eventType]})`; // Display event type and occurrence count
 
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
 
-        // Initially hide all checkboxes
-        checkboxContainer.style.display = 'none';
+        checkboxContainer.style.display = 'none'; // Initially hide all checkboxes
 
         eventSelection.appendChild(checkboxContainer);
     });
@@ -105,7 +103,6 @@ function populateEventSelection() {
     new Sortable(eventSelection, {
         animation: 150,
         onEnd: function (evt) {
-            // Update the eventOrder array with the new order
             eventOrder = Array.from(eventSelection.children)
                 .filter(container => !container.classList.contains('hide-all-container'))
                 .map(container => container.dataset.eventType);
@@ -113,6 +110,7 @@ function populateEventSelection() {
         }
     });
 }
+
 
 
 function updateOrderOfLineCharts() {
@@ -176,6 +174,8 @@ function createMoreLineCharts() {
     const container = document.getElementById('hiddenCharts');
     container.innerHTML = ''; // Clear the container before adding new charts
 
+    let maxYValue = 0;
+
     selectedTypes.forEach((eventType, index) => {
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
@@ -202,7 +202,10 @@ function createMoreLineCharts() {
         const subChartData = dataHandler.getEventTypeData(eventType);
         const isLastChart = index === selectedTypes.length - 1;
         const subLineChart = new SubLineChart(`#linechart_${index}`, eventType, lineChart, isLastChart);
+        
+        
         subLineChart.renderChart(subChartData);
+        
         lineChart.subLineCharts.push(subLineChart);
         subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
         subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
@@ -213,6 +216,10 @@ function createMoreLineCharts() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         subLineChart.updateGridlines();
+        if (subLineChart.y.domain()[1] > maxYValue) {
+            maxYValue = subLineChart.y.domain()[1];
+        }
+        subLineChart.changeYAxisRange(maxYValue);
     });
 }
 

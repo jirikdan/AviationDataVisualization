@@ -395,4 +395,18 @@ class SubLineChart {
         }
     }
 
+    changeYAxisRange(maxYValue) {
+        // Update the y scale with new min and max values
+        this.y.domain([0, maxYValue]);
+    
+        // Update the y-axis with new domain
+        this.yAxis.call(d3.axisLeft(this.y).ticks(this.yTicks));
+    
+        // Redraw the chart area with the updated y scale
+        this.area.select('.myArea')
+            .transition()
+            .duration(0)
+            .attr("d", this.areaGenerator);
+    }
+
 }
