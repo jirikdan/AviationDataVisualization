@@ -4,6 +4,11 @@ let selectedEventTypes = {};
 // Array to store the order of selected event types
 let eventOrder = [];
 
+let maxYValue = 0;
+
+var eventSelection = document.getElementById('eventSelection');
+eventSelection.classList.add('hidden');
+
 document.getElementById('toggleButton').addEventListener('click', function () {
     var hiddenTexts = document.getElementById('hiddenCharts');
     var eventSelection = document.getElementById('eventSelection');
@@ -21,7 +26,7 @@ document.getElementById('toggleButton').addEventListener('click', function () {
 
         lineChart.xAxis.attr("class", "x-axis hidden-ticks");
         lineChart.xGrid.attr("class", "grid");
-        createMoreLineCharts();
+        updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
 
     } else {
         // Hide hidden charts and event selection
@@ -34,7 +39,7 @@ document.getElementById('toggleButton').addEventListener('click', function () {
         lineChart.xGrid.attr("class", "grid hidden-ticks");
     }
 });
-
+let isHidden = true;
 function populateEventSelection() {
     const eventCounts = dataHandler.getSelectedEventCounts().eventCounts; // Assuming this contains event counts
     const activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes; // Fetch active event types
@@ -50,7 +55,7 @@ function populateEventSelection() {
     hideAllButton.id = 'hideAllButton';
     hideAllButton.textContent = 'Sort'; // Start with "Unhide All"
 
-    let isHidden = true;
+
 
     hideAllButton.addEventListener('click', function () {
         isHidden = !isHidden;
@@ -59,7 +64,7 @@ function populateEventSelection() {
         });
         hideAllButton.textContent = isHidden ? 'Sort' : 'Close';
     });
-
+    console.log("Populating and isHidden = " + isHidden);
     hideAllContainer.appendChild(hideAllButton);
     eventSelection.appendChild(hideAllContainer);
 
@@ -94,8 +99,13 @@ function populateEventSelection() {
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
 
-        checkboxContainer.style.display = 'none'; // Initially hide all checkboxes
+        if (isHidden) {
+            checkboxContainer.style.display = 'none'; // Initially hide all checkboxes
 
+        }
+        else {
+            checkboxContainer.style.display = 'flex'; // Initially hide all checkboxes
+        }
         eventSelection.appendChild(checkboxContainer);
     });
 
@@ -159,9 +169,12 @@ function updateOrderOfLineCharts() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         subLineChart.updateGridlines();
+        if (subLineChart.y.domain()[1] > maxYValue) {
+            maxYValue = subLineChart.y.domain()[1];
+        }
+        subLineChart.changeYAxisRange(maxYValue);
     });
 }
-
 
 
 function createMoreLineCharts() {
@@ -174,7 +187,7 @@ function createMoreLineCharts() {
     const container = document.getElementById('hiddenCharts');
     container.innerHTML = ''; // Clear the container before adding new charts
 
-    let maxYValue = 0;
+
 
     selectedTypes.forEach((eventType, index) => {
         const chartContainer = document.createElement('div');
@@ -202,10 +215,10 @@ function createMoreLineCharts() {
         const subChartData = dataHandler.getEventTypeData(eventType);
         const isLastChart = index === selectedTypes.length - 1;
         const subLineChart = new SubLineChart(`#linechart_${index}`, eventType, lineChart, isLastChart);
-        
-        
+
+
         subLineChart.renderChart(subChartData);
-        
+
         lineChart.subLineCharts.push(subLineChart);
         subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
         subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
@@ -221,6 +234,7 @@ function createMoreLineCharts() {
         }
         subLineChart.changeYAxisRange(maxYValue);
     });
+
 }
 
 

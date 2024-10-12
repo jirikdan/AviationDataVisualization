@@ -321,12 +321,6 @@ function applyFilters(filters) {
         }
     });
 
-    
-    // Populate the eventSelection div with checkboxes if toggleButton is true
-    //console.log('Toggle Button:', toggleButton);
-    if (toggleButton.textContent === 'Close More') {
-    populateEventSelection();
-    }
     // Call the function to create or update the charts
     createMoreLineCharts();
 
