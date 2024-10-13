@@ -326,6 +326,7 @@ function applyFilters(filters) {
 
     zoomableMap.applyUpdates(filters.eventTypes);
     lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
+    updateTableWithFilteredData();
 }
 
 

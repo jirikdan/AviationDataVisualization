@@ -47,13 +47,14 @@ function populateEventSelection() {
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
 
+    
     // Create "hide/unhide all" button
     const hideAllContainer = document.createElement('div');
     hideAllContainer.classList.add('hide-all-container'); // Additional class for custom styling
 
     const hideAllButton = document.createElement('button');
     hideAllButton.id = 'hideAllButton';
-    hideAllButton.textContent = 'Sort'; // Start with "Unhide All"
+    hideAllButton.textContent = 'Sort'; 
 
 
 
@@ -67,6 +68,19 @@ function populateEventSelection() {
     console.log("Populating and isHidden = " + isHidden);
     hideAllContainer.appendChild(hideAllButton);
     eventSelection.appendChild(hideAllContainer);
+
+
+    // Create a separate button for sorting by max Y value
+    const sortButton = document.createElement('button');
+    sortButton.id = 'sortByMaxYButton';
+    sortButton.textContent = 'Sort by Max Y Value';
+
+    // Add event listener to sort the charts by maximum Y value when clicked
+    sortButton.addEventListener('click', function () {
+        sortChartsByMaxYValue(); // Call the sorting function
+    });
+
+    hideAllContainer.appendChild(sortButton); // Append the sort button to the container
 
     // Sort event types by their occurrence count in descending order
     const orderedEventTypes = activeEventTypes.sort((a, b) => eventCounts[b] - eventCounts[a]);
@@ -236,6 +250,91 @@ function createMoreLineCharts() {
     });
 
 }
+
+
+function sortChartsByMaxYValue() {
+    console.log('Sorting charts and checkboxes by maximum Y value');
+
+    const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
+    const allCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]'));
+
+    const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
+
+    // Get the maximum Y values for each event type
+    const maxYValues = selectedTypes.map(eventType => {
+        const subChartData = dataHandler.getEventTypeData(eventType);
+        const maxY = d3.max(subChartData, d => d.value); // Assuming 'value' is the property for Y axis data
+        return { eventType, maxY };
+    });
+
+    // Sort the event types by their maxY value in descending order
+    const sortedEventTypes = maxYValues.sort((a, b) => b.maxY - a.maxY).map(d => d.eventType);
+
+    // Sort the checkboxes based on the sorted event types
+    const eventSelection = document.getElementById('eventSelection');
+    const checkboxContainers = Array.from(eventSelection.querySelectorAll('.checkbox-container:not(.hide-all-container)'));
+
+    // Clear the existing checkboxes and re-order them
+    checkboxContainers.forEach(container => eventSelection.removeChild(container));
+
+    // Append the checkboxes in the new sorted order
+    sortedEventTypes.forEach(eventType => {
+        const checkboxContainer = checkboxContainers.find(container => container.dataset.eventType === eventType);
+        eventSelection.appendChild(checkboxContainer);
+    });
+
+    // Clear the container before adding new sorted charts
+    const container = document.getElementById('hiddenCharts');
+    container.innerHTML = ''; 
+
+    // Re-render the sorted charts
+    sortedEventTypes.forEach((eventType, index) => {
+        const chartContainer = document.createElement('div');
+        chartContainer.classList.add('chart-container');
+
+        const label = document.createElement('span');
+        label.classList.add('chart-label');
+        label.textContent = eventType;
+
+        // Set the color of the label based on the event type
+        label.style.color = colorMapping[eventType];
+
+        const newDiv = document.createElement('div');
+        newDiv.id = `linechart_${index}`;
+        newDiv.classList.add('linechart');
+
+        // Set background color for the chart container if desired
+        chartContainer.style.backgroundColor = colorMapping[eventType] + '15'; // Slightly transparent background
+
+        chartContainer.appendChild(label); // Append the label next to the chart
+        chartContainer.appendChild(newDiv);
+
+        container.appendChild(chartContainer);
+
+        const subChartData = dataHandler.getEventTypeData(eventType);
+        const isLastChart = index === sortedEventTypes.length - 1;
+        const subLineChart = new SubLineChart(`#linechart_${index}`, eventType, lineChart, isLastChart);
+        subLineChart.renderChart(subChartData);
+
+        lineChart.subLineCharts.push(subLineChart);
+        subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
+        subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
+        subLineChart.area
+            .select('.myArea')
+            .transition()
+            .attr("d", subLineChart.areaGenerator)
+            .style("fill", colorMapping[eventType]) // Apply color to the chart area
+            .style("stroke", colorMapping[eventType]); // Apply color to the chart line
+        subLineChart.updateGridlines();
+
+        // Update maxYValue for consistent Y axis scaling
+        if (subLineChart.y.domain()[1] > maxYValue) {
+            maxYValue = subLineChart.y.domain()[1];
+        }
+        subLineChart.changeYAxisRange(maxYValue);
+    });
+}
+
 
 
 

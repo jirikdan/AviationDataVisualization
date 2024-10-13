@@ -20,7 +20,7 @@ function enableRectangleSelection(zoomableMap) {
 
             svg.on("mousemove", mousemoveHandler);
         }
-        //unselect all points
+        // Unselect all points
         /*glyphs.selectAll("path").each(function (d) {
             d.properties.selected = false;
             d.properties.highlighted = d.properties.selected;
@@ -54,70 +54,69 @@ function enableRectangleSelection(zoomableMap) {
             const y1 = Math.max(startPoint[1], endPoint[1]);
             const filters = getFilters();
             var somethingSelected = true;
+
             glyphs.selectAll("path").each(function (d) {
                 const [gx, gy] = projection([d.geometry.coordinates[0], d.geometry.coordinates[1]]);
-                if (gx >= x0 && gx <= x1 && gy >= y0 && gy <= y1) {
-                    //console.log(data);
-                    //if d event type is in getFilters do this
+                const element = document.getElementById(d.properties.id);
 
-                    console.log(filters.eventTypes);
+                // Debugging the ID
+                console.log("Checking element for ID: ", d.properties.id);
 
-
-                    console.log(d.properties.highlighted);
-                    if (checkIfPointPassesFilter(d)) {
-                        console.log("in");
-                        d.properties.selected = true;
-                        if (!d.properties.highlighted) {
-                            d.properties.highlighted = true;
-                            var element = document.getElementById(d.properties.id);
-                            //toggle class highlighted
-                            element.classList.toggle("highlighted");
+                if (element) {
+                    if (gx >= x0 && gx <= x1 && gy >= y0 && gy <= y1) {
+                        if (checkIfPointPassesFilter(d)) {
+                            console.log("in");
+                            d.properties.selected = true;
+                            if (!d.properties.highlighted) {
+                                d.properties.highlighted = true;
+                                // Toggle the highlighted class
+                                element.classList.toggle("highlighted");
+                            }
+                        }
+                    } else {
+                        if (checkIfPointPassesFilter(d)) {
+                            if (d.properties.highlighted) {
+                                // Toggle the highlighted class
+                                element.classList.toggle("highlighted");
+                            }
+                            d.properties.selected = true;
+                            d.properties.highlighted = false;
                         }
                     }
-                }
-                else {
-                    if (checkIfPointPassesFilter(d)) {
-                        if (d.properties.highlighted) {
-                            var element = document.getElementById(d.properties.id);
-                            //toggle class highlighted
-                            element.classList.toggle("highlighted");
-                        }
-                        d.properties.selected = true;
-                        d.properties.highlighted = false;
-                    }
+                } else {
+                    console.warn(`No element found for ID: ${d.properties.id}`);
                 }
 
-                //if none was selected select all
+                // If none was selected, select all
                 if (x0 === x1 && y0 === y1) {
                     if (checkIfPointPassesFilter(d)) {
                         d.properties.selected = true;
                     }
                     somethingSelected = false;
-                    
-
                 }
             });
+
             updateGlyphs();
-            
+
             if (somethingSelected) {
                 lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
-                //foreach lineChart.subLineCharts
+                // Update subLineCharts
                 for (var i = 0; i < lineChart.subLineCharts.length; i++) {
                     lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
                 }
-            }
-            else {
+            } else {
                 lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
                 for (var i = 0; i < lineChart.subLineCharts.length; i++) {
                     lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
                 }
             }
+
             startPoint = null;
             if (selectionRect) {
                 selectionRect.remove();
                 selectionRect = null;
             }
-            
+
             svg.on("mousemove", null);
         }
     });
@@ -128,10 +127,10 @@ function enableRectangleSelection(zoomableMap) {
     });
 }
 
-
-function checkIfPointPassesFilter(point)
-{
+function checkIfPointPassesFilter(point) {
     const filters = getFilters();
+    let startDate, endDate;
+
     if (filters.timeFilter === 'past-7-days') {
         endDate = new Date();
         startDate = new Date();

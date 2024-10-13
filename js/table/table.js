@@ -99,6 +99,16 @@ function updateHighlightedPoints() {
 }
 
 function updateTableBody(data, columns) {
+     // Sort the filtered data by a specific property, e.g., by "properties.name"
+     data.sort((a, b) => {
+         if (a.properties.name < b.properties.name) {
+             return -1;
+         }
+         if (a.properties.name > b.properties.name) {
+             return 1;
+         }
+         return 0;
+     });
     //console.log("Update table");
     var tbody = d3.select('table').select('tbody');
 
@@ -145,3 +155,10 @@ function updateTableBody(data, columns) {
 }
 
 
+function updateTableWithFilteredData() {
+    // Filter the data to only include items where properties.selected is true
+    const filteredData = data.filter(d => d.properties.selected);
+
+    // Now call updateTableBody with the filtered data
+    updateTableBody(filteredData, tableInfo);
+}
