@@ -41,22 +41,19 @@ document.getElementById('toggleButton').addEventListener('click', function () {
 });
 let isHidden = true;
 function populateEventSelection() {
-    const eventCounts = dataHandler.getSelectedEventCounts().eventCounts; // Assuming this contains event counts
-    const activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes; // Fetch active event types
+    // Get active event types using dataHandler.getSelectedEventCounts()
+    const { activeEventTypes } = dataHandler.getSelectedEventCounts();
 
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
 
-    
     // Create "hide/unhide all" button
     const hideAllContainer = document.createElement('div');
     hideAllContainer.classList.add('hide-all-container'); // Additional class for custom styling
 
     const hideAllButton = document.createElement('button');
     hideAllButton.id = 'hideAllButton';
-    hideAllButton.textContent = 'Sort'; 
-
-
+    hideAllButton.textContent = 'Sort'; // Start with "Sort"
 
     hideAllButton.addEventListener('click', function () {
         isHidden = !isHidden;
@@ -65,10 +62,8 @@ function populateEventSelection() {
         });
         hideAllButton.textContent = isHidden ? 'Sort' : 'Close';
     });
-    console.log("Populating and isHidden = " + isHidden);
     hideAllContainer.appendChild(hideAllButton);
     eventSelection.appendChild(hideAllContainer);
-
 
     // Create a separate button for sorting by max Y value
     const sortButton = document.createElement('button');
@@ -82,11 +77,8 @@ function populateEventSelection() {
 
     hideAllContainer.appendChild(sortButton); // Append the sort button to the container
 
-    // Sort event types by their occurrence count in descending order
-    const orderedEventTypes = activeEventTypes.sort((a, b) => eventCounts[b] - eventCounts[a]);
-
-    // Use sorted event types to maintain the order
-    orderedEventTypes.forEach((eventType, index) => {
+    // Iterate over each active event type and display checkboxes
+    activeEventTypes.forEach((eventType, index) => {
         const checkboxContainer = document.createElement('div');
         checkboxContainer.classList.add('checkbox-container');
         checkboxContainer.dataset.eventType = eventType;
@@ -108,18 +100,17 @@ function populateEventSelection() {
 
         const label = document.createElement('label');
         label.htmlFor = `eventCheckbox_${index}`;
-        label.textContent = `${eventType} (${eventCounts[eventType]})`; // Display event type and occurrence count
+        label.textContent = eventType; // Display only the event type (no count)
 
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
 
         if (isHidden) {
             checkboxContainer.style.display = 'none'; // Initially hide all checkboxes
+        } else {
+            checkboxContainer.style.display = 'flex'; // Show all checkboxes
+        }
 
-        }
-        else {
-            checkboxContainer.style.display = 'flex'; // Initially hide all checkboxes
-        }
         eventSelection.appendChild(checkboxContainer);
     });
 
@@ -134,6 +125,11 @@ function populateEventSelection() {
         }
     });
 }
+
+
+
+
+
 
 
 

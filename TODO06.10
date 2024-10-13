@@ -1,8 +1,8 @@
 BUGS TO FIX
 - [X] Change in filters does not propagate into sublinecharts
 - [X] Default order in subcharts should be descending
-- [ ] Table data should dynamically update to filters and be sorted by Default
-- [ ] Table data should be ordered
+- [X] Table data should dynamically update to filters and be sorted by Default
+- [X] Table data should be ordered
 - [ ] (Table remove button double check)
 - [ ] Gray points disable tooltip
 - [ ] Points when highlighted and unhighlighted gets either gray or really light almost unvisible (opacity changes probably) they don't return to the state before highlighting
