@@ -201,6 +201,7 @@ class DataClass {
     }
 
 
+
     getHighlightedEventCountsByType(eventType) {
         const highlightedEvents = this.data.filter(event => event.properties.highlighted && event.properties.name === eventType);
         const eventCounts = {};
@@ -282,6 +283,16 @@ class DataClass {
             .catch(error => {
                 console.error("Error loading the JSON file:", error);
             });
+    }
+
+    //function to return if any data are highlighted at this moment
+    isAnythingHighlighted() {
+        for (var i = 0; i < this.data.length; i++) {
+            if (this.data[i].properties.highlighted) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -147,14 +147,17 @@ class ZoomableMap {
 
     // Tooltip methods
     showTooltip(event, d) {
-        const format = d3.timeFormat("%m/%d/%Y %H:%M");
-        const tooltip = d3.select("#tooltip");
-        const content = this.currentColorVisualization === "time" ? d.properties.name : format(d.properties.date);
-        tooltip.style("display", "block")
-            .html(content)
-            .style("left", `${event.pageX + 5}px`)
-            .style("top", `${event.pageY + 5}px`);
+        if (d.properties.selected) { // Only show tooltip if the point is selected
+            const format = d3.timeFormat("%m/%d/%Y %H:%M");
+            const tooltip = d3.select("#tooltip");
+            const content = this.currentColorVisualization === "time" ? d.properties.name : format(d.properties.date);
+            tooltip.style("display", "block")
+                .html(content)
+                .style("left", `${event.pageX + 5}px`)
+                .style("top", `${event.pageY + 5}px`);
+        }
     }
+    
 
     hideTooltip() {
         d3.select("#tooltip").style("display", "none");
@@ -347,7 +350,7 @@ class ZoomableMap {
     onGlyphClick(event, d) {
         if (checkIfPointPassesFilter(d)) {
         d.properties.highlighted = !d.properties.highlighted;
-        d.properties.selected = d.properties.highlighted;
+        //d.properties.selected = d.properties.highlighted;
         this.highlightTableWithId(d.properties.id);
         lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
         updateGlyphs();

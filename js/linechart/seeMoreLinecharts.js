@@ -27,6 +27,7 @@ document.getElementById('toggleButton').addEventListener('click', function () {
         lineChart.xAxis.attr("class", "x-axis hidden-ticks");
         lineChart.xGrid.attr("class", "grid");
         updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
+        updateHighlightedSubcharts(); // Update the line charts based on the selected points
 
     } else {
         // Hide hidden charts and event selection
@@ -42,7 +43,20 @@ document.getElementById('toggleButton').addEventListener('click', function () {
 let isHidden = true;
 function populateEventSelection() {
     // Get active event types using dataHandler.getSelectedEventCounts()
-    const { activeEventTypes } = dataHandler.getSelectedEventCounts();
+    var somethingSelected = false;
+    for (var i = 0; i < dataHandler.data.length; i++) {
+        if (dataHandler.data[i].properties.selected && dataHandler.data[i].properties.highlighted) {
+            somethingSelected = true;
+            break;
+        }
+    }
+    var activeEventTypes;
+    if (somethingSelected) {
+        activeEventTypes = dataHandler.getHighlightedEventCounts().activeEventTypes;
+    } else {
+        activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
+    }
+    console.log('Active event types:', activeEventTypes);
 
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
@@ -178,7 +192,7 @@ function updateOrderOfLineCharts() {
             .attr("d", subLineChart.areaGenerator)
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
-        subLineChart.updateGridlines();
+        //subLineChart.updateGridlines();
         if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }
@@ -258,13 +272,30 @@ function sortChartsByMaxYValue() {
 
     // Get the maximum Y values for each event type
     const maxYValues = selectedTypes.map(eventType => {
-        const subChartData = dataHandler.getEventTypeData(eventType);
-        const maxY = d3.max(subChartData, d => d.value); // Assuming 'value' is the property for Y axis data
-        return { eventType, maxY };
+        if (dataHandler.isAnythingHighlighted()) {
+            const subChartData = dataHandler.getHighlightedEventCountsByType(eventType).eventCounts;
+            const maxY = d3.max(subChartData, d => d.value); // Assuming 'value' is the property for Y axis data
+            return { eventType, maxY };
+        } else {
+            const subChartData = dataHandler.getEventTypeData(eventType);
+            const maxY = d3.max(subChartData, d => d.value); // Assuming 'value' is the property for Y axis data
+            return { eventType, maxY };
+        }
     });
 
+    console.log('Max Y values before filtering:', maxYValues);
+
+    // Filter out any eventTypes where maxY is undefined
+    const filteredMaxYValues = maxYValues.filter(d => d.maxY !== undefined);
+
+    console.log('Max Y values after filtering:', filteredMaxYValues);
+
     // Sort the event types by their maxY value in descending order
-    const sortedEventTypes = maxYValues.sort((a, b) => b.maxY - a.maxY).map(d => d.eventType);
+    const sortedEventTypes = filteredMaxYValues
+        .sort((a, b) => b.maxY - a.maxY)
+        .map(d => d.eventType);
+
+    console.log('Sorted event types:', sortedEventTypes);
 
     // Sort the checkboxes based on the sorted event types
     const eventSelection = document.getElementById('eventSelection');
@@ -281,7 +312,7 @@ function sortChartsByMaxYValue() {
 
     // Clear the container before adding new sorted charts
     const container = document.getElementById('hiddenCharts');
-    container.innerHTML = ''; 
+    container.innerHTML = '';
 
     // Re-render the sorted charts
     sortedEventTypes.forEach((eventType, index) => {
@@ -321,28 +352,14 @@ function sortChartsByMaxYValue() {
             .attr("d", subLineChart.areaGenerator)
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
-        subLineChart.updateGridlines();
+        //subLineChart.updateGridlines();
 
         // Update maxYValue for consistent Y axis scaling
         if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }
         subLineChart.changeYAxisRange(maxYValue);
+
+        updateHighlightedSubchartsAfterSort(); // Update the line charts based on the selected points
     });
 }
-
-
-
-
-// Initialize the selectedEventTypes and eventOrder when the page loads or the charts are first shown
-(function initializeSelectedEventTypes() {
-    const activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
-    activeEventTypes.forEach(eventType => {
-        if (selectedEventTypes[eventType] === undefined) {
-            selectedEventTypes[eventType] = true; // Set default to true if not already set
-        }
-        if (!eventOrder.includes(eventType)) {
-            eventOrder.push(eventType); // Add to order array if not already present
-        }
-    });
-})();

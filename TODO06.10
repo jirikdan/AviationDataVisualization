@@ -4,10 +4,11 @@ BUGS TO FIX
 - [X] Table data should dynamically update to filters and be sorted by Default
 - [X] Table data should be ordered
 - [ ] (Table remove button double check)
-- [ ] Gray points disable tooltip
-- [ ] Points when highlighted and unhighlighted gets either gray or really light almost unvisible (opacity changes probably) they don't return to the state before highlighting
+- [X] Gray points disable tooltip
+- [X] Points when highlighted and unhighlighted gets either gray or really light almost unvisible (opacity changes probably) they don't return to the state before highlighting
+- [ ] Highlighting points should propagate into subcharts
 - [ ] Close button sort problem
-- [ ] SubLinecharts should have all same maximum
+- [X] SubLinecharts should have all same maximum
 - [ ] Change of filters bugs highlighting points (resets)
 - [ ] Double colored border for highlighted
 
