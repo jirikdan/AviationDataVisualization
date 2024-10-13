@@ -6,9 +6,9 @@ BUGS TO FIX
 - [ ] (Table remove button double check)
 - [X] Gray points disable tooltip
 - [X] Points when highlighted and unhighlighted gets either gray or really light almost unvisible (opacity changes probably) they don't return to the state before highlighting
-- [ ] Highlighting points should propagate into subcharts
+- [X] Highlighting points should propagate into subcharts
 - [ ] Close button sort problem
 - [X] SubLinecharts should have all same maximum
 - [ ] Change of filters bugs highlighting points (resets)
 - [ ] Double colored border for highlighted
-
+- [ ] Names do not correspond correctly to colors in active filters

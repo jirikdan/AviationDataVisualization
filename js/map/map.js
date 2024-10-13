@@ -183,14 +183,14 @@ class ZoomableMap {
     }
 
     updateColorsByName(names) {
-        const predefinedColors = d3.schemeCategory10;
-        const colorMapping = {};
+        //const predefinedColors = d3.schemeCategory10;
+        /*const colorMapping = {};
 
         const uniqueNames = [...new Set(data.map(d => d.properties.name))];
         uniqueNames.forEach((name, index) => {
             colorMapping[name] = predefinedColors[index % predefinedColors.length];
         });
-
+*/
         glyphs.selectAll("path")
             .attr("fill", d => colorMapping[d.properties.name] || "black");
 
@@ -353,6 +353,7 @@ class ZoomableMap {
         //d.properties.selected = d.properties.highlighted;
         this.highlightTableWithId(d.properties.id);
         lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
+        updateHighlightedSubcharts();
         updateGlyphs();
         }
     }
