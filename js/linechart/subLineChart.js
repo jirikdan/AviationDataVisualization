@@ -400,13 +400,17 @@ class SubLineChart {
         this.y.domain([0, maxYValue]);
     
         // Update the y-axis with new domain
-        this.yAxis.call(d3.axisLeft(this.y).ticks(this.yTicks));
+        this.yAxis.transition()  // Add a transition for smoother updates, optional
+            .duration(0)       // Adjust duration as needed
+            .call(d3.axisLeft(this.y).ticks(this.yTicks));  // Ensure ticks are based on updated domain
     
         // Redraw the chart area with the updated y scale
         this.area.select('.myArea')
             .transition()
-            .duration(0)
-            .attr("d", this.areaGenerator);
+            .duration(0)  // Optional, you can control the transition duration
+            .attr("d", this.areaGenerator);  // Update the path with the new Y-domain
+    
     }
+    
 
 }

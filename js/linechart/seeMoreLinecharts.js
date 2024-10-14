@@ -219,6 +219,7 @@ function updateOrderOfLineCharts() {
         if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }
+        console.log('Max Y value sort:', maxYValue);
         subLineChart.changeYAxisRange(maxYValue);
     });
 }
