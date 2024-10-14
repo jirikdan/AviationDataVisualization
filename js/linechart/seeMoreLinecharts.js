@@ -131,6 +131,18 @@ function populateEventSelection() {
     // Make the eventSelection div sortable
     new Sortable(eventSelection, {
         animation: 150,
+        handle: '.checkbox-container', // Only allow dragging of elements with the class 'checkbox-container'
+        filter: '.hide-all-container', // Exclude the container with the sort buttons from being dragged
+        preventOnFilter: false, // Ensure that the filtered elements are not affected at all
+        fallbackOnBody: true,  // Use body as a fallback for placing dragged elements
+        fallbackTolerance: 10, // Tolerance before fallback kicks in to prevent dragging over non-draggable areas
+        onMove: function (evt) {
+            const target = evt.related;
+            // Prevent dropping on the sort buttons
+            if (target && target.classList.contains('hide-all-container')) {
+                return false;
+            }
+        },
         onEnd: function (evt) {
             eventOrder = Array.from(eventSelection.children)
                 .filter(container => !container.classList.contains('hide-all-container'))
@@ -138,6 +150,8 @@ function populateEventSelection() {
             updateOrderOfLineCharts(); // Update charts when order changes
         }
     });
+    
+    
 }
 
 

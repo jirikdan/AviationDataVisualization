@@ -7,8 +7,8 @@ BUGS TO FIX
 - [X] Gray points disable tooltip
 - [X] Points when highlighted and unhighlighted gets either gray or really light almost unvisible (opacity changes probably) they don't return to the state before highlighting
 - [X] Highlighting points should propagate into subcharts
-- [ ] Close button sort problem
+- [X] Close button sort problem
 - [X] SubLinecharts should have all same maximum
 - [ ] Change of filters bugs highlighting points (resets)
 - [ ] Double colored border for highlighted
-- [ ] Names do not correspond correctly to colors in active filters
+- [X] Names do not correspond correctly to colors in active filters
