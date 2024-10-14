@@ -72,7 +72,8 @@ class DataClass {
     
             data.push(point);
         }
-    
+        //print all damage data
+        
         return data;
     }
     

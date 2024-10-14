@@ -99,34 +99,35 @@ function updateHighlightedPoints() {
 }
 
 function updateTableBody(data, columns) {
-     // Sort the filtered data by a specific property, e.g., by "properties.name"
-     data.sort((a, b) => {
-         if (a.properties.name < b.properties.name) {
-             return -1;
-         }
-         if (a.properties.name > b.properties.name) {
-             return 1;
-         }
-         return 0;
-     });
-    //console.log("Update table");
+    // Sort the filtered data by a specific property, e.g., by "properties.name"
+    data.sort((a, b) => {
+        if (a.properties.name < b.properties.name) {
+            return -1;
+        }
+        if (a.properties.name > b.properties.name) {
+            return 1;
+        }
+        return 0;
+    });
+
     var tbody = d3.select('table').select('tbody');
 
+    // Bind data to rows, using the unique 'properties.id' as the key
     var rows = tbody.selectAll('tr')
-        .data(data, d => d && d.properties ? d.properties.name : null);
+        .data(data, d => d && d.properties ? d.properties.id : null); // Use properties.id as key
 
+    // Remove any rows that no longer have matching data
     rows.exit().remove();
 
+    // Append new rows for incoming data
     var addedRows = rows.enter().append('tr')
-        .attr('id', function (d) { return d.properties.id; })
-        .on('click', function (d, i) {
-            console.log("click");
-            console.log(i);
-            toggleHighlightData(i);
+        .attr('id', d => d && d.properties ? d.properties.id : null) // Set the id attribute correctly
+        .on('click', function (event, d) { // Correctly capture event and data
+            toggleHighlightData(d);
             toggleHighlightRow(this);
         });
 
-    // create a cell in each row for each column
+    // Create cells for each row and column
     var cells = addedRows.selectAll('td')
         .data(function (row) {
             return columns.map(function (column) {
@@ -144,15 +145,17 @@ function updateTableBody(data, columns) {
     cells.append('td')
         .text(function (d) { return d.value; });
 
-    addedRows.append('td').append("button").attr("onclick", function (d, i) { return "removeItem(" + i + ");" }).text("Remove");
+    // Add a 'Remove' button to each row
+    addedRows.append('td').append("button").attr("onclick", function (d, i) { return "removeItem(" + i + ");"; }).text("Remove");
 
-    // Reassign the event handlers for the rows and set the id attribute for the existing rows
-    rows.attr('id', d => d.id)
-        .select("button").attr("onclick", function (d, i) { return "removeItem(" + i + ");" }).text("Remove");
+    // Update the id attribute for existing rows and reassign event handlers
+    rows.attr('id', d => d && d.properties ? d.properties.id : null) // Make sure id is updated for existing rows
+        .select("button").attr("onclick", function (d, i) { return "removeItem(" + i + ");"; }).text("Remove");
 
-    // Apply the highlighted class to rows based on the highlighted property
+    // Apply the 'highlighted' class to rows based on the 'highlighted' property
     tbody.selectAll('tr').classed('highlighted', d => d && d.properties ? d.properties.highlighted : false);
 }
+
 
 
 function updateTableWithFilteredData() {

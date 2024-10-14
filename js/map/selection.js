@@ -50,7 +50,8 @@ function enableRectangleSelection(zoomableMap) {
             glyphs.selectAll("path").each(function (d) {
                 const [gx, gy] = projection([d.geometry.coordinates[0], d.geometry.coordinates[1]]);
                 const element = document.getElementById(d.properties.id);
-
+                console.log("Checking element for ID: ", d.properties.id);
+                console.log("Element: ", element);
                 // Debugging the ID
                 //console.log("Checking element for ID: ", d.properties.id);
 
