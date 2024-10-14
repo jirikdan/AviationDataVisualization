@@ -2,8 +2,8 @@ class SubLineChart {
     constructor(selector, eventType, mainChart, isLastChart) {
         this.selector = selector;
         this.margin = { top: 20, right: 20, bottom: 0, left: 20 };
-
         this.width = lineChartWidth - this.margin.left - this.margin.right;
+        //console.log("Width of " + eventType + " is " + this.width);
         this.height = 40 - this.margin.top - this.margin.bottom;
         this.eventType = eventType;
         this.mainChart = mainChart;
@@ -15,6 +15,7 @@ class SubLineChart {
         }
         this.initChart();
         this.yTicks = 2;
+        this.updateGridlines();
     }
 
     initChart() {
@@ -38,6 +39,8 @@ class SubLineChart {
 
         this.x = d3.scaleTime()
             .range([0, this.width]);
+
+        
 
         this.xAxis = this.linechartSvg.append("g")
             .attr("transform", `translate(0,${this.height})`)
@@ -92,6 +95,7 @@ class SubLineChart {
         this.data = data;
 
         this.x.domain(d3.extent(this.data, d => d.date));
+        //this.x.domain(dateSpan);
         this.xAxis.call(d3.axisBottom(this.x).ticks(3));
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.yAxis.call(d3.axisLeft(this.y).ticks(this.yTicks));  // Fewer ticks on Y axis
@@ -122,38 +126,47 @@ class SubLineChart {
             .call(this.brush);
 
         // Update gridlines and labels
+        console.log("X of " + this.eventType + " is " + this.x.domain());
         this.updateGridlines();
     }
 
     updateGridlines() {
         // Clear any existing lines and labels to prevent overlap
+        //console.log(`Clearing previous lines and labels for chart: ${this.eventType}`);
         this.xGrid.selectAll("line").remove();
         this.labels.selectAll("text").remove();
-
+    
         // Manually generate tick positions including the start and end of the x-axis
+        // const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
         const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
+        //console.log(`Tick values for chart ${this.eventType}:`, tickValues);
+    
         const start = this.x.domain()[0];
         const end = this.x.domain()[1];
-
+        //console.log(`X-axis start: ${start}, end: ${end} for chart ${this.eventType}`);
+    
         // Calculate distance between grid lines
         const tickPositions = tickValues.map(tick => this.x(tick)); // Convert tick values to pixel positions
         let gridLineDistance = 0;
         if (tickPositions.length > 1) {
             gridLineDistance = Math.abs(tickPositions[1] - tickPositions[0]); // Calculate the distance between the first two ticks
         }
-
-        //spaceOutLabelsByGridDistance(gridLineDistance); // Call the function to space out labels
+        //console.log(`Grid line distance for chart ${this.eventType}: ${gridLineDistance}`);
+    
+        // Set global grid line distance
         gridLineDistanceGlobal = gridLineDistance;
-
+    
         // Append vertical grid lines for each tick and create labels
         var fixedLabelsContainer = d3.select('#fixed-labels-container');
         fixedLabelsContainer.selectAll("div").remove(); // Remove previous divs to avoid overlaps
-        //fixedLabelsContainer.style("display", "inline-block"); // Ensure the container is displayed as inline-block
-
+    
+        //console.log(`Appending grid lines and labels for chart: ${this.eventType}`);
+    
         tickValues.concat(start, end).forEach((tickValue, i) => {
             const isStartOrEnd = (tickValue === start || tickValue === end);
             const xPosition = this.x(tickValue);
-
+            //console.log(`Tick value: ${tickValue}, X position: ${xPosition} for chart ${this.eventType}`);
+    
             // Create the line and apply common attributes
             const line = this.xGrid.append("line")
                 .attr("x1", xPosition)
@@ -162,35 +175,37 @@ class SubLineChart {
                 .attr("y2", -this.height - 42)
                 .attr("stroke", "currentColor")
                 .attr("stroke-width", 3); // Adjust stroke width as needed
-
+    
             // If the tick value is not the start or end, apply dashed stroke
             if (!isStartOrEnd) {
                 line.attr("stroke-dasharray", "2.5");
-
+                //console.log(`Dashed line applied for tick value: ${tickValue}, chart: ${this.eventType}`);
+    
                 if (this.isLastChart) {
-                    // Determine if this is the first label to append the additional class
                     const labelClass = i === 0 ? "grid-label bottom-labels first-bottom-label" : "grid-label bottom-labels";
                     const labelDivClass = i === 0 ? "label-div first-bottom-label" : "label-div";
-
-                    //if i==0 insert dummy div
+    
+                    // Insert dummy div if it's the first label
                     if (i == 0) {
                         const dummyDiv = fixedLabelsContainer.append("div")
                             .attr("class", "dummy-div")
                             .style("width", gridLineDistance + computeFirstOffset() - 10 + "px")
                             .style("display", "inline-block");
+    
+                        //console.log(`Dummy div inserted with width: ${gridLineDistance + computeFirstOffset() - 10}px for chart: ${this.eventType}`);
                     }
+    
                     var width = gridLineDistance;
                     if (i === tickValues.length - 1) {
                         width = 0;
                     }
-
-
+    
                     // Create a new div for each label with fixed width of gridLineDistance
                     const labelDiv = fixedLabelsContainer.append("div")
                         .attr("class", labelDivClass)
                         .style("width", width + "px") // Set width to gridLineDistance
                         .style("display", "inline-block");
-
+    
                     // Append the text labels inside the created div
                     labelDiv.append("text")
                         .attr("dy", "2em")
@@ -201,10 +216,14 @@ class SubLineChart {
                         .style("opacity", 0.8) // Adjust opacity if needed
                         .text(this.formatDate(tickValue))
                         .style("overflow", "visible"); // Ensure overflow is visible
+    
+                    //console.log(`Label created for tick value: ${tickValue}, text: ${this.formatDate(tickValue)}, chart: ${this.eventType}`);
                 }
             }
         });
+        //console.log(`Gridlines update complete for chart: ${this.eventType}`);
     }
+    
 
 
 
@@ -270,17 +289,18 @@ class SubLineChart {
     }
 
     updateGridlineLabels() {
+        
         const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
         const start = this.x.domain()[0];
         const end = this.x.domain()[1];
 
-        console.log("Interpolated times = " + this.interpolateDates(start, end, lineChartNumberOfDashedLines + 1));
+        //console.log("Interpolated times = " + this.interpolateDates(start, end, lineChartNumberOfDashedLines + 1));
         const interpolatedDates = this.interpolateDates(start, end, lineChartNumberOfDashedLines + 1);
         const xLineWidth = 1590;
-        console.log("start = " + start + " end = " + end + " gridline width = " + gridLineDistanceGlobal);
+        //console.log("start = " + start + " end = " + end + " gridline width = " + gridLineDistanceGlobal);
         const dummyDiv = d3.select('.dummy-div');
         const currentWidth = parseFloat(dummyDiv.style('width'));
-        
+
         const textElement = d3.select('.grid-label');
 
         var beforeTextWidth = 0;
@@ -311,10 +331,9 @@ class SubLineChart {
             afterTextWidth = textElement2.node().getBoundingClientRect().width;
         }
 
-        if(afterTextWidth!=beforeTextWidth)
-        {
+        if (afterTextWidth != beforeTextWidth) {
             const moveLabelsPixels = beforeTextWidth - afterTextWidth;
-            dummyDiv.style('width', currentWidth + moveLabelsPixels/2 + 'px');
+            dummyDiv.style('width', currentWidth + moveLabelsPixels / 2 + 'px');
         }
 
     }
@@ -398,24 +417,24 @@ class SubLineChart {
     changeYAxisRange(maxYValue) {
         // Update the y scale with new min and max values
         this.y.domain([0, maxYValue]);
-    
+
         // Update the y-axis with new domain
         this.yAxis.transition()  // Add a transition for smoother updates, optional
             .duration(0)       // Adjust duration as needed
             .call(d3.axisLeft(this.y).ticks(this.yTicks));  // Ensure ticks are based on updated domain
-    
+
         // Redraw the chart area with the updated y scale
         this.area.select('.myArea')
             .transition()
             .duration(0)  // Optional, you can control the transition duration
             .attr("d", this.areaGenerator);  // Update the path with the new Y-domain
-    
+
     }
 
     //return max value of y axis
     getMaxYValue() {
         return d3.max(this.data, d => +d.value);
     }
-    
+
 
 }

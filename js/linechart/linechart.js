@@ -7,6 +7,9 @@ class LineChart {
         this.currentXDomain = null;
         this.initChart();
         this.subLineCharts = [];
+        this.tickValues = this.x.ticks(3);
+        console.log(this.tickValues);
+
     }
 
     initChart() {
@@ -103,6 +106,7 @@ class LineChart {
         this.data = data;
 
         this.x.domain(d3.extent(this.data, d => d.date));
+        //this.x.domain(dateSpan);
         this.xAxis.call(d3.axisBottom(this.x).ticks(3));
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
 

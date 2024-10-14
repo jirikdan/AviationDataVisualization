@@ -8,7 +8,7 @@ const url = (x, y, z) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
 const eventNames = ["Trash", "Wildlife", "Vandalism", "Weather", "Damage", "Other", "Dirt", "Fuel"];
 const eventDatesWithHours = ["2024-10-08T12:00:00Z", "2024-10-05T12:00:00Z", "2024-10-02T12:00:00Z","2024-10-07T12:00:00Z", "2024-10-01T12:00:00Z" ];
 const tableInfo = ["properties.name", "properties.date", "geometry.coordinates[1]", "geometry.coordinates[0]"];
-var dateSpan = [new Date("2024-10-01T12:00:00Z"), new Date("2024-10-12T12:00:00Z")];
+var dateSpan = [new Date("2024-10-01T12:00:00Z"), new Date("2024-10-08T12:00:00Z")];
 //var startDate = dateSpan[0];
 //var endDate = dateSpan[1];
 //var globalStartDate = startDate;

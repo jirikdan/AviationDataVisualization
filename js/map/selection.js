@@ -228,14 +228,14 @@ function updateHighlightedSubchartsAfterSort()
 //recalculate and change max y value for all subcharts
 function updateMaxYValue()
 {
-    console.log("Updating max y value");
+    //console.log("Updating max y value");
 
     maxYValue = 0;
     for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-        console.log("Tadzy");
-        console.log(lineChart.subLineCharts[i].getMaxYValue());
+        //console.log("Tadzy");
+        //console.log(lineChart.subLineCharts[i].getMaxYValue());
         if (lineChart.subLineCharts[i].getMaxYValue() > maxYValue) {
-            console.log("Actually updating max y value");
+            //console.log("Actually updating max y value");
             maxYValue = lineChart.subLineCharts[i].getMaxYValue();
         }
     }
