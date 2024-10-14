@@ -10,7 +10,7 @@ class SubLineChart {
         this.isLastChart = isLastChart;
         if (isLastChart) {
             this.margin.bottom = 20;
-            console.log("Last chart");
+            //console.log("Last chart");
             this.height = this.height + 0;
         }
         this.initChart();
@@ -410,6 +410,11 @@ class SubLineChart {
             .duration(0)  // Optional, you can control the transition duration
             .attr("d", this.areaGenerator);  // Update the path with the new Y-domain
     
+    }
+
+    //return max value of y axis
+    getMaxYValue() {
+        return d3.max(this.data, d => +d.value);
     }
     
 

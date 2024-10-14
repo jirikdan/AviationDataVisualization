@@ -58,7 +58,7 @@ function populateEventSelection() {
     } else {
         activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
     }
-    console.log('Active event types:', activeEventTypes);
+    //console.log('Active event types:', activeEventTypes);
 
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
@@ -171,7 +171,7 @@ function populateEventSelection() {
 
 
 function updateOrderOfLineCharts() {
-    console.log('Updating order of line charts');
+    //console.log('Updating order of line charts');
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
 
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
@@ -219,7 +219,7 @@ function updateOrderOfLineCharts() {
         if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }
-        console.log('Max Y value sort:', maxYValue);
+        //console.log('Max Y value sort:', maxYValue);
         subLineChart.changeYAxisRange(maxYValue);
     });
 }
@@ -227,7 +227,7 @@ function updateOrderOfLineCharts() {
 
 function createMoreLineCharts() {
     populateEventSelection(); // Update the event selection div with the current state
-    console.log('Creating more line charts');
+    //console.log('Creating more line charts');
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
 
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);

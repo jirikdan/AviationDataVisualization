@@ -9,12 +9,13 @@ const get = (obj, ...selectors) =>
 
 
 function removeItem(index) {
-    console.log(index);
+    //console.log(index);
     data.splice(index, 1);
     //data.pop();
     //vector.attr("d", path);
     zoomableMap.mapToSvg(data, glyphs);
     tabulate(data, tableInfo);
+    updateHighlightedSubcharts();
 }
 
 function formatDate(date) {
@@ -26,8 +27,6 @@ function formatCoordinates(coord) {
     const num = parseFloat(coord);
     return isNaN(num) ? coord : num.toFixed(5);  // Limit to 5 decimal places
 }
-
-
 
 function tabulate(data, columns) {
     //console.log("tabulate");
@@ -61,14 +60,12 @@ function tabulate(data, columns) {
 
     // append filter input row
 
-
     updateTableBody(data, columns);
 }
 
-
 function toggleHighlightData(d) {
-    console.log("toggleHighlight");
-    console.log(d);
+    //console.log("toggleHighlight");
+    //console.log(d);
 
     d.properties.highlighted = !d.properties.highlighted;
     d.properties.selected = d.properties.highlighted;
@@ -77,7 +74,6 @@ function toggleHighlightData(d) {
         lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
     }
     updateGlyphs();
-
 }
 
 function toggleHighlightRow(row) {
@@ -125,6 +121,7 @@ function updateTableBody(data, columns) {
         .on('click', function (event, d) { // Correctly capture event and data
             toggleHighlightData(d);
             toggleHighlightRow(this);
+            updateHighlightedSubcharts();
         });
 
     // Create cells for each row and column
@@ -146,17 +143,17 @@ function updateTableBody(data, columns) {
         .text(function (d) { return d.value; });
 
     // Add a 'Remove' button to each row
-    addedRows.append('td').append("button").attr("onclick", function (d, i) { return "removeItem(" + i + ");"; }).text("Remove");
+    addedRows.append('td').append("button")
+        .attr("onclick", function (d, i) { return `event.stopPropagation(); removeItem(${i});`; })
+        .text("Remove");
 
     // Update the id attribute for existing rows and reassign event handlers
     rows.attr('id', d => d && d.properties ? d.properties.id : null) // Make sure id is updated for existing rows
-        .select("button").attr("onclick", function (d, i) { return "removeItem(" + i + ");"; }).text("Remove");
+        .select("button").attr("onclick", function (d, i) { return `event.stopPropagation(); removeItem(${i});`; }).text("Remove");
 
     // Apply the 'highlighted' class to rows based on the 'highlighted' property
     tbody.selectAll('tr').classed('highlighted', d => d && d.properties ? d.properties.highlighted : false);
 }
-
-
 
 function updateTableWithFilteredData() {
     // Filter the data to only include items where properties.selected is true
@@ -164,4 +161,6 @@ function updateTableWithFilteredData() {
 
     // Now call updateTableBody with the filtered data
     updateTableBody(filteredData, tableInfo);
+    console.log("Updating");
+    updateHighlightedSubcharts();
 }

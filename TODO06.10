@@ -13,4 +13,5 @@ BUGS TO FIX
 - [ ] Double colored border for highlighted
 - [X] Names do not correspond correctly to colors in active filters
 - [ ] Fix axis alignment when number of events is low
-- [ ] Sort button does not rename to close correctly when opened with see more and the state is visivle
+- [ ] Sort button does not rename to close correctly when opened with see more and the state is visible
+- [ ] Fix max Y when point is removed

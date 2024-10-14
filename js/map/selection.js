@@ -50,8 +50,8 @@ function enableRectangleSelection(zoomableMap) {
             glyphs.selectAll("path").each(function (d) {
                 const [gx, gy] = projection([d.geometry.coordinates[0], d.geometry.coordinates[1]]);
                 const element = document.getElementById(d.properties.id);
-                console.log("Checking element for ID: ", d.properties.id);
-                console.log("Element: ", element);
+                //console.log("Checking element for ID: ", d.properties.id);
+                //console.log("Element: ", element);
                 // Debugging the ID
                 //console.log("Checking element for ID: ", d.properties.id);
 
@@ -167,18 +167,19 @@ function updateHighlightedSubcharts() {
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
-            console.log("Updating Max Y value: ", maxYValue);
+            //console.log("Updating Max Y value: ", maxYValue);
             lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
-            lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
+            
         }
     } else {
         lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-            console.log("Updating Max Y value: ", maxYValue);
+            //console.log("Updating Max Y value: ", maxYValue);
             lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
-            lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
+            
         }
     }
+    updateMaxYValue();
 }
 
 function updateHighlightedSubchartsAfterSort()
@@ -211,14 +212,37 @@ function updateHighlightedSubchartsAfterSort()
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
             lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
-            console.log("Max Y value: ", maxYValue);
-            lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
+            //console.log("Max Y value: ", maxYValue);
+            
         }
     } else {
         lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
-            lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
+            
         }
     }
+    updateMaxYValue();
 }
+
+//recalculate and change max y value for all subcharts
+function updateMaxYValue()
+{
+    console.log("Updating max y value");
+
+    maxYValue = 0;
+    for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+        console.log("Tadzy");
+        console.log(lineChart.subLineCharts[i].getMaxYValue());
+        if (lineChart.subLineCharts[i].getMaxYValue() > maxYValue) {
+            console.log("Actually updating max y value");
+            maxYValue = lineChart.subLineCharts[i].getMaxYValue();
+        }
+    }
+    console.log("Max Y value: ", maxYValue);
+    //change max y value for all subcharts
+    for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+        lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
+    }
+}
+
