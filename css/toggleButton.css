@@ -35,6 +35,11 @@
     border-color: #ccc; /* Darker border on hover */
 }
 
+/* Hide the sort button by default */
+#sortByMaxYButton {
+    display: none; /* Hidden by default */
+}
+
 /* Style for the hide/unhide button */
 #hideAllButton {
     width: 100%;
@@ -46,6 +51,7 @@
     font-weight: bold; /* Make the text bold */
     cursor: pointer; /* Change cursor to pointer on hover */
     transition: background-color 0.3s ease; /* Smooth transition for background color change */
+    margin-bottom: 15px; /* Add space between the two buttons */
 }
 
 /* Style when the button is hovered */
@@ -56,4 +62,28 @@
 /* Style when the button is active (clicked) */
 #hideAllButton:active {
     background-color: #004494; /* Even darker blue when pressed */
+}
+
+/* Style for the sort button */
+#sortByMaxYButton {
+    width: 100%;
+    background-color: #0056b3; /* Slightly darker blue to differentiate */
+    color: white; /* White text color */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Slightly rounded corners */
+    font-size: 15px; /* Slightly smaller font size */
+    font-weight: bold; /* Make the text bold */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for background color change */
+    margin-top: 5px; /* Add a small margin on top */
+}
+
+/* Style when the button is hovered */
+#sortByMaxYButton:hover {
+    background-color: #004494; /* Darker blue on hover */
+}
+
+/* Style when the button is active (clicked) */
+#sortByMaxYButton:active {
+    background-color: #003366; /* Even darker blue when pressed */
 }

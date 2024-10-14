@@ -10,6 +10,7 @@ var eventSelection = document.getElementById('eventSelection');
 eventSelection.classList.add('hidden');
 
 document.getElementById('toggleButton').addEventListener('click', function () {
+    
     var hiddenTexts = document.getElementById('hiddenCharts');
     var eventSelection = document.getElementById('eventSelection');
     var fixedLabelContainer = document.getElementById('fixed-labels-container');
@@ -28,6 +29,7 @@ document.getElementById('toggleButton').addEventListener('click', function () {
         lineChart.xGrid.attr("class", "grid");
         updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
         updateHighlightedSubcharts(); // Update the line charts based on the selected points
+        //sortChartsByMaxYValue(); // Sort the charts by maximum Y value
 
     } else {
         // Hide hidden charts and event selection
@@ -75,6 +77,13 @@ function populateEventSelection() {
             container.style.display = isHidden ? 'none' : 'flex';
         });
         hideAllButton.textContent = isHidden ? 'Sort' : 'Close';
+        //get sortByMaxYButton and display it or hide it
+        var sortByMaxYButton = document.getElementById('sortByMaxYButton');
+        if (isHidden) {
+            sortByMaxYButton.style.display = 'none';
+        } else {
+            sortByMaxYButton.style.display = 'block';
+        }
     });
     hideAllContainer.appendChild(hideAllButton);
     eventSelection.appendChild(hideAllContainer);
@@ -377,3 +386,4 @@ function sortChartsByMaxYValue() {
         updateHighlightedSubchartsAfterSort(); // Update the line charts based on the selected points
     });
 }
+
