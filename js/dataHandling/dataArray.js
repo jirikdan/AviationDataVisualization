@@ -161,7 +161,7 @@ const generatedData = generateGeoJsonData({
     allHighlighted: false,
     proximityConfig: {
         hotspots: [
-            { lat: 50.09, lng: 14.25, radius: 0.001, density: 15 },
+            { lat: 50.108958845453124, lng: 14.265167657637676, radius: 0.001, density: 15 },
             { lat: 50.1, lng: 14.26, radius: 0.001, density: 10 },
             { lat: 50.11, lng: 14.24, radius: 0.001, density: 10 }
         ]
@@ -189,7 +189,7 @@ const generatedData = generateGeoJsonData({
     hotspotTimeWeights: {
         "2024-10-01T12:00:00Z": 1,
         "2024-10-02T12:00:00Z": 1,
-        "2024-10-05T12:00:00Z": 8,
+        "2024-10-05T12:00:00Z": 5,
         "2024-10-07T12:00:00Z": 1,
         "2024-10-08T12:00:00Z": 1
     },

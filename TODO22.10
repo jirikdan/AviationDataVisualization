@@ -4,3 +4,33 @@ Zakomponovat průběh vylepšení do finálního textu práce. (Myšleno, říct
 Dodělat finální dotazník po testování.
 Začít psát diplomovou práci (odborný text) - podklad na overleafu
 Text práce je momentálně důležitější než zůstat věčně na vylepšování appky
+
+data 
+poloha/cas, kategorie, positivni/negativni nalez
+potřeba aby aplikace vypadala správně na všech rozlišeních a přiblížení 100%
+bílé okraje i u nevybraných bodů, na výběr zvolit jinou barvu - HALO EFECT, V základu selected HALO EFECT, při HIGHLIGHTU ZMĚNIT BARVU HALO EFECTU.
+zoom na ose by neměl
+při výberu času od do, změnit colorscale ten času
+přidat biny s 0 hodnotama mezi hodnotama
+highlight brushem - nějak by se měl dát zrušit výběr, kliknutím by měl jít zvýraznit jen jeden bin
+důležité je aby to fungovalo dobře pro týden a měsíc.
+je důležité vědět jestli časová souslednout koresponduje s prostorovou.
+bin by mohl mít zvýrazněn jasem podle toho kolik bodů je vybráno z binu
+vloženej bin bude jako obdelník přes linechart, který by měl mít takový pyramidky
+barva zvýraznění v tabulce by měla být stejná všude, tzv. okraje koleček, zvýraznění binu.
+místo sloupečku remove by tam mohl být čtvereček vybráno/nevybráno.
+přidat řazení podle jména, data, selekce. 
+
+když vyberu osu 30 dnů tak natvrdo 30 dnů na ose X, to samé na 7 dnů. Je třeba vidět, že se nic nestalo.
+Filter určuje osu X natvrdo!
+Barva highlightu všude stejná, table, mapa, linechart. Neudělat to, ale tak zářivé, aby to bolelo do očí. Zašedlé body nechat bez okraje. Hidden nebere vpotaz, lepší na výkon.
+
+Biny u podos by měly být vždy jen u podosy u bodu, který jsme vybrali. když máme 3 body jiného typu, ale ve stejný čas. Tak je důležité vědět, jaký bod jsme vybrali.
+
+
+U tabulky jméno obarvit stejně jako ve filterech nebo na mapě. PŘEJMENOVAT NAME NA EVENT TYPE. 
+
+vyzkoušet no ve firefoxu. 
+
+Vyčistit kód a přidat komentáře.
+

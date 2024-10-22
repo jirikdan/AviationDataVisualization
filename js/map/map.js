@@ -35,13 +35,13 @@ class ZoomableMap {
         this.setupColorScaleSelector();
     }
 
-    setLinechart(lineChart){
+    setLinechart(lineChart) {
         this.lineChart = lineChart;
     }
 
     setupColorScaleSelector() {
         const colorScaleSelector = document.getElementById('colorScale');
-        
+
         colorScaleSelector.addEventListener('change', (event) => {
             this.lineChart.updateGradientAndRedraw();
             const selectedScale = event.target.value;
@@ -72,7 +72,7 @@ class ZoomableMap {
         rects = svg.append("g");
 
         const zoom = d3.zoom()
-            .scaleExtent([1 << 20, 1 << 24])
+            .scaleExtent([1 << 22, 1 << 28])
             .extent([[0, 0], [width, height]])
             .on("zoom", (event) => zoomed(event.transform));
 
@@ -162,7 +162,7 @@ class ZoomableMap {
                 .style("top", `${event.pageY + 5}px`);
         }
     }
-    
+
 
     hideTooltip() {
         d3.select("#tooltip").style("display", "none");
@@ -253,7 +253,7 @@ class ZoomableMap {
         colorScaleDiv.style.display = "flex";
     }
 
-    
+
 
     showColorScaleTooltip(event, color, i) {
         const tooltip = d3.select("#tooltip");
@@ -354,12 +354,12 @@ class ZoomableMap {
     // Function to handle glyph click
     onGlyphClick(event, d) {
         if (checkIfPointPassesFilter(d)) {
-        d.properties.highlighted = !d.properties.highlighted;
-        //d.properties.selected = d.properties.highlighted;
-        this.highlightTableWithId(d.properties.id);
-        lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
-        updateHighlightedSubcharts();
-        updateGlyphs();
+            d.properties.highlighted = !d.properties.highlighted;
+            //d.properties.selected = d.properties.highlighted;
+            this.highlightTableWithId(d.properties.id);
+            lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
+            updateHighlightedSubcharts();
+            updateGlyphs();
         }
     }
 
@@ -373,5 +373,5 @@ class ZoomableMap {
         element.classList.toggle("highlighted");
     }
 
-    
+
 }

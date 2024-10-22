@@ -21,3 +21,6 @@ BUGS TO FIX
 - [ ] Sort max Y button is not visible when reopening main linechart
 - [ ] Zoom of main linechart gets reset when reopening main linechart
 - [ ] Fix issue of missalignement when data do not have the earliest and latest data point date.
+- [ ] Fix visibility for single data or multiple data of single type/date
+- [ ] Fix possible offset of grid labels
+- [ ] Time visualization does not have gray points when filtered by custom time
