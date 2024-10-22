@@ -78,7 +78,12 @@ class ZoomableMap {
 
         svg
             .call(zoom)
-            .call(zoom.transform, this.initialTransform);
+            .call(zoom.transform, this.initialTransform)
+            .on("click", (event) => {
+                const [x, y] = d3.pointer(event);
+                const [lon, lat] = projection.invert([x, y]);
+                console.log(`Latitude: ${lat}, Longitude: ${lon}`);
+            });
 
 
         function zoomed(transform) {

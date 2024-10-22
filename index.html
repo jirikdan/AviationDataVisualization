@@ -24,10 +24,12 @@
     <script src="js/linechart/linechart.js"></script>
     <script src="js/linechart/subLineChart.js"></script>
     <!-- include zoomableMap.js -->
+    <script src="js/constants/constants.js"></script>
+    <script src ="js/dataHandling/dataArray.js"></script>
     <script src="js/dataFiltering/dataFiltering.js"></script>
     <script src="js/map/map.js"></script>
     <script src="js/map/selection.js"></script>
-    <script src="js/constants/constants.js"></script>
+    
     <script src="js/region/region.js"></script>
 
 
@@ -52,6 +54,7 @@
 
         var dataHandler = new DataClass(300, names, latitudeRange, longitudeRange, nameWeights, latLonWeights, seed);
         var data = dataHandler.getData();
+        //dataHandler.loadJSONFromFile('/js/dataHandling/data.json');
         var chartData = [];
         var linechart;
         var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;

@@ -126,7 +126,7 @@ class SubLineChart {
             .call(this.brush);
 
         // Update gridlines and labels
-        console.log("X of " + this.eventType + " is " + this.x.domain());
+        //console.log("X of " + this.eventType + " is " + this.x.domain());
         this.updateGridlines();
     }
 
@@ -373,12 +373,15 @@ class SubLineChart {
 
     updateChartData(newData) {
         this.data = newData;
-
-        // Update scales with new data
+    
+        // Retrieve the current zoom range from the x-axis domain
+        const currentZoomRange = this.x.domain();
+    
+        // Update scales with new data, but keep the current zoom range
         this.x.domain(d3.extent(this.data, d => d.date));
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.colorScale.domain(d3.extent(this.data, d => d.date));
-
+    
         // Update gradient
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
@@ -386,21 +389,25 @@ class SubLineChart {
                 .attr("offset", `${(i / (this.data.length - 1)) * 100}%`)
                 .attr("stop-color", this.colorScale(d.date));
         });
-
-        // Transition the area path
+    
+        // Apply the zoom range back to the x-axis domain to maintain the current zoom level
+        this.x.domain(currentZoomRange);
+    
+        // Transition the area path with the updated data
         this.area.select('.myArea')
             .datum(this.data)
             .transition()
             .duration(1000)
             .attr("d", this.areaGenerator);
-
-        // Transition the x-axis
+    
+        // Transition the x-axis with the adjusted zoom level
         this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
         this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(2));
-
-        // Update gridlines and labels
-        //this.updateGridlines(); // Commented out to prevent overlap
+    
+        // Update gridlines and labels to reflect the new data within the current zoom range
+        //this.updateGridlineLabels();
     }
+    
 
 
     formatDate(date) {

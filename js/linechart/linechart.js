@@ -8,7 +8,7 @@ class LineChart {
         this.initChart();
         this.subLineCharts = [];
         this.tickValues = this.x.ticks(3);
-        console.log(this.tickValues);
+        //console.log(this.tickValues);
 
     }
 
@@ -103,6 +103,7 @@ class LineChart {
     }
 
     renderChart(data) {
+        console.log("rendering main linechart");
         this.data = data;
 
         this.x.domain(d3.extent(this.data, d => d.date));
@@ -178,6 +179,7 @@ class LineChart {
     }
 
     updateChart(event) {
+        //console.log("updating chart");
         const extent = event.selection;
         if (!extent) {
             if (!this.idleTimeout) return this.idleTimeout = setTimeout(() => this.idleTimeout = null, 350);
@@ -229,14 +231,14 @@ class LineChart {
         this.subLineCharts.forEach(subLineChart => {
             subLineChart.resetZoom();
         });
-
+        
         // Update X-axis labels
         //this.addXAxisLabels();
     }
 
     updateChartData(newData) {
         this.data = newData;
-
+        console.log("updating chart data");
         // Update scales with new data
         this.x.domain(d3.extent(this.data, d => d.date));
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
@@ -293,7 +295,6 @@ class LineChart {
             .select('.myArea')
             .transition()
             .attr("d", this.areaGenerator);
-
         // Update gridlines
         //this.updateGridlines();
 

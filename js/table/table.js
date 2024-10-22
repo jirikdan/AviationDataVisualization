@@ -68,7 +68,7 @@ function toggleHighlightData(d) {
     //console.log(d);
 
     d.properties.highlighted = !d.properties.highlighted;
-    d.properties.selected = d.properties.highlighted;
+    //d.properties.selected = d.properties.highlighted;
     lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
     for (var i = 0; i < lineChart.subLineCharts.length; i++) {
         lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
