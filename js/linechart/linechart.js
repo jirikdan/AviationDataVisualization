@@ -178,14 +178,21 @@ class LineChart {
     updateChart(event) {
         const extent = event.selection;
     
-        // Ensure selection only affects dateSpan range
-        if (!extent) return;
-        
+        // Select the tooltip element
+        const tooltip = d3.select("#brush-tooltip");
+    
+        if (!extent) {
+            // Hide tooltip if no selection
+            tooltip.style("display", "none");
+            return;
+        }
+    
+        // Convert brush pixel positions to date values
         const [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
     
-        // Apply a visible style to indicate selection
+        // Update the brush selection rectangle style
         this.area.selectAll(".selection-rectangle").remove();
-        this.area.append("rect")
+        const selectionRectangle = this.area.append("rect")
             .attr("class", "selection-rectangle")
             .attr("x", extent[0])
             .attr("y", 0)
@@ -193,11 +200,37 @@ class LineChart {
             .attr("height", this.height)
             .attr("fill", "rgba(0, 0, 255, 0.2)")
             .attr("stroke", "blue")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 1)
+            .on("mouseover", function() {
+                tooltip.style("display", "block");
+            })
+            .on("mousemove", (event) => {
+                // Get bounding box of the SVG container to determine proper coordinates for tooltip positioning
+                const containerElement = d3.select(this.selector).node(); // Select the actual DOM element
+                const containerBox = containerElement.getBoundingClientRect();
     
-        // Use the fixed dateSpan for brush highlighting
+                // Calculate the midpoint of the brush selection and tooltip position
+                const midPoint = (extent[0] + extent[1]) / 2;
+                const tooltipX = midPoint + containerBox.left + this.margin.left;
+                const tooltipY = containerBox.top + this.margin.top;
+    
+                // Update tooltip content and position it according to mouse position
+                tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M")(start)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M")(end)}`)
+                    .style("left", `${tooltipX}px`)
+                    .style("top", `${tooltipY - 80}px`)  // Position the tooltip above the selection box
+                    .style("transform", "translateX(-50%)");
+            })
+            .on("mouseout", function() {
+                tooltip.style("display", "none");
+            });
+    
+        // Highlight data inside the brush selection
         this.highlightDataInsideBrush(start, end);
     }
+    
+    
+    
+    
     
 
     updateChartData(newData) {
@@ -237,9 +270,6 @@ class LineChart {
         console.log(start);
         console.log(end);
         data.forEach(point => {
-            //print the comparison date
-            console.log("Comparison date = " + point.properties.date);
-
             const dateMatches = point.properties.date >= start && point.properties.date <= end;
             const element = document.getElementById(point.properties.id);
             
