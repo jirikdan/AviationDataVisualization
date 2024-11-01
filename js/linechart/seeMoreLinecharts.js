@@ -137,6 +137,8 @@ function populateEventSelection() {
         eventSelection.appendChild(checkboxContainer);
     });
 
+
+
     // Make the eventSelection div sortable
     new Sortable(eventSelection, {
         animation: 150,

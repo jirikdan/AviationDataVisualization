@@ -242,7 +242,7 @@ class SubLineChart {
             this.mainChart.subLineCharts.forEach(subLineChart => {
                 subLineChart.updateChartFromOutside(this.x.domain());
             });
-            this.mainChart.updateChartFromOutside(this.x.domain());
+            //this.mainChart.updateChartFromOutside(this.x.domain());
         }
 
         this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
@@ -368,7 +368,7 @@ class SubLineChart {
                 subLineChart.resetZoomFromOutside();
             }
         });
-        this.mainChart.resetZoomFromOutside();
+        //this.mainChart.resetZoomFromOutside();
     }
 
     updateChartData(newData) {

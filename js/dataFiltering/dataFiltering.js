@@ -288,13 +288,16 @@ function applyFilters(filters) {
         endDate = new Date();
         startDate = new Date();
         startDate.setDate(endDate.getDate() - 7);
+        dateSpan = [startDate, endDate];
     } else if (filters.timeFilter === 'past-30-days') {
         endDate = new Date();
         startDate = new Date();
         startDate.setDate(endDate.getDate() - 30);
+        dateSpan = [startDate, endDate];
     } else if (filters.timeFilter === 'custom') {
         startDate = filters.startDate ? new Date(filters.startDate) : null;
         endDate = filters.endDate ? new Date(filters.endDate) : null;
+        dateSpan = [startDate, endDate];
     }
 
     data.forEach(point => {

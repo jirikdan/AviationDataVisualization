@@ -8,8 +8,6 @@ class LineChart {
         this.initChart();
         this.subLineCharts = [];
         this.tickValues = this.x.ticks(3);
-        //console.log(this.tickValues);
-
     }
 
     initChart() {
@@ -62,8 +60,6 @@ class LineChart {
             .y1(d => this.y(d.value))
             .curve(d3.curveBasis);
 
-        this.linechartSvg.on("dblclick", this.resetZoom.bind(this));
-
         // Add gridlines
         this.xGrid = this.linechartSvg.append("g")
             .attr("class", "grid hidden-ticks")
@@ -77,8 +73,10 @@ class LineChart {
     }
 
     updateGradientAndRedraw() {
+        // Update the x domain with dateSpan for consistency
+        this.x.domain(dateSpan);
+    
         // Update the gradient
-        //console.log("Setting gradient and redrawing");
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
             const color = d3.color(this.colorScale(d.date));
@@ -86,44 +84,44 @@ class LineChart {
                 .attr("offset", `${(i / (this.data.length - 1)) * 100}%`)
                 .attr("stop-color", color);
         });
-
+    
         // Redraw the area chart with the updated gradient
         this.area.select('.myArea')
             .datum(this.data)
             .transition()
             .duration(1000)
             .attr("d", this.areaGenerator);
-
+    
         // Redraw axes
         this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
         this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(3));
-
-        // Update gridlines
-        //this.updateGridlines();
     }
+    
 
     renderChart(data) {
         console.log("rendering main linechart");
         this.data = data;
-
-        this.x.domain(d3.extent(this.data, d => d.date));
-        //this.x.domain(dateSpan);
-        this.xAxis.call(d3.axisBottom(this.x).ticks(3));
-        this.y.domain([0, d3.max(this.data, d => +d.value)]);
-
+    
+        // Set x domain to dateSpan rather than the data extent
+        this.x.domain(dateSpan);
+        this.xAxis.call(d3.axisBottom(this.x).ticks(3));  // Adjust the number of ticks as needed
+        this.y.domain([0, d3.max(this.data, d => +d.value)]);  // Set y domain based on data values
+    
         this.yAxis.call(d3.axisLeft(this.y).ticks(3));  // Fewer ticks on Y axis
-
-        this.colorScale.domain(d3.extent(this.data, d => d.date));
-
+    
+        this.colorScale.domain(d3.extent(this.data, d => d.date));  // Adjust color scale domain if needed
+    
+        // Remove old gradient stops and recreate with updated color
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
             let color = d3.color(this.colorScale(d.date));
-            color = d3.rgb(color.r * 0.1, color.g * 0.1, color.b * 0.1); // Darken the color by reducing the RGB values
+            color = d3.rgb(color.r * 0.1, color.g * 0.1, color.b * 0.1); // Darken the color
             this.gradient.append("stop")
                 .attr("offset", `${(i / (this.data.length - 1)) * 100}%`)
                 .attr("stop-color", color);
         });
-
+    
+        // Update the area path
         this.area.selectAll(".myArea").remove();
         this.area.append("path")
             .datum(this.data)
@@ -132,19 +130,18 @@ class LineChart {
             .attr("fill-opacity", .7)
             .attr("stroke", "black")
             .attr("d", this.areaGenerator);
-
+    
+        // Attach the brush with updated selection
         this.area.selectAll(".brush").remove();
         this.area
             .append("g")
             .attr("class", "brush")
             .call(this.brush);
-
-        // Update gridlines
+    
+        // Update gridlines based on the new x domain
         this.updateGridlines();
-
-        // Add X-axis labels
-        //this.addXAxisLabels();
     }
+    
 
     addXAxisLabels() {
         // Remove any existing labels
@@ -179,71 +176,38 @@ class LineChart {
     }
 
     updateChart(event) {
-        //console.log("updating chart");
         const extent = event.selection;
-        if (!extent) {
-            if (!this.idleTimeout) return this.idleTimeout = setTimeout(() => this.idleTimeout = null, 350);
-            this.x.domain([4, 8]);
-
-        } else {
-            const [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
-            this.x.domain([start, end]);
-            this.area.select(".brush").call(this.brush.move, null);
-            this.currentXDomain = this.x.domain();
-            // Update subLineCharts
-            this.subLineCharts.forEach(subLineChart => {
-                subLineChart.updateChartFromOutside(this.currentXDomain);
-            });
-        }
-
-        this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
-        this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(3));
-
-        this.area
-            .select('.myArea')
-            .transition()
-            .duration(1000)
-            .attr("d", this.areaGenerator);
-
-        // Update gridlines
-        //this.updateGridlines();
-
-        // Update X-axis labels
-        //this.addXAxisLabels();
-
-        this.highlightDataInsideBrush();
-    }
-
-    resetZoom() {
-        this.x.domain(d3.extent(this.data, d => d.date));
-        this.xAxis.transition().call(d3.axisBottom(this.x).ticks(3));
-        this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(3));
-        this.area
-            .select('.myArea')
-            .transition()
-            .attr("d", this.areaGenerator);
-
-        // Update gridlines
-        //this.updateGridlines();
-
-        this.currentXDomain = this.x.domain(d3.extent(this.data, d => d.date));
-
-        this.subLineCharts.forEach(subLineChart => {
-            subLineChart.resetZoom();
-        });
+    
+        // Ensure selection only affects dateSpan range
+        if (!extent) return;
         
-        // Update X-axis labels
-        //this.addXAxisLabels();
+        const [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
+    
+        // Apply a visible style to indicate selection
+        this.area.selectAll(".selection-rectangle").remove();
+        this.area.append("rect")
+            .attr("class", "selection-rectangle")
+            .attr("x", extent[0])
+            .attr("y", 0)
+            .attr("width", extent[1] - extent[0])
+            .attr("height", this.height)
+            .attr("fill", "rgba(0, 0, 255, 0.2)")
+            .attr("stroke", "blue")
+            .attr("stroke-width", 1);
+    
+        // Use the fixed dateSpan for brush highlighting
+        this.highlightDataInsideBrush(start, end);
     }
+    
 
     updateChartData(newData) {
         this.data = newData;
-        console.log("updating chart data");
-        // Update scales with new data
-        this.x.domain(d3.extent(this.data, d => d.date));
+    
+        // Set x domain to dateSpan instead of recalculating from data
+        this.x.domain(dateSpan);
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.colorScale.domain(d3.extent(this.data, d => d.date));
-
+    
         // Update gradient
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
@@ -251,73 +215,51 @@ class LineChart {
                 .attr("offset", `${(i / (this.data.length - 1)) * 100}%`)
                 .attr("stop-color", this.colorScale(d.date));
         });
-
+    
         // Transition the area path
         this.area.select('.myArea')
             .datum(this.data)
             .transition()
             .duration(1000)
             .attr("d", this.areaGenerator);
-
-        // Transition the X-axis
+    
+        // Transition the X-axis with dateSpan domain
         this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
-
+    
         // Transition the Y-axis
         this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(3));
-
-        // Update gridlines
-        //this.updateGridlines();
-
-        // Update X-axis labels
-        //this.addXAxisLabels();
     }
+    
 
-    updateChartFromOutside(newXDomain) {
-        if (newXDomain) {
-            this.x.domain(newXDomain);
-        }
-        this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
-        this.area
-            .select('.myArea')
-            .transition()
-            .duration(1000)
-            .attr("d", this.areaGenerator);
-        //this.updateGridlines();
-
-        // Update X-axis labels
-        //this.addXAxisLabels();
-    }
-
-    resetZoomFromOutside() {
-        this.x.domain(d3.extent(this.data, d => d.date));
-        this.xAxis.transition().call(d3.axisBottom(this.x).ticks(3));
-        this.area
-            .select('.myArea')
-            .transition()
-            .attr("d", this.areaGenerator);
-        // Update gridlines
-        //this.updateGridlines();
-
-        // Update X-axis labels
-        //this.addXAxisLabels();
-    }
-
-    highlightDataInsideBrush() {
+    highlightDataInsideBrush(start, end) {
+        console.log("highlighting data inside brush");
+        //print the start and end date
+        console.log(start);
+        console.log(end);
         data.forEach(point => {
-            const dateMatches = point.properties.date >= this.x.domain()[0] && point.properties.date <= this.x.domain()[1];
-            var element = document.getElementById(point.properties.id);
+            //print the comparison date
+            console.log("Comparison date = " + point.properties.date);
 
-            if (dateMatches && point.properties.selected) {
-                point.properties.highlighted = true;
-                updateGlyphs();
-                element.classList.add("highlighted");
+            const dateMatches = point.properties.date >= start && point.properties.date <= end;
+            const element = document.getElementById(point.properties.id);
+            
+            if (element) {  // Check if element is not null
+                if (dateMatches && point.properties.selected) {
+                    point.properties.highlighted = true;
+                    updateGlyphs();
+                    element.classList.add("highlighted");
+                } else {
+                    point.properties.highlighted = false;
+                    updateGlyphs();
+                    element.classList.remove("highlighted");
+                }
             } else {
-                point.properties.highlighted = false;
-                updateGlyphs();
-                element.classList.remove("highlighted");
+                console.warn(`Element with id ${point.properties.id} not found.`);
             }
         });
     }
+    
+    
 }
 
 // Add the event listener and call the functions
@@ -347,4 +289,3 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 });
-
