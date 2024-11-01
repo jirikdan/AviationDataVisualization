@@ -234,6 +234,8 @@ class LineChart {
     
 
     updateChartData(newData) {
+        console.log("updating main linechart data");
+        console.log(newData);
         this.data = newData;
     
         // Set x domain to dateSpan instead of recalculating from data
@@ -265,10 +267,10 @@ class LineChart {
     
 
     highlightDataInsideBrush(start, end) {
-        console.log("highlighting data inside brush");
+        //console.log("highlighting data inside brush");
         //print the start and end date
-        console.log(start);
-        console.log(end);
+        //console.log(start);
+        //console.log(end);
         data.forEach(point => {
             const dateMatches = point.properties.date >= start && point.properties.date <= end;
             const element = document.getElementById(point.properties.id);
