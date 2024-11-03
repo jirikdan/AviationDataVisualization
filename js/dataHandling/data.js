@@ -45,17 +45,45 @@ class DataClass {
     fillMissingDates(eventCounts) {
         const dateRange = this.generateDateRange();
         console.log("Date range:", dateRange);
+        
+        // Fill missing dates with value 0
         dateRange.forEach(date => {
             const dateString = date.toISOString().split('T')[0];
-            if (!eventCounts.some(count => count.date.toISOString().split('T')[0] === dateString)) {
+            const event = eventCounts.find(count => count.date.toISOString().split('T')[0] === dateString);
+            
+            if (event) {
+                // If an event exists, add an additional entry at the end of the day
+                const endOfDay = new Date(event.date);
+                endOfDay.setHours(23, 59, 59, 999); // Set time to 23:59
+                eventCounts.push({ date: endOfDay, value: event.value });
+            } else {
+                // If no event exists, fill with 0
                 eventCounts.push({ date, value: 0 });
             }
         });
-
-        eventCounts.sort((a, b) => a.date - b.date); // Ensure the array is sorted by date
-        console.log("Filled missing dates:", eventCounts);
-        return eventCounts;
+    
+        // Sort eventCounts by date to ensure chronological order
+        eventCounts.sort((a, b) => a.date - b.date);
+        
+        // Remove leading and trailing 0 values
+        let start = 0;
+        while (start < eventCounts.length && eventCounts[start].value === 0) {
+            start++;
+        }
+    
+        let end = eventCounts.length - 1;
+        while (end >= 0 && eventCounts[end].value === 0) {
+            end--;
+        }
+    
+        // Slice the array to include only the relevant section
+        const trimmedEventCounts = eventCounts.slice(start, end + 1);
+    
+        console.log("Filled and trimmed event counts:", trimmedEventCounts);
+        return trimmedEventCounts;
     }
+    
+    
 
 
 
@@ -121,7 +149,7 @@ class DataClass {
 
         eventCountsArray.sort((a, b) => a.date - b.date);
 
-        return eventCountsArray;
+        return this.fillMissingDates(eventCountsArray);
     }
 
 
@@ -149,7 +177,7 @@ class DataClass {
         eventCountsArray.sort((a, b) => a.date - b.date);
 
         return {
-            eventCounts: eventCountsArray,
+            eventCounts: this.fillMissingDates(eventCountsArray),
             activeEventTypes: Array.from(activeEventTypes)
         };
     }
@@ -177,7 +205,7 @@ class DataClass {
         eventCountsArray.sort((a, b) => a.date - b.date);
 
         return {
-            eventCounts: eventCountsArray,
+            eventCounts: this.fillMissingDates(eventCountsArray),
             activeEventTypes: Array.from(activeEventTypes)
         };
     }

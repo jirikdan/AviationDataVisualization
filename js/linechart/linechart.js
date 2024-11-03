@@ -8,6 +8,8 @@ class LineChart {
         this.initChart();
         this.subLineCharts = [];
         this.tickValues = this.x.ticks(3);
+        // Flag to track programmatic brush moves
+        this.isProgrammaticBrushMove = false;
     }
 
     initChart() {
@@ -177,26 +179,46 @@ class LineChart {
 
     updateChart(event) {
         const extent = event.selection;
-    
+
+        // If programmatically moving the brush, skip the rest of the update logic
+        if (this.isProgrammaticBrushMove) {
+            return;
+        }
+
         // Select the tooltip element
         const tooltip = d3.select("#brush-tooltip");
-    
+
         if (!extent) {
             // Hide tooltip if no selection
             tooltip.style("display", "none");
             return;
         }
-    
+
+        // Define bin size, e.g., one day
+        const binSize = 24 * 60 * 60 * 1000; // One day in milliseconds
+
         // Convert brush pixel positions to date values
-        const [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
-    
+        let [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
+
+        // Snap `start` to the beginning of the bin and `end` to the end of the bin
+        const snappedStart = new Date(Math.floor(start.getTime() / binSize) * binSize);
+        const snappedEnd = new Date(Math.ceil(end.getTime() / binSize) * binSize - 1);
+
+        // Calculate the snapped pixel positions on the x scale
+        const snappedExtent = [this.x(snappedStart), this.x(snappedEnd)];
+
+        // Programmatically move the brush to snap to bins
+        this.isProgrammaticBrushMove = true;  // Set flag to true
+        d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
+        this.isProgrammaticBrushMove = false;  // Reset flag to false
+
         // Update the brush selection rectangle style
         this.area.selectAll(".selection-rectangle").remove();
-        const selectionRectangle = this.area.append("rect")
+        this.area.append("rect")
             .attr("class", "selection-rectangle")
-            .attr("x", extent[0])
+            .attr("x", snappedExtent[0])
             .attr("y", 0)
-            .attr("width", extent[1] - extent[0])
+            .attr("width", snappedExtent[1] - snappedExtent[0])
             .attr("height", this.height)
             .attr("fill", "rgba(0, 0, 255, 0.2)")
             .attr("stroke", "blue")
@@ -206,27 +228,28 @@ class LineChart {
             })
             .on("mousemove", (event) => {
                 // Get bounding box of the SVG container to determine proper coordinates for tooltip positioning
-                const containerElement = d3.select(this.selector).node(); // Select the actual DOM element
+                const containerElement = d3.select(this.selector).node();
                 const containerBox = containerElement.getBoundingClientRect();
-    
+
                 // Calculate the midpoint of the brush selection and tooltip position
-                const midPoint = (extent[0] + extent[1]) / 2;
+                const midPoint = (snappedExtent[0] + snappedExtent[1]) / 2;
                 const tooltipX = midPoint + containerBox.left + this.margin.left;
                 const tooltipY = containerBox.top + this.margin.top;
-    
+
                 // Update tooltip content and position it according to mouse position
-                tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M")(start)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M")(end)}`)
+                tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M")(snappedStart)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M")(snappedEnd)}`)
                     .style("left", `${tooltipX}px`)
-                    .style("top", `${tooltipY - 80}px`)  // Position the tooltip above the selection box
+                    .style("top", `${tooltipY - 80}px`)
                     .style("transform", "translateX(-50%)");
             })
             .on("mouseout", function() {
                 tooltip.style("display", "none");
             });
-    
-        // Highlight data inside the brush selection
-        this.highlightDataInsideBrush(start, end);
+
+        // Highlight data inside the snapped brush selection
+        this.highlightDataInsideBrush(snappedStart, snappedEnd);
     }
+    
     
     
     
@@ -267,12 +290,22 @@ class LineChart {
     
 
     highlightDataInsideBrush(start, end) {
-        //console.log("highlighting data inside brush");
-        //print the start and end date
-        //console.log(start);
-        //console.log(end);
+        // Adjust the start and end to the nearest bin boundaries
+        const binSize = 24 * 60 * 60 * 1000; // One day in milliseconds
+    
+        // Round start to the beginning of the day (bin start)
+        const adjustedStart = new Date(Math.floor(start.getTime() / binSize) * binSize);
+        
+        // Round end to the end of the day (bin end)
+        const adjustedEnd = new Date(Math.ceil(end.getTime() / binSize) * binSize - 1); 
+    
+        // Debug: Log the adjusted start and end
+        console.log("Adjusted Start:", adjustedStart);
+        console.log("Adjusted End:", adjustedEnd);
+    
+        // Iterate through the data and highlight points within the adjusted range
         data.forEach(point => {
-            const dateMatches = point.properties.date >= start && point.properties.date <= end;
+            const dateMatches = point.properties.date >= adjustedStart && point.properties.date <= adjustedEnd;
             const element = document.getElementById(point.properties.id);
             
             if (element) {  // Check if element is not null
@@ -290,6 +323,7 @@ class LineChart {
             }
         });
     }
+    
     
     
 }
