@@ -162,7 +162,7 @@ function updateHighlightedSubcharts() {
     }
 
     if (somethingIsHighlighted) {
-        lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
+        lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         //updateOrderOfLineCharts();
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
@@ -172,7 +172,7 @@ function updateHighlightedSubcharts() {
             
         }
     } else {
-        lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
+        lineChart.updateChartDataHighlight(dataHandler.getSelectedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             //console.log("Updating Max Y value: ", maxYValue);
             lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
@@ -206,7 +206,7 @@ function updateHighlightedSubchartsAfterSort()
     }
 
     if (somethingIsHighlighted) {
-        lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
+        lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         //updateOrderOfLineCharts();
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
@@ -216,7 +216,7 @@ function updateHighlightedSubchartsAfterSort()
             
         }
     } else {
-        lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
+        lineChart.updateChartDataHighlight(dataHandler.getSelectedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             

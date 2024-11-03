@@ -253,9 +253,6 @@ class LineChart {
     
     
     
-    
-    
-
     updateChartData(newData) {
         //console.log("updating main linechart data");
         //console.log(newData);
@@ -287,6 +284,62 @@ class LineChart {
         // Transition the Y-axis
         this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(3));
     }
+    
+
+    updateChartDataHighlight(newData) {
+        console.log("updating main linechart");
+        // Keep track of previous data for comparison
+        const previousData = this.data || [];
+    
+        // Identify new data points by checking if the new data contains points not in the previous data
+        const newDataPoints = newData.filter(newPoint => {
+            return !previousData.some(prevPoint => 
+                prevPoint.date.getTime() === newPoint.date.getTime() && 
+                prevPoint.value === newPoint.value
+            );
+        });
+    
+        // Highlight the new data points in the chart
+        this.highlightNewDataPoints(newDataPoints);
+    }
+    
+    highlightNewDataPoints(newDataPoints) {
+        // Remove any previous highlights
+        this.area.selectAll(".new-data-highlight").remove();
+    
+        // Group newDataPoints by day
+        const dailyData = d3.group(newDataPoints, d => d3.timeDay(d.date));
+    
+        // Loop through each day's data to create individual areas
+        dailyData.forEach((points, day) => {
+            // Sort points within each day by time to ensure proper order
+            const sortedPoints = points.sort((a, b) => a.date - b.date);
+    
+            // Define an area generator for each day's points
+            const dayAreaGenerator = d3.area()
+                .x(d => this.x(d.date))
+                .y0(this.y(0))  // Use y-axis baseline as the starting point
+                .y1(d => this.y(d.value))
+                .curve(d3.curveBasis);  // Use a curve for smoothness
+    
+            // Append a new area path for the current day's data points
+            this.area.append("path")
+                .datum(sortedPoints)
+                .attr("class", "new-data-highlight")
+                .attr("clip-path", "url(#clip)")  // Apply clipping to restrict the area within chart bounds
+                .attr("d", dayAreaGenerator)
+                .attr("fill", "red")  // Fill color for the highlight
+                .attr("fill-opacity", 0.5)  // Adjust opacity for visual effect
+                .attr("stroke", "red")
+                .attr("stroke-width", 1.5);  // Outline to define the highlighted area
+        });
+    }
+    
+    
+    
+    
+    
+    
     
 
     highlightDataInsideBrush(start, end) {
