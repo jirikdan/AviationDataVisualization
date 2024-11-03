@@ -13,6 +13,7 @@
  * @param {number} hotspotProbability - Probability that a point is generated in a hotspot.
  * @returns {Array} - Array of geoJSON-like objects.
  */
+// Updated generateGeoJsonData to apply fillMissingDates only once during data generation
 function generateGeoJsonData({
     eventNames,
     eventDatesWithHours,
@@ -26,35 +27,27 @@ function generateGeoJsonData({
     totalPoints = 50,
     hotspotProbability = 0.4
 }) {
-    // Latitude and longitude boundaries for the general area
+    // Original data generation logic
     const minLat = 50.08615648561272;
     const maxLat = 50.11815590532789;
     const minLng = 14.225240518215271;
     const maxLng = 14.288241809867836;
 
-    // Helper function to get a random integer between min and max (inclusive)
     const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-    // Helper function to get a random boolean value
     const getRandomBool = () => Math.random() < 0.5;
 
-    // Calculate weights for event occurrence distribution
     const eventWeights = Object.entries(eventOccurrenceConfig).map(([key, weight]) => ({ name: key, weight }));
     const totalWeight = eventWeights.reduce((acc, item) => acc + item.weight, 0);
 
-    // Calculate weights for event occurrence distribution inside hotspots
     const hotspotWeights = Object.entries(hotspotEventWeights).map(([key, weight]) => ({ name: key, weight }));
     const totalHotspotWeight = hotspotWeights.reduce((acc, item) => acc + item.weight, 0);
 
-    // Calculate weights for time distribution in hotspots
     const hotspotTimes = Object.entries(hotspotTimeWeights).map(([time, weight]) => ({ time, weight }));
     const totalHotspotTimeWeight = hotspotTimes.reduce((acc, item) => acc + item.weight, 0);
 
-    // Calculate weights for time distribution outside hotspots
     const normalTimes = Object.entries(normalTimeWeights).map(([time, weight]) => ({ time, weight }));
     const totalNormalTimeWeight = normalTimes.reduce((acc, item) => acc + item.weight, 0);
 
-    // Function to get a random event name based on configured weights
     const getRandomEventName = (weights, totalWeight) => {
         const randomValue = Math.random() * totalWeight;
         let cumulativeWeight = 0;
@@ -64,10 +57,9 @@ function generateGeoJsonData({
                 return name;
             }
         }
-        return eventNames[0]; // Fallback in case something goes wrong
+        return eventNames[0];
     };
 
-    // Function to get a random time based on configured weights
     const getRandomTime = (weights, totalWeight) => {
         const randomValue = Math.random() * totalWeight;
         let cumulativeWeight = 0;
@@ -77,46 +69,37 @@ function generateGeoJsonData({
                 return time;
             }
         }
-        return eventDatesWithHours[0]; // Fallback in case something goes wrong
+        return eventDatesWithHours[0];
     };
 
-    // Function to get random coordinates within defined bounds
     const getRandomCoordsWithinBounds = () => {
         const randomLat = minLat + Math.random() * (maxLat - minLat);
         const randomLng = minLng + Math.random() * (maxLng - minLng);
         return [parseFloat(randomLng.toFixed(5)), parseFloat(randomLat.toFixed(5))];
     };
 
-    // Function to get random coordinates near a specified lat/lng within a radius
     const getRandomCoordsNear = (lat, lng, radius) => {
         const randomLat = lat + (Math.random() - 0.5) * radius * 2;
         const randomLng = lng + (Math.random() - 0.5) * radius * 2;
         return [parseFloat(randomLng.toFixed(5)), parseFloat(randomLat.toFixed(5))];
     };
 
-    // Generate the data points
     const data = [];
     for (let i = 0; i < totalPoints; i++) {
-        // Determine if the point should be placed in a hotspot based on probability
         const shouldBeInHotspot = Math.random() < hotspotProbability && proximityConfig.hotspots && proximityConfig.hotspots.length > 0;
 
-        // Choose a random event name, with different weights if in a hotspot
         const eventName = shouldBeInHotspot
             ? getRandomEventName(hotspotWeights, totalHotspotWeight)
             : getRandomEventName(eventWeights, totalWeight);
 
-        // Choose a random time, with different weights if in a hotspot
         const eventTime = shouldBeInHotspot
             ? getRandomTime(hotspotTimes, totalHotspotTimeWeight)
             : getRandomTime(normalTimes, totalNormalTimeWeight);
-        
-        const eventDate = new Date(eventTime);
 
-        // Determine if the point is selected and highlighted
+        const eventDate = new Date(eventTime);
         const selected = allSelected || getRandomBool();
         const highlighted = allHighlighted || getRandomBool();
 
-        // Determine coordinates, possibly in a dense area or within defined bounds
         let coordinates = [];
         if (shouldBeInHotspot) {
             const hotspot = proximityConfig.hotspots[getRandomInt(0, proximityConfig.hotspots.length - 1)];
@@ -125,7 +108,6 @@ function generateGeoJsonData({
             coordinates = getRandomCoordsWithinBounds();
         }
 
-        // Construct the geoJSON-like object
         const feature = {
             type: "Feature",
             properties: {
@@ -144,7 +126,7 @@ function generateGeoJsonData({
         data.push(feature);
     }
 
-    return data;
+    return data; // Generate data without filling missing dates initially
 }
 
 // Example usage
@@ -198,9 +180,10 @@ const generatedData = generateGeoJsonData({
         "2024-10-12T00:00:00Z": 1,
         "2024-10-15T00:00:00Z": 1,
         "2024-10-17T00:00:00Z": 1,
+        "2024-10-17T12:00:00Z": 1,
         "2024-10-18T00:00:00Z": 1
     },
-    totalPoints: 250,
+    totalPoints: 1000,
     hotspotProbability: 0.2 // 40% of points will be in hotspots, 60% spread within the specified area
 });
 

@@ -10,6 +10,7 @@ class DataClass {
         this.dateSpan = dateSpan; // Add dateSpan as a class property
         this.rng = new Math.seedrandom(this.seed); // Create a seeded random number generator
         this.data = generatedData;
+        //this.enrichData();
     }
 
     getData() {
@@ -42,46 +43,59 @@ class DataClass {
         return dates;
     }
 
+    enrichData() {
+        this.data = this.fillMissingDates(this.data);
+    }
+
+    // Modified fillMissingDates to handle eventCounts directly
     fillMissingDates(eventCounts) {
         const dateRange = this.generateDateRange();
-        console.log("Date range:", dateRange);
-        
-        // Fill missing dates with value 0
+    
+        const optimizedEventCounts = [];
+        let previousValue = 0;
+    
         dateRange.forEach(date => {
             const dateString = date.toISOString().split('T')[0];
             const event = eventCounts.find(count => count.date.toISOString().split('T')[0] === dateString);
-            
-            if (event) {
-                // If an event exists, add an additional entry at the end of the day
-                const endOfDay = new Date(event.date);
-                endOfDay.setHours(23, 59, 59, 999); // Set time to 23:59
-                eventCounts.push({ date: endOfDay, value: event.value });
-            } else {
-                // If no event exists, fill with 0
-                eventCounts.push({ date, value: 0 });
+    
+            let currentTime = new Date(date);
+            currentTime.setHours(0, 0, 0, 0); // Start at the beginning of the day
+            const eventValue = event ? event.value : 0;
+    
+            // Check for transitions
+            if (eventValue !== previousValue) {
+                // Add a transition point right before the change for sharpness
+                optimizedEventCounts.push({ date: new Date(currentTime.getTime() - 1), value: previousValue });
+                optimizedEventCounts.push({ date: new Date(currentTime), value: eventValue });
             }
+    
+            // Keep value the same throughout the day with start and end points
+            optimizedEventCounts.push({ date: new Date(currentTime), value: eventValue });
+    
+            let endOfDay = new Date(currentTime);
+            endOfDay.setHours(23, 59, 59, 999);
+            optimizedEventCounts.push({ date: endOfDay, value: eventValue });
+    
+            previousValue = eventValue;
         });
     
-        // Sort eventCounts by date to ensure chronological order
-        eventCounts.sort((a, b) => a.date - b.date);
-        
-        // Remove leading and trailing 0 values
+        // Remove leading and trailing zero-value data points for cleaner output
         let start = 0;
-        while (start < eventCounts.length && eventCounts[start].value === 0) {
+        while (start < optimizedEventCounts.length && optimizedEventCounts[start].value === 0) {
             start++;
         }
     
-        let end = eventCounts.length - 1;
-        while (end >= 0 && eventCounts[end].value === 0) {
+        let end = optimizedEventCounts.length - 1;
+        while (end >= 0 && optimizedEventCounts[end].value === 0) {
             end--;
         }
     
-        // Slice the array to include only the relevant section
-        const trimmedEventCounts = eventCounts.slice(start, end + 1);
-    
-        console.log("Filled and trimmed event counts:", trimmedEventCounts);
-        return trimmedEventCounts;
+        return optimizedEventCounts.slice(start, end + 1);
     }
+    
+    
+    
+    
     
     
 

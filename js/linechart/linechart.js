@@ -257,8 +257,8 @@ class LineChart {
     
 
     updateChartData(newData) {
-        console.log("updating main linechart data");
-        console.log(newData);
+        //console.log("updating main linechart data");
+        //console.log(newData);
         this.data = newData;
     
         // Set x domain to dateSpan instead of recalculating from data
