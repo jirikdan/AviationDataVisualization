@@ -168,6 +168,22 @@ function updateTableWithFilteredData() {
 function adjustTableHeight() {
     console.log("Adjusting table height");
     console.log(window.innerHeight);
-    const newHeight = window.innerHeight < 1000 ? '230px' : '280px';
+    var newHeight = 0;
+    if (window.innerWidth == 1920) {
+        console.log("Setting newheight 280");
+        newHeight = '230px';
+    }
+    else if (window.innerWidth > 1920) {
+        console.log("Setting newheight 230");
+        newHeight = '280px';
+    }
+    else if (window.innerWidth < 1750) {
+        console.log("Setting newheight 200");
+        newHeight = '200px';
+    }
+    else {
+        newHeight = '100px';
+    }
+    //const newHeight = window.innerHeight < 1000 ? '230px' : '280px';
     document.documentElement.style.setProperty('--table-max-height', newHeight);
 }

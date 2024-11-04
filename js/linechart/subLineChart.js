@@ -72,9 +72,8 @@ class SubLineChart {
             .x(d => this.x(d.date))
             .y0(this.y(0))
             .y1(d => this.y(d.value))
+            .defined(d => d.value !== 0) // Only include non-zero points for the area fill
             .curve(d3.curveBasis);
-
-        this.linechartSvg.on("dblclick", this.resetZoom.bind(this));
 
         // Add gridlines
         this.xGrid = this.linechartSvg.append("g")
@@ -85,11 +84,6 @@ class SubLineChart {
         this.labels = this.linechartSvg.append("g")
             .attr("class", "grid-labels");
 
-        this.initGridlines();
-    }
-
-    initGridlines() {
-        // This method is intentionally left empty for now
     }
 
     renderChart(data) {
@@ -119,10 +113,12 @@ class SubLineChart {
         this.area.append("path")
             .datum(this.data)
             .attr("class", "myArea")
-            .attr("fill", "url(#gradient)")
-            .attr("fill-opacity", .7)
-            .attr("stroke", "black")
+            .attr("fill", colorMapping[this.eventType]) // Use the color from colorMapping
+            .attr("fill-opacity", 1)
+            .attr("stroke", d3.color(colorMapping[this.eventType]).darker(1)) // Use the color from colorMapping
+            .attr("stroke-width", 1)
             .attr("d", this.areaGenerator);
+
 
         // Attach the brush with updated selection
         this.area.selectAll(".brush").remove();
@@ -134,9 +130,15 @@ class SubLineChart {
         // Update gridlines based on the new x domain
         this.updateGridlines();
     }
+    /*updateGridlines() {
+       
+        const xAxis = d3.axisBottom(this.x).ticks(lineChartNumberOfDashedLines).tickSize(-this.height).tickFormat("");
+        this.xGrid.call(xAxis);
+
+    }*/
 
     updateGridlines() {
-        return;
+        this.isLastChart = false;
         // Clear any existing lines and labels to prevent overlap
         //console.log(`Clearing previous lines and labels for chart: ${this.eventType}`);
         this.xGrid.selectAll("line").remove();
@@ -359,19 +361,19 @@ class SubLineChart {
     highlightDataInsideBrush(start, end) {
         // Adjust the start and end to the nearest bin boundaries
         const binSize = 24 * 60 * 60 * 1000; // One day in milliseconds
-    
+
         // Round start to the beginning of the day (bin start)
         const adjustedStart = new Date(Math.floor(start.getTime() / binSize) * binSize);
-    
+
         // Round end to the end of the day (bin end)
         const adjustedEnd = new Date(Math.ceil(end.getTime() / binSize) * binSize - 1);
-    
+
         // Iterate through the data and highlight points within the adjusted range
         data.forEach(point => {
             const dateMatches = point.properties.date >= adjustedStart && point.properties.date <= adjustedEnd;
             const eventMatches = point.properties.name === this.eventType; // Check if event matches subchart
             const element = document.getElementById(point.properties.id);
-    
+
             if (element && eventMatches) {  // Only modify elements if the event matches
                 if (dateMatches && point.properties.selected) {
                     point.properties.highlighted = true;
@@ -388,27 +390,27 @@ class SubLineChart {
             }
         });
     }
-    
+
     updateChartDataHighlight(newData) {
         console.log("updating main linechart");
         // Keep track of previous data for comparison
         const previousData = this.data || [];
-    
+
         // Identify new data points by checking if the new data contains points not in the previous data
         const newDataPoints = newData.filter(newPoint => {
-            return !previousData.some(prevPoint => 
-                prevPoint.date.getTime() === newPoint.date.getTime() && 
+            return !previousData.some(prevPoint =>
+                prevPoint.date.getTime() === newPoint.date.getTime() &&
                 prevPoint.value === newPoint.value
             );
         });
-    
+
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }
 
 
     updateChartFromOutside(newXDomain) {
-       console.log("updating from outside");
+        console.log("updating from outside");
         if (newXDomain) {
             this.x.domain(newXDomain);
         }
@@ -443,31 +445,31 @@ class SubLineChart {
         const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
         const start = this.x.domain()[0];
         const end = this.x.domain()[1];
-    
+
         const interpolatedDates = this.interpolateDates(start, end, lineChartNumberOfDashedLines + 1);
-        
+
         // Reference the dummy div and its original width
         const dummyDiv = d3.select('.dummy-div');
         const originalWidth = parseFloat(dummyDiv.style('width'));
-    
+
         // Measure initial label width
         const beforeTextWidth = d3.select('.grid-label').node()?.getBoundingClientRect().width || 0;
-    
+
         // Update the text labels based on interpolated dates
         tickValues.concat(start, end).forEach((tickValue, i) => {
             const xPosition = this.x(tickValue);
             const label = d3.selectAll(".grid-label").nodes();
-            
+
             if (label[i]) {
                 label[i].innerHTML = this.formatDate(interpolatedDates[i + 1]);
                 d3.select(label[i]).text(this.formatDate(interpolatedDates[i + 1]));
             }
         });
-    
+
         // Measure updated label width
         const afterTextWidth = d3.select('.grid-label').node()?.getBoundingClientRect().width || 0;
         const widthDifference = beforeTextWidth - afterTextWidth;
-    
+
         // Apply width adjustment only if the difference exceeds a threshold (e.g., 1px)
         const minAdjustmentThreshold = 1;
         if (Math.abs(widthDifference) > minAdjustmentThreshold) {
@@ -475,40 +477,7 @@ class SubLineChart {
             dummyDiv.style('width', newWidth + 'px');
         }
     }
-    
 
-    resetZoomFromOutside() {
-        this.x.domain(d3.extent(this.data, d => d.date));
-        this.xAxis.transition().call(d3.axisBottom(this.x).ticks(3));
-        this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(2));
-        this.area
-            .select('.myArea')
-            .transition()
-            .attr("d", this.areaGenerator);
-
-        // Update gridlines and labels
-        //this.updateGridlineLabels();
-    }
-
-    resetZoom() {
-        this.x.domain(d3.extent(this.data, d => d.date));
-        this.xAxis.transition().call(d3.axisBottom(this.x).ticks(3));
-        this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(2));
-        this.area
-            .select('.myArea')
-            .transition()
-            .attr("d", this.areaGenerator);
-
-        // Update gridlines and labels
-        //this.updateGridlineLabels();
-
-        this.mainChart.subLineCharts.forEach(subLineChart => {
-            if (subLineChart.eventType !== this.eventType) {
-                subLineChart.resetZoomFromOutside();
-            }
-        });
-        //this.mainChart.resetZoomFromOutside();
-    }
 
     updateChartData(newData) {
         //console.log("updating main linechart data");

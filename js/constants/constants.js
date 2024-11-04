@@ -41,14 +41,35 @@ uniqueNames.forEach((name, index) => {
 // Define start and end colors
 const startColor = "#ff0000"; // Red
 const endColor = "#00ff00"; // Green
-var lineChartWidth = 1110;
-if (window.innerWidth > 1920) {
-    lineChartWidth = 1210;
+// Adjust for device pixel ratio
+const screenWidth = window.screen.width * window.devicePixelRatio;
+const screenHeight = window.screen.height * window.devicePixelRatio;
+
+console.log(`True Screen Resolution: ${screenWidth} x ${screenHeight}`);
+
+// vs observed resolution
+console.log(`Observed Screen Resolution: ${window.innerWidth} x ${window.innerHeight}`);
+
+var lineChartWidth = 0;
+if (window.innerWidth == 1920) {
+    console.log("Setting line chart width to 1150");
+    lineChartWidth = 1150;
+}
+else if (window.innerWidth > 1920) {
+    console.log("Setting line chart width to 1010");
+    lineChartWidth = 1250;
+}
+else if (window.innerWidth < 1750) {
+    console.log("Setting line chart width to 850");
+    lineChartWidth = 930;
+}
+else {
+    lineChartWidth = 950;
 }
 
 
 
-const lineChartNumberOfDashedLines = 4;
+const lineChartNumberOfDashedLines = 5;
 var gridLineDistanceGlobal = 0;
 
 

@@ -5,11 +5,13 @@ class LineChart {
         this.width = lineChartWidth - this.margin.left - this.margin.right;
         this.height = 100 - this.margin.top - this.margin.bottom;
         this.currentXDomain = null;
-        this.initChart();
+        
         this.subLineCharts = [];
-        this.tickValues = this.x.ticks(3);
+        //this.tickValues = this.x.ticks(3);
         // Flag to track programmatic brush moves
         this.isProgrammaticBrushMove = false;
+        
+        this.initChart();
     }
 
     initChart() {
@@ -70,7 +72,7 @@ class LineChart {
 
     updateColorScale(scale) {
         this.colorScale = d3.scaleSequential(scale);  // Update color scale
-        this.colorScale.domain(d3.extent(this.data, d => d.date));  // Recalculate domain based on data
+        this.colorScale.domain(dateSpan);  // Recalculate domain based on data
         this.updateGradientAndRedraw();  // Redraw the chart with the new color scale
     }
 
@@ -105,7 +107,9 @@ class LineChart {
         this.data = data;
     
         // Set x domain to dateSpan rather than the data extent
+        console.log("Datespan in renderChart:", dateSpan);
         this.x.domain(dateSpan);
+        console.log("Domain in renderChart:", this.x.domain());
         this.xAxis.call(d3.axisBottom(this.x).ticks(3));  // Adjust the number of ticks as needed
         this.y.domain([0, d3.max(this.data, d => +d.value)]);  // Set y domain based on data values
     
@@ -141,6 +145,7 @@ class LineChart {
             .call(this.brush);
     
         // Update gridlines based on the new x domain
+        console.log("Domain before updateGridlines:", this.x.domain());
         this.updateGridlines();
     }
     
@@ -173,9 +178,13 @@ class LineChart {
         });
     }
 
+
     updateGridlines() {
+        console.log("updating sublinechart gridlines");
+        console.log("linechartnumberofdashedlines: ", lineChartNumberOfDashedLines);
         this.xGrid.call(d3.axisBottom(this.x).ticks(lineChartNumberOfDashedLines).tickSize(-this.height).tickFormat(""));
     }
+    
 
     updateChart(event) {
         const extent = event.selection;
@@ -262,7 +271,7 @@ class LineChart {
         this.x.domain(dateSpan);
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.colorScale.domain(d3.extent(this.data, d => d.date));
-    
+        this.updateGridlines();
         // Update gradient
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
