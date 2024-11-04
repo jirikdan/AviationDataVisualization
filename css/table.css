@@ -1,13 +1,10 @@
 .table-container {
-    max-height: 360px;
+    max-height: var(--table-max-height); /* Use the CSS variable */
     overflow-y: scroll;
     border-radius: 2px;
     width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 0px 0;
-    /* Remove or comment out the following lines to make scrollbar visible */
-    /* -ms-overflow-style: none;  Hide scrollbar in IE and Edge */
-    /* scrollbar-width: none;  Hide scrollbar in Firefox */
+    margin: 0;
 }
 
 

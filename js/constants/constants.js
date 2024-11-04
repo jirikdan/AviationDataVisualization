@@ -6,9 +6,34 @@ function updateChartWithNewData(selectedRegion) {
 const url = (x, y, z) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
 
 const eventNames = ["Trash", "Wildlife", "Vandalism", "Weather", "Damage", "Other", "Dirt", "Fuel"];
-const eventDatesWithHours = ["2024-10-18T12:00:00Z", "2024-10-15T12:00:00Z", "2024-10-12T12:00:00Z","2024-10-17T12:00:00Z", "2024-10-11T12:00:00Z" ];
+const eventDatesWithHours = ["2024-10-18T12:00:00Z", "2024-10-15T12:00:00Z", "2024-10-12T12:00:00Z", "2024-10-17T12:00:00Z", "2024-10-11T12:00:00Z"];
 const tableInfo = ["properties.name", "properties.date", "geometry.coordinates[1]", "geometry.coordinates[0]"];
 var dateSpan = [new Date("2024-10-11T12:00:00Z"), new Date("2024-11-18T22:00:00Z")];
+
+
+
+const names = eventNames;
+const latitudeRange = [50.08, 50.12];  // Example lat range
+const longitudeRange = [14.23, 14.28];  // Example lon range
+const nameWeights = [0.1, 0.1, 0.5, 0.1, 0.05, 0.35, 0.05, 0.05]; // Event A will be more common
+const latLonWeights = [1, 0.3]; // Increase frequency near the lower lat range and mid-longitude
+const seed = '12345';
+var dataHandler = new DataClass(300, names, latitudeRange, longitudeRange, nameWeights, latLonWeights, seed);
+var data = dataHandler.getData();
+var chartData = [];
+var linechart;
+var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
+
+const predefinedColors = d3.schemeCategory10;
+const colorMapping = {};
+
+const uniqueNames = [...new Set(data.map(d => d.properties.name))];
+uniqueNames.forEach((name, index) => {
+    colorMapping[name] = predefinedColors[index % predefinedColors.length];
+});
+
+
+
 //var startDate = dateSpan[0];
 //var endDate = dateSpan[1];
 //var globalStartDate = startDate;
@@ -16,7 +41,13 @@ var dateSpan = [new Date("2024-10-11T12:00:00Z"), new Date("2024-11-18T22:00:00Z
 // Define start and end colors
 const startColor = "#ff0000"; // Red
 const endColor = "#00ff00"; // Green
-const lineChartWidth = 1630;
+var lineChartWidth = 1110;
+if (window.innerWidth > 1920) {
+    lineChartWidth = 1210;
+}
+
+
+
 const lineChartNumberOfDashedLines = 4;
 var gridLineDistanceGlobal = 0;
 
@@ -29,9 +60,9 @@ var zoomableMap;
 var pi = Math.PI,
     tau = 2 * pi;
 
-const initX = -144144.5305263423;
-const initY = 589275.2242183866;
-const initScale = 3651353.7098351927;
+const initX = -218505.76580430535;
+const initY = 893059.666352264;
+const initScale = 5534417.308186406;
 var glyphs;
 var data;
 var svg;

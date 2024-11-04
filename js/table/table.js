@@ -71,7 +71,7 @@ function toggleHighlightData(d) {
     //d.properties.selected = d.properties.highlighted;
     lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
     for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-        lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+        lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
     }
     updateGlyphs();
 }
@@ -163,4 +163,11 @@ function updateTableWithFilteredData() {
     updateTableBody(filteredData, tableInfo);
     console.log("Updating");
     updateHighlightedSubcharts();
+}
+
+function adjustTableHeight() {
+    console.log("Adjusting table height");
+    console.log(window.innerHeight);
+    const newHeight = window.innerHeight < 1000 ? '230px' : '280px';
+    document.documentElement.style.setProperty('--table-max-height', newHeight);
 }

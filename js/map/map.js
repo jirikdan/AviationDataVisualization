@@ -18,6 +18,11 @@ function updateGlyphs() {
 class ZoomableMap {
     constructor() {
         this.initialTransform = d3.zoomIdentity.translate(initX, initY).scale(initScale);
+        console.log("Client width: " + document.getElementById("map").clientWidth);
+        console.log("Client height: " + document.getElementById("map").clientHeight);
+        //get width and height of the svg element
+        this.svgWidth = document.getElementById("map").clientWidth;
+
         this.width = document.getElementById("map").clientWidth;
         this.height = document.getElementById("map").clientHeight;
         this.showlayers = false;
@@ -56,7 +61,7 @@ class ZoomableMap {
         const svg = d3.selectAll("svg");
 
         const tile = d3.tile()
-            .extent([[0, 0], [width, height]])
+            .extent([[0, 0], [width*3, height*3]])
             .tileSize(512)
             .clampX(false);
 
@@ -86,37 +91,43 @@ class ZoomableMap {
             });
 
 
-        function zoomed(transform) {
-            projection
-                .scale(transform.k / tau)
-                .translate([transform.x, transform.y]);
-
-            //copy of updateGlyphs function
-            updateGlyphs();
-
-            regions.selectAll("polygon")
-                .attr("points", function (d) {
-                    var newCoords = [];
-                    for (var i = 0; i < d.geometry.coordinates[0].length; i++) {
-                        newCoords.push(projection(d.geometry.coordinates[0][i]));
-                    }
-                    return newCoords.map(coord => coord.join(",")).join(" ");
+            function zoomed(transform) {
+                // Log current translation and scale values
+                console.log("Current X Translation:", transform.x);
+                console.log("Current Y Translation:", transform.y);
+                console.log("Current Scale (Zoom Level):", transform.k);
+            
+                projection
+                    .scale(transform.k / tau)
+                    .translate([transform.x, transform.y]);
+            
+                // Copy of updateGlyphs function
+                updateGlyphs();
+            
+                regions.selectAll("polygon")
+                    .attr("points", function (d) {
+                        var newCoords = [];
+                        for (var i = 0; i < d.geometry.coordinates[0].length; i++) {
+                            newCoords.push(projection(d.geometry.coordinates[0][i]));
+                        }
+                        return newCoords.map(coord => coord.join(",")).join(" ");
+                    });
+            
+                rasterLevels.each(function (delta) {
+                    const tiles = tile.zoomDelta(delta)(transform);
+            
+                    d3.select(this)
+                        .selectAll("image")
+                        .data(tiles, d => d)
+                        .join("image")
+                        .attr("xlink:href", d => url(...d3.tileWrap(d)))
+                        .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
+                        .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
+                        .attr("width", tiles.scale)
+                        .attr("height", tiles.scale);
                 });
-
-            rasterLevels.each(function (delta) {
-                const tiles = tile.zoomDelta(delta)(transform);
-
-                d3.select(this)
-                    .selectAll("image")
-                    .data(tiles, d => d)
-                    .join("image")
-                    .attr("xlink:href", d => url(...d3.tileWrap(d)))
-                    .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
-                    .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
-                    .attr("width", tiles.scale)
-                    .attr("height", tiles.scale);
-            });
-        }
+            }
+            
     }
 
     mapToSvg(data, glyphs) {

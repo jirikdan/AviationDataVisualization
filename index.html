@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airport data visualization</title>
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mapStyle.css">
+    <link rel="stylesheet" href="css/filters.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="stylesheet" href="css/linechart.css">
+    <link rel="stylesheet" href="css/toggleButton.css">
+
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-tile@1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
@@ -12,77 +20,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/mapStyle.css">
-    <link rel="stylesheet" href="css/filters.css">
-    <link rel="stylesheet" href="css/table.css">
-    <link rel="stylesheet" href="css/linechart.css">
-    <link rel="stylesheet" href="css/toggleButton.css">
-    <!-- include data.js -->
     <script src="js/dataHandling/data.js"></script>
     <script src="js/linechart/positionLabels.js"></script>
     <script src="js/linechart/linechart.js"></script>
     <script src="js/linechart/subLineChart.js"></script>
-    <!-- include zoomableMap.js -->
-    <script src="js/constants/constants.js"></script>
-    <script src ="js/dataHandling/dataArray.js"></script>
+    <script src="js/dataHandling/dataArray.js"></script>
     <script src="js/dataFiltering/dataFiltering.js"></script>
+    <script src="js/constants/constants.js"></script>
     <script src="js/map/map.js"></script>
     <script src="js/map/selection.js"></script>
-    
     <script src="js/region/region.js"></script>
-
-
-
-
     <script src="js/table/table.js"></script>
-
-
-
-
 </head>
 
 <body>
     <script>
-        //Load data from dataHandling
-        const names = eventNames;
-        const latitudeRange = [50.08, 50.12];  // Example lat range
-        const longitudeRange = [14.23, 14.28];  // Example lon range
-        const nameWeights = [0.1, 0.1, 0.5,0.1,0.05,0.35,0.05,0.05]; // Event A will be more common
-        const latLonWeights = [1, 0.3]; // Increase frequency near the lower lat range and mid-longitude
-        const seed = '12345';
-
-        var dataHandler = new DataClass(300, names, latitudeRange, longitudeRange, nameWeights, latLonWeights, seed);
-        var data = dataHandler.getData();
-        //dataHandler.loadJSONFromFile('/js/dataHandling/data.json');
-        var chartData = [];
-        var linechart;
-        var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
-
-        const predefinedColors = d3.schemeCategory10;
-        const colorMapping = {};
-
-        const uniqueNames = [...new Set(data.map(d => d.properties.name))];
-        uniqueNames.forEach((name, index) => {
-            colorMapping[name] = predefinedColors[index % predefinedColors.length];
-        });
-
-        //var result = dataHandler.getSelectedEventCounts();
-        //console.log(result);
-        //console.log(data);
-
+        
     </script>
     <div class="main-container">
-
-        <!-- <div class="top-panel">
-            <h1>Airport data visualization</h1>
-        </div> -->
-
         <div class="container">
             <div class="column column-1">
                 <div class="row data-filters">
                     <div class="name-time">
-                        <div class = "filterHeader">Choose visualization type</div>
+                        <div class="filterHeader">Choose visualization type</div>
                         <div class="change-name-time" id="change-name-time">
                             <input type="radio" id="time" name="visualization" value="time" checked>
                             <label for="time">Time</label>
@@ -110,7 +70,7 @@
                     </div>
 
                     <div class="filter">
-                        <div class = "filterHeader">Choose time and events</div>
+                        <div class="filterHeader">Choose time and events</div>
                         <div class="filterBox">
                             <label for="time-filter">Filter by Time:</label>
                             <div class="time-filter">
@@ -153,24 +113,12 @@
                         </div>
 
                     </div>
-
-
-                    <!-- <div class="filter-buttons">
-                        <button id="apply-filters">Apply Filters</button>
-                        <script>
-                            document.getElementById("apply-filters").style.display = "none";
-                        </script>
-                    </div> -->
-                    
-                    <!-- Section to display the applied filters -->
-
-
                 </div>
-
-
 
                 <div class="row table-row">
                     <div class="table-container">
+                        <!-- set max height based on display size -->
+                         <script>adjustTableHeight() </script>
                         <table>
                             <thead></thead>
                             <tbody></tbody>
@@ -178,10 +126,10 @@
                     </div>
                     <script>tabulate(data, tableInfo);</script>
                 </div>
+
             </div>
             <div class="column column-2">
                 <div class="row row-1">
-                    <!-- <div class="dynamicChartName">Název</div> -->
                     <div id="brush-tooltip" class="brush-tooltip"></div>
                     <div id="my_dataviz"><span class="mainChart-label">
                             <div class="toggleButtonWrapper">
@@ -205,17 +153,11 @@
                     <div id="tooltip"></div>
                     <script>
                         zoomableMap = new ZoomableMap();
-
-                        //zoomableMap.applyUpdates();
                     </script>
                 </div>
             </div>
         </div>
-
     </div>
-
-
-
     <script src="js/linechart/seeMoreLinecharts.js"></script>
 
 </body>

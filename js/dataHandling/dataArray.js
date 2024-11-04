@@ -181,9 +181,13 @@ const generatedData = generateGeoJsonData({
         "2024-10-15T00:00:00Z": 1,
         "2024-10-17T00:00:00Z": 1,
         "2024-10-17T12:00:00Z": 1,
+        "2024-10-28T00:00:00Z": 1,
+        "2024-10-30T12:00:00Z": 1,
+        "2024-10-23T00:00:00Z": 1,
+        "2024-10-20T12:00:00Z": 1,
         "2024-10-18T00:00:00Z": 1
     },
-    totalPoints: 350,
+    totalPoints: 250,
     hotspotProbability: 0.2 // 40% of points will be in hotspots, 60% spread within the specified area
 });
 
