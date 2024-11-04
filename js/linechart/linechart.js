@@ -238,8 +238,8 @@ class LineChart {
 
                 // Update tooltip content and position it according to mouse position
                 tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M")(snappedStart)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M")(snappedEnd)}`)
-                    .style("left", `${tooltipX}px`)
-                    .style("top", `${tooltipY - 80}px`)
+                    .style("left", `${tooltipX - 60}px`)
+                    .style("top", `${tooltipY - 40}px`)
                     .style("transform", "translateX(-50%)");
             })
             .on("mouseout", function() {

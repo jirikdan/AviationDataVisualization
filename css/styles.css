@@ -10,19 +10,10 @@ body {
     height: 100vh;
 }
 
-/* Main Container */
-.main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
 
 /* Main Content Container */
 .container {
     display: flex;
-    
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     overflow: none;
@@ -38,8 +29,8 @@ body {
 .column-2 { flex: 7; } /* Wide Column */
 
 /* Column-1 Content */
-.column-1 .data-filters { flex: 5;}
-.column-1 .table-row { flex: 5;}
+.column-1 .data-filters { flex: 7;}
+.column-1 .table-row { flex: 3;}
 
 /* Column-2 Content */
 .column-2 .row-1, 

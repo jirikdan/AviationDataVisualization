@@ -168,14 +168,14 @@ function updateHighlightedSubcharts() {
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
             //console.log("Updating Max Y value: ", maxYValue);
-            lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
     } else {
         lineChart.updateChartDataHighlight(dataHandler.getSelectedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             //console.log("Updating Max Y value: ", maxYValue);
-            lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
     }
@@ -211,14 +211,14 @@ function updateHighlightedSubchartsAfterSort()
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
-            lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             //console.log("Max Y value: ", maxYValue);
             
         }
     } else {
         lineChart.updateChartDataHighlight(dataHandler.getSelectedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-            lineChart.subLineCharts[i].updateChartData(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
     }

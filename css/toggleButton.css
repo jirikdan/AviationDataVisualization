@@ -2,7 +2,7 @@
 #toggleButton {
     background-color: #4CAF50; /* Green background */
     color: white; /* White text */
-    padding: 10px 20px; /* Some padding */
+    width: 100%; /* Full width */
     border: none; /* Remove borders */
     border-radius: 5px; /* Rounded corners */
     cursor: pointer; /* Pointer/hand icon on hover */
@@ -21,12 +21,12 @@
 
 /* Styling each checkbox container */
 .checkbox-container {
-    padding: 10px; /* Some padding */
     border: 1px solid #ddd; /* Light grey border */
     border-radius: 5px; /* Rounded corners */
-    margin-bottom: 10px; /* Space between items */
-    margin-top: 10px;
+    margin-bottom: 5px; /* Space between items */
+    margin-top: 5px;
     background-color: #f9f9f9; /* Light grey background */
+    justify-content: center;
 }
 
 /* Adding some more style for hover effect */
@@ -42,7 +42,7 @@
 
 /* Style for the hide/unhide button */
 #hideAllButton {
-    width: 100%;
+    width: 100%; /* Set a fixed width */
     background-color: #007bff; /* A nice blue color */
     color: white; /* White text color */
     border: none; /* Remove default border */
@@ -51,7 +51,7 @@
     font-weight: bold; /* Make the text bold */
     cursor: pointer; /* Change cursor to pointer on hover */
     transition: background-color 0.3s ease; /* Smooth transition for background color change */
-    margin-bottom: 15px; /* Add space between the two buttons */
+    margin-right: 5px;
 }
 
 /* Style when the button is hovered */
@@ -66,16 +66,17 @@
 
 /* Style for the sort button */
 #sortByMaxYButton {
-    width: 100%;
+    
     background-color: #0056b3; /* Slightly darker blue to differentiate */
     color: white; /* White text color */
     border: none; /* Remove default border */
     border-radius: 5px; /* Slightly rounded corners */
-    font-size: 15px; /* Slightly smaller font size */
+    font-size: 8px; /* Slightly smaller font size */
     font-weight: bold; /* Make the text bold */
     cursor: pointer; /* Change cursor to pointer on hover */
     transition: background-color 0.3s ease; /* Smooth transition for background color change */
-    margin-top: 5px; /* Add a small margin on top */
+    margin-top: 2px;
+    width: 100%;
 }
 
 /* Style when the button is hovered */

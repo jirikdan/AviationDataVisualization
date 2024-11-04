@@ -37,9 +37,9 @@
 }
 
 #hiddenCharts {
-    max-height: 300px;
+    max-height: 250px;
     overflow-y: scroll;
-    overflow-x: hidden;
+    /* overflow-x: visible; */
     width: 100%;
     background-color: rgb(232, 231, 231);
     border-radius: 5px;
@@ -129,7 +129,7 @@
 .chart-label {
     margin-right: 15px;
     /* Adjust spacing between label and chart */
-    width: 80px;
+    width: 40px;
     font-size: 12px;
     font-weight: bold;
     color: #333;
@@ -138,15 +138,35 @@
 }
 
 .mainChart-label {
-    margin-right: 15px;
-    /* Adjust spacing between label and chart */
-    width: 80px;
+    margin-right: 0px;
+    width: 55px;
     font-size: 12px;
     font-weight: bold;
     color: #333;
-    /* Adjust text color if necessary */
-    overflow: hidden;
+    max-height: 30vh; /* Ensuring the label section has a set height */
+    overflow: none; /* Ensuring the label section has a scrollbar */
 }
+
+/* Scrollbar styling for .mainChart-label */
+.mainChart-label::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.mainChart-label::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background of the scrollbar track */
+    border-radius: 10px; /* Rounded corners on the scrollbar track */
+}
+
+.mainChart-label::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners on the scrollbar thumb */
+    border: 2px solid #f1f1f1; /* Adds a border around the thumb */
+}
+
+.mainChart-label::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker thumb when hovered */
+}
+
 
 .myArea:hover {
     filter: brightness(1);
@@ -155,4 +175,9 @@
 
 .label-div{
     white-space: nowrap;
+}
+
+.hide-all-container {
+    
+
 }

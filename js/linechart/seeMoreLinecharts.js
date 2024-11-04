@@ -9,6 +9,8 @@ let maxYValue = 0;
 var eventSelection = document.getElementById('eventSelection');
 eventSelection.classList.add('hidden');
 
+
+
 document.getElementById('toggleButton').addEventListener('click', function () {
     
     var hiddenTexts = document.getElementById('hiddenCharts');
@@ -91,7 +93,7 @@ function populateEventSelection() {
     // Create a separate button for sorting by max Y value
     const sortButton = document.createElement('button');
     sortButton.id = 'sortByMaxYButton';
-    sortButton.textContent = 'Sort by Max Y Value';
+    sortButton.textContent = 'Max Y';
 
     // Add event listener to sort the charts by maximum Y value when clicked
     sortButton.addEventListener('click', function () {
@@ -123,7 +125,7 @@ function populateEventSelection() {
 
         const label = document.createElement('label');
         label.htmlFor = `eventCheckbox_${index}`;
-        label.textContent = eventType; // Display only the event type (no count)
+        label.textContent = " ";//eventType; // Display only the event type (no count)
 
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);

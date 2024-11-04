@@ -5,13 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airport data visualization</title>
-    
+
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mapStyle.css">
     <link rel="stylesheet" href="css/filters.css">
     <link rel="stylesheet" href="css/table.css">
     <link rel="stylesheet" href="css/linechart.css">
     <link rel="stylesheet" href="css/toggleButton.css">
+    <!-- <link rel="stylesheet" href="css/popup.css"> -->
+
+    <!-- <link rel="stylesheet" href="css/newCSS.css"> -->
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-tile@1"></script>
@@ -31,135 +34,135 @@
     <script src="js/map/selection.js"></script>
     <script src="js/region/region.js"></script>
     <script src="js/table/table.js"></script>
+    
 </head>
 
 <body>
     <script>
-        
+
     </script>
-    <div class="main-container">
-        <div class="container">
-            <div class="column column-1">
-                <div class="row data-filters">
-                    <div class="name-time">
-                        <div class="filterHeader">Choose visualization type</div>
-                        <div class="change-name-time" id="change-name-time">
-                            <input type="radio" id="time" name="visualization" value="time" checked>
-                            <label for="time">Time</label>
-                            <input type="radio" id="name" name="visualization" value="name">
-                            <label for="name">Name</label>
-                        </div>
-                        <div id="color-visualization" style="display:none;">
-                            <div id="color-scale" class="color-scale"></div>
-                            <div class="color-scale-selector">
-                                <div class="center-label">Choose Color Scale:</div>
-                                <select id="colorScale">
-                                    <option value="interpolateViridis">Viridis</option>
-                                    <option value="interpolateInferno">Inferno</option>
-                                    <option value="interpolateMagma">Magma</option>
-                                    <option value="interpolatePlasma">Plasma</option>
-                                    <option value="interpolateCividis">Cividis</option>
-                                    <option value="interpolateCool">Cool</option>
-                                    <option value="interpolateWarm">Warm</option>
-                                    <option value="interpolateCubehelixDefault">Cubehelix</option>
-                                    <option value="interpolateRainbow">Rainbow</option>
-                                    <option value="interpolateSinebow">Sinebow</option>
-                                </select>
-                            </div>
-                        </div>
+    <div class="container">
+        <div class="column column-1">
+            <div class="row data-filters block">
+                <div class="name-time">
+                    <div class="filterHeader">Choose visualization type</div>
+                    <div class="change-name-time" id="change-name-time">
+                        <input type="radio" id="time" name="visualization" value="time" checked>
+                        <label for="time">Time</label>
+                        <input type="radio" id="name" name="visualization" value="name">
+                        <label for="name">Name</label>
                     </div>
-
-                    <div class="filter">
-                        <div class="filterHeader">Choose time and events</div>
-                        <div class="filterBox">
-                            <label for="time-filter">Filter by Time:</label>
-                            <div class="time-filter">
-                                <select id="time-filter" name="time">
-                                    <option value="past-7-days">Past 7 Days</option>
-                                    <option value="past-30-days" selected>Past 30 Days</option>
-                                    <option value="custom">Custom</option>
-                                </select>
-                                <div class="custom-time" id="custom-time">
-                                    <label for="start-date">From</label>
-                                    <input type="date" id="start-date" name="start-date">
-                                    <label for="end-date">To</label>
-                                    <input type="date" id="end-date" name="end-date">
-                                </div>
-                            </div>
+                    <div id="color-visualization" style="display:none;">
+                        <div id="color-scale" class="color-scale"></div>
+                        <div class="color-scale-selector">
+                            <div class="center-label">Choose Color Scale:</div>
+                            <select id="colorScale">
+                                <option value="interpolateViridis">Viridis</option>
+                                <option value="interpolateInferno">Inferno</option>
+                                <option value="interpolateMagma">Magma</option>
+                                <option value="interpolatePlasma">Plasma</option>
+                                <option value="interpolateCividis">Cividis</option>
+                                <option value="interpolateCool">Cool</option>
+                                <option value="interpolateWarm">Warm</option>
+                                <option value="interpolateCubehelixDefault">Cubehelix</option>
+                                <option value="interpolateRainbow">Rainbow</option>
+                                <option value="interpolateSinebow">Sinebow</option>
+                            </select>
                         </div>
-                        <div class="filterBox">
-                            <label for="event-type">Filter by Event Type:</label>
-                            <div id="dropdown" class="dropdown-content">
-                                <div class="search-select-container">
-                                    <input type="text" id="search-event-types" placeholder="Search event types...">
-
-                                </div>
-                                <div class="hide-group">
-                                    <div class="checkbox-group">
-                                    </div>
-                                    <div class="button-group">
-                                        <button id="confirm-selection">OK</button>
-                                        <button id="select-all" class="select-all-button">Select All</button>
-                                        <button id="reset-filters">Reset Filters</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div id="active-filters" class="active-filters">
-                            <h3>Active Filters:</h3>
-                            <p id="active-time-filter">Time Filter: None</p>
-                            <p id="active-event-types">Event Types: None</p>
-                        </div>
-
                     </div>
                 </div>
 
-                <div class="row table-row">
-                    <div class="table-container">
-                        <!-- set max height based on display size -->
-                         <script>adjustTableHeight() </script>
-                        <table>
-                            <thead></thead>
-                            <tbody></tbody>
-                        </table>
+                <div class="filter">
+                    <div class="filterHeader">Choose time and events</div>
+                    <div class="filterBox">
+                        <label for="time-filter">Filter by Time:</label>
+                        <div class="time-filter">
+                            <select id="time-filter" name="time">
+                                <option value="past-7-days">Past 7 Days</option>
+                                <option value="past-30-days" selected>Past 30 Days</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <div class="custom-time" id="custom-time">
+                                <label for="start-date">From</label>
+                                <input type="date" id="start-date" name="start-date">
+                                <label for="end-date">To</label>
+                                <input type="date" id="end-date" name="end-date">
+                            </div>
+                        </div>
                     </div>
-                    <script>tabulate(data, tableInfo);</script>
-                </div>
+                    <div class="filterBox">
+                        <label for="event-type">Filter by Event Type:</label>
+                        <div id="dropdown" class="dropdown-content">
+                            <div class="search-select-container">
+                                <input type="text" id="search-event-types" placeholder="Search event types...">
 
-            </div>
-            <div class="column column-2">
-                <div class="row row-1">
-                    <div id="brush-tooltip" class="brush-tooltip"></div>
-                    <div id="my_dataviz"><span class="mainChart-label">
-                            <div class="toggleButtonWrapper">
-                                <button id="toggleButton">See More</button>
-                                <div id="eventSelection">
-                                    <!-- Dynamically populated checkboxes will go here -->
+                            </div>
+                            <div class="hide-group">
+                                <div class="checkbox-group">
+                                </div>
+                                <div class="button-group">
+                                    <button id="confirm-selection">OK</button>
+                                    <button id="select-all" class="select-all-button">Select All</button>
+                                    <button id="reset-filters">Reset Filters</button>
                                 </div>
                             </div>
-                        </span> </div>
 
-                    <div id="hiddenCharts" class="hidden">
-                        <div class="text-block">Text Block 1</div>
-                        <div class="text-block">Text Block 2</div>
-                        <div class="text-block">Text Block 3</div>
+                        </div>
                     </div>
-                    <div id="fixed-labels-container" class="hidden"></div>
-                </div>
-                <div class="row row-2">
+                    <div id="active-filters" class="active-filters">
+                        <h3>Active Filters:</h3>
+                        <p id="active-time-filter">Time Filter: None</p>
+                        <p id="active-event-types">Event Types: None</p>
+                    </div>
 
-                    <svg id="map"></svg>
-                    <div id="tooltip"></div>
-                    <script>
-                        zoomableMap = new ZoomableMap();
-                    </script>
                 </div>
             </div>
+
+            <div class="row table-row block">
+                <div class="table-container">
+                    <!-- set max height based on display size -->
+                    <script>adjustTableHeight() </script>
+                    <table>
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <script>tabulate(data, tableInfo);</script>
+            </div>
+
+        </div>
+        <div class="column column-2">
+            <div class="row row-1 block">
+                <div id="brush-tooltip" class="brush-tooltip"></div>
+                <div id="my_dataviz"><span class="mainChart-label">
+                <div class="toggleButtonWrapper">
+                    <button id="toggleButton">See More</button>
+                    <div id="eventSelection">
+                        <!-- Dynamically populated checkboxes will go here -->
+                    </div>
+                </div>
+                </span>
+            </div>
+
+            <div id="hiddenCharts" class="hidden">
+                <div class="text-block">Text Block 1</div>
+                <div class="text-block">Text Block 2</div>
+                <div class="text-block">Text Block 3</div>
+            </div>
+            <div id="fixed-labels-container" class="hidden"></div>
+        </div>
+        <div class="row row-2 block">
+
+            <svg id="map"></svg>
+            <div id="tooltip"></div>
+            <script>
+                zoomableMap = new ZoomableMap();
+            </script>
         </div>
     </div>
+    </div>
     <script src="js/linechart/seeMoreLinecharts.js"></script>
-
+    <!-- <script src="js/linechart/popup.js"></script> -->
 </body>
 
 </html>

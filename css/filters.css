@@ -1,3 +1,4 @@
+/* Container for data filters */
 .row.data-filters {
     display: flex;
     flex-wrap: wrap;
@@ -6,19 +7,17 @@
     background-color: #d7d1d1;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 5px;
-    border: 2px solid #333; /* Solid border with a custom color */
-    align-items:normal;
+    border: 2px solid #333;
+    align-items: normal;
     justify-content: center;
-    
 }
 
 /* Individual filter container */
 .filter {
-    display: flex; /* Use Flexbox for centering */
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     flex: 1;
     min-width: 300px;
     padding: 20px;
@@ -29,33 +28,29 @@
     width: 100%;
 }
 
-
+/* Container for name and time inputs */
 .name-time {
-    display: flex; /* Use Flexbox for centering */
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
-    /* min-width: 300px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 20px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid #333;
-    /* width: 100%; */
+    width: 100%;
 }
-
 
 .change-name-time {
-    display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Adjust this value to increase or decrease spacing between items */
-    
+    gap: 10px;
 }
 
-
 /* Labels for form elements */
-.filter label, .name-time label {
+.filter label,
+.name-time label {
     display: inline-block;
     font-weight: bold;
     margin-bottom: 10px;
@@ -63,7 +58,9 @@
 }
 
 /* Flex container for time filters, custom time input, and buttons */
-.time-filter, .custom-time, .filter-buttons {
+.time-filter, 
+.custom-time, 
+.filter-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -75,7 +72,6 @@
     margin-top: 10px;
 }
 
-/* Labels within custom time inputs */
 .custom-time label {
     font-weight: normal;
     margin: 0;
@@ -97,19 +93,17 @@
     gap: 10px;
 }
 
-/* Labels for checkboxes */
 .checkbox-group label {
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
-/* Styling for checkboxes */
 .checkbox-group input[type="checkbox"] {
     margin-right: 10px;
 }
 
-/* Display for selected events */
+/* Selected events display */
 #selected-event {
     margin-top: 10px;
     font-size: 0.9em;
@@ -130,7 +124,7 @@
 /* General button styling */
 .filter-buttons button,
 #select-event-types,
-#select-all-event-types, /* Added styling for the new button */
+#select-all-event-types, 
 #confirm-selection {
     padding: 10px 20px;
     background-color: #007BFF;
@@ -143,7 +137,7 @@
 #reset-filters {
     padding: 10px 20px;
     background-color: #d1d1d1;
-    color: rgb(0, 0, 0);
+    color: #000;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -153,10 +147,9 @@
     background-color: #6c757d;
 }
 
-/* Hover effect for buttons */
 .filter-buttons button:hover,
 #select-event-types:hover,
-#select-all-event-types:hover, /* Added hover effect for the new button */
+#select-all-event-types:hover, 
 #confirm-selection:hover {
     opacity: 0.8;
 }
@@ -164,7 +157,6 @@
 /* Dropdown content styling */
 .dropdown-content {
     display: show;
-    /* position: absolute; */
     background-color: #f9f9f9;
     min-width: 200px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -212,8 +204,6 @@
     opacity: 0.8;
 }
 
-
-
 /* Button group container for OK and Reset buttons */
 .button-group {
     display: flex;
@@ -225,7 +215,7 @@
 /* Styling for tags */
 .tag {
     background-color: hsl(0, 0%, 65%);
-    color: rgb(0, 0, 0);
+    color: #000;
     padding: 5px 10px;
     border-radius: 20px;
     display: inline-block;
@@ -252,9 +242,9 @@
     width: 90%;
 }
 
-/* Heading for active filters section */
+/* Active filters section heading */
 .active-filters h3 {
-    margin-top: 0;
+    margin: 0;
     margin-bottom: 10px;
     font-weight: bold;
     color: #333;
@@ -271,13 +261,14 @@
     color: #0d2d4d;
 }
 
+/* Styling for active tags */
 .active-tag {
     position: relative;
     display: inline-block;
     padding: 5px;
     margin: 2px;
     background-color: #237e32;
-    color: rgb(255, 255, 255);
+    color: #fff;
     border-radius: 3px;
     cursor: pointer;
 }
@@ -290,7 +281,7 @@
     width: 16px;
     height: 16px;
     background-color: rgb(87, 24, 24);
-    color: rgb(255, 255, 255);
+    color: #fff;
     text-align: center;
     line-height: 16px;
     border-radius: 50%;
@@ -301,8 +292,7 @@
     display: block;
 }
 
-/*Event type search*/
-
+/* Event type search styling */
 #event-type-search {
     padding: 10px;
     width: calc(100% - 20px);
@@ -334,7 +324,7 @@
     display: none;
 } 
 
-.filterHeader{
+.filterHeader {
     font-size: 1.2em;
     font-weight: bold;
 }
