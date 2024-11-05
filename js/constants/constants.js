@@ -45,22 +45,22 @@ const endColor = "#00ff00"; // Green
 const screenWidth = window.screen.width * window.devicePixelRatio;
 const screenHeight = window.screen.height * window.devicePixelRatio;
 
-console.log(`True Screen Resolution: ${screenWidth} x ${screenHeight}`);
+//console.log(`True Screen Resolution: ${screenWidth} x ${screenHeight}`);
 
 // vs observed resolution
-console.log(`Observed Screen Resolution: ${window.innerWidth} x ${window.innerHeight}`);
+//console.log(`Observed Screen Resolution: ${window.innerWidth} x ${window.innerHeight}`);
 
 var lineChartWidth = 0;
 if (window.innerWidth == 1920) {
-    console.log("Setting line chart width to 1150");
+    //console.log("Setting line chart width to 1150");
     lineChartWidth = 1150;
 }
 else if (window.innerWidth > 1920) {
-    console.log("Setting line chart width to 1010");
+    //console.log("Setting line chart width to 1010");
     lineChartWidth = 1250;
 }
 else if (window.innerWidth < 1750) {
-    console.log("Setting line chart width to 850");
+    //console.log("Setting line chart width to 850");
     lineChartWidth = 930;
 }
 else {

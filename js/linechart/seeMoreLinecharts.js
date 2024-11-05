@@ -56,7 +56,7 @@ function populateEventSelection() {
     }
     var activeEventTypes;
     if (somethingSelected) {
-        activeEventTypes = dataHandler.getHighlightedEventCounts().activeEventTypes;
+        activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
     } else {
         activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
     }
@@ -121,6 +121,7 @@ function populateEventSelection() {
         checkbox.addEventListener('change', function () {
             selectedEventTypes[eventType] = checkbox.checked;
             updateOrderOfLineCharts(); // Update charts when selection changes
+            updateHighlightedSubcharts();
         });
 
         const label = document.createElement('label');
@@ -161,6 +162,7 @@ function populateEventSelection() {
                 .filter(container => !container.classList.contains('hide-all-container'))
                 .map(container => container.dataset.eventType);
             updateOrderOfLineCharts(); // Update charts when order changes
+            updateHighlightedSubcharts();
         }
     });
     
@@ -175,7 +177,7 @@ function populateEventSelection() {
 
 
 function updateOrderOfLineCharts() {
-    //console.log('Updating order of line charts');
+    console.log('Updating order of line charts');
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
 
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
@@ -220,11 +222,12 @@ function updateOrderOfLineCharts() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         //subLineChart.updateGridlines();
-        if (subLineChart.y.domain()[1] > maxYValue) {
+        /*if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }
         //console.log('Max Y value sort:', maxYValue);
-        subLineChart.changeYAxisRange(maxYValue);
+        subLineChart.changeYAxisRange(maxYValue);*/
+        changeMaxYBasedOnCurrentDatespan();
     });
 }
 
@@ -281,34 +284,42 @@ function createMoreLineCharts() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         subLineChart.updateGridlines();
-        if (subLineChart.y.domain()[1] > maxYValue) {
+        /*if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }
-        subLineChart.changeYAxisRange(maxYValue);
+        subLineChart.changeYAxisRange(maxYValue);*/
+        changeMaxYBasedOnCurrentDatespan();
     });
 
 }
 
 
 function sortChartsByMaxYValue() {
-    console.log('Sorting charts and checkboxes by maximum Y value');
+    console.log('Sorting charts and checkboxes by maximum Y value within the current date span');
 
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
-    const allCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]'));
-
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
 
-    // Get the maximum Y values for each event type
+    var start = dateSpan[0];
+    var end = dateSpan[1];
+
+    // Get the maximum Y values for each event type within the current date span
     const maxYValues = selectedTypes.map(eventType => {
+        let subChartData;
+
+        // Check if any points are highlighted to determine which data to use
         if (dataHandler.isAnythingHighlighted()) {
-            const subChartData = dataHandler.getHighlightedEventCountsByType(eventType).eventCounts;
-            const maxY = d3.max(subChartData, d => d.value); // Assuming 'value' is the property for Y axis data
-            return { eventType, maxY };
+            subChartData = dataHandler.getHighlightedEventCountsByType(eventType).eventCounts;
         } else {
-            const subChartData = dataHandler.getEventTypeData(eventType);
-            const maxY = d3.max(subChartData, d => d.value); // Assuming 'value' is the property for Y axis data
-            return { eventType, maxY };
+            subChartData = dataHandler.getEventTypeData(eventType);
         }
+
+        // Filter data to include only those within the current date span
+        const filteredData = subChartData.filter(d => d.date >= start && d.date <= end);
+
+        // Get the max Y value within the current date span
+        const maxY = d3.max(filteredData, d => d.value); // Assuming 'value' is the property for Y-axis data
+        return { eventType, maxY };
     });
 
     console.log('Max Y values before filtering:', maxYValues);
@@ -380,15 +391,38 @@ function sortChartsByMaxYValue() {
             .attr("d", subLineChart.areaGenerator)
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
-        //subLineChart.updateGridlines();
 
-        // Update maxYValue for consistent Y axis scaling
-        if (subLineChart.y.domain()[1] > maxYValue) {
-            maxYValue = subLineChart.y.domain()[1];
-        }
-        subLineChart.changeYAxisRange(maxYValue);
-
+        // Update max Y-axis range for consistency based on the current date span
+        changeMaxYBasedOnCurrentDatespan();
         updateHighlightedSubchartsAfterSort(); // Update the line charts based on the selected points
     });
 }
 
+
+function changeMaxYBasedOnCurrentDatespan() {
+    var start = dateSpan[0];
+    var end = dateSpan[1];
+    var maxYValueDatespan = 0;
+
+    // Calculate maxYValue for the current date span across all subLineCharts
+    for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+        var subChart = lineChart.subLineCharts[i];
+        var data = subChart.data;
+
+        // Filter data points to only those within the dateSpan range
+        var filteredData = data.filter(d => d.date >= start && d.date <= end);
+
+        // Find the maximum Y value within the filtered data points
+        var maxYForCurrentChart = d3.max(filteredData, d => d.value);
+
+        // Update the overall maxYValueDatespan if the current chart has a higher value
+        if (maxYForCurrentChart > maxYValueDatespan) {
+            maxYValueDatespan = maxYForCurrentChart;
+        }
+    }
+    //console.log("Calculated maxY " + maxYValueDatespan);
+    // Change the max Y-axis range for each subLineChart to the calculated maxYValueDatespan
+    for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+        lineChart.subLineCharts[i].changeYAxisRange(maxYValueDatespan);
+    }
+}

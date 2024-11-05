@@ -192,4 +192,4 @@ const generatedData = generateGeoJsonData({
     hotspotProbability: 0.2 // 40% of points will be in hotspots, 60% spread within the specified area
 });
 
-console.log(generatedData);
+//console.log(generatedData);

@@ -161,24 +161,24 @@ function updateTableWithFilteredData() {
 
     // Now call updateTableBody with the filtered data
     updateTableBody(filteredData, tableInfo);
-    console.log("Updating");
+    //console.log("Updating");
     updateHighlightedSubcharts();
 }
 
 function adjustTableHeight() {
-    console.log("Adjusting table height");
-    console.log(window.innerHeight);
+    //console.log("Adjusting table height");
+    //console.log(window.innerHeight);
     var newHeight = 0;
     if (window.innerWidth == 1920) {
-        console.log("Setting newheight 280");
+        //console.log("Setting newheight 280");
         newHeight = '230px';
     }
     else if (window.innerWidth > 1920) {
-        console.log("Setting newheight 230");
+        //console.log("Setting newheight 230");
         newHeight = '280px';
     }
     else if (window.innerWidth < 1750) {
-        console.log("Setting newheight 200");
+        //console.log("Setting newheight 200");
         newHeight = '200px';
     }
     else {

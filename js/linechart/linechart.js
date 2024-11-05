@@ -103,13 +103,13 @@ class LineChart {
     
 
     renderChart(data) {
-        console.log("rendering main linechart");
+        //console.log("rendering main linechart");
         this.data = data;
     
         // Set x domain to dateSpan rather than the data extent
-        console.log("Datespan in renderChart:", dateSpan);
+        //console.log("Datespan in renderChart:", dateSpan);
         this.x.domain(dateSpan);
-        console.log("Domain in renderChart:", this.x.domain());
+        //console.log("Domain in renderChart:", this.x.domain());
         this.xAxis.call(d3.axisBottom(this.x).ticks(3));  // Adjust the number of ticks as needed
         this.y.domain([0, d3.max(this.data, d => +d.value)]);  // Set y domain based on data values
     
@@ -145,7 +145,7 @@ class LineChart {
             .call(this.brush);
     
         // Update gridlines based on the new x domain
-        console.log("Domain before updateGridlines:", this.x.domain());
+        //console.log("Domain before updateGridlines:", this.x.domain());
         this.updateGridlines();
     }
     
@@ -180,8 +180,8 @@ class LineChart {
 
 
     updateGridlines() {
-        console.log("updating sublinechart gridlines");
-        console.log("linechartnumberofdashedlines: ", lineChartNumberOfDashedLines);
+        //console.log("updating sublinechart gridlines");
+        //console.log("linechartnumberofdashedlines: ", lineChartNumberOfDashedLines);
         this.xGrid.call(d3.axisBottom(this.x).ticks(lineChartNumberOfDashedLines).tickSize(-this.height).tickFormat(""));
     }
     
@@ -296,7 +296,7 @@ class LineChart {
     
 
     updateChartDataHighlight(newData) {
-        console.log("updating main linechart");
+        //console.log("updating main linechart");
         // Keep track of previous data for comparison
         const previousData = this.data || [];
     

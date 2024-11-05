@@ -18,8 +18,8 @@ function updateGlyphs() {
 class ZoomableMap {
     constructor() {
         this.initialTransform = d3.zoomIdentity.translate(initX, initY).scale(initScale);
-        console.log("Client width: " + document.getElementById("map").clientWidth);
-        console.log("Client height: " + document.getElementById("map").clientHeight);
+        //console.log("Client width: " + document.getElementById("map").clientWidth);
+        //console.log("Client height: " + document.getElementById("map").clientHeight);
         //get width and height of the svg element
         this.svgWidth = document.getElementById("map").clientWidth;
 
@@ -77,7 +77,7 @@ class ZoomableMap {
         rects = svg.append("g");
 
         const zoom = d3.zoom()
-            .scaleExtent([1 << 22, 1 << 28])
+            .scaleExtent([1 << 20.5, 1 << 28])
             .extent([[0, 0], [width, height]])
             .on("zoom", (event) => zoomed(event.transform));
 
@@ -93,9 +93,9 @@ class ZoomableMap {
 
             function zoomed(transform) {
                 // Log current translation and scale values
-                console.log("Current X Translation:", transform.x);
+                /*console.log("Current X Translation:", transform.x);
                 console.log("Current Y Translation:", transform.y);
-                console.log("Current Scale (Zoom Level):", transform.k);
+                console.log("Current Scale (Zoom Level):", transform.k);*/
             
                 projection
                     .scale(transform.k / tau)

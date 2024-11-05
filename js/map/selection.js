@@ -138,7 +138,7 @@ function checkIfPointPassesFilter(point) {
 function updateHighlightedSubcharts() {
     //console.log("Updating highlighted subcharts");
     populateEventSelection();
-    updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
+    //updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
     //go through data and see if any of them is selected and highlited at the same time if yes somethingSelected is true
     var somethingIsHighlighted = dataHandler.isAnythingHighlighted();
 
@@ -241,8 +241,9 @@ function updateMaxYValue()
     }
     //console.log("Max Y value: ", maxYValue);
     //change max y value for all subcharts
-    for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+    changeMaxYBasedOnCurrentDatespan()
+    /*for (var i = 0; i < lineChart.subLineCharts.length; i++) {
         lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
-    }
+    }*/
 }
 

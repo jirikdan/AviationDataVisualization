@@ -392,7 +392,7 @@ class SubLineChart {
     }
 
     updateChartDataHighlight(newData) {
-        console.log("updating main linechart");
+        //console.log("updating main linechart");
         // Keep track of previous data for comparison
         const previousData = this.data || [];
 
@@ -525,6 +525,7 @@ class SubLineChart {
     }
 
     changeYAxisRange(maxYValue) {
+        //console.log("redrawing y with - " + maxYValue);
         // Update the y scale with new min and max values
         this.y.domain([0, maxYValue]);
 
