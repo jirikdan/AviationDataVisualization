@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     // Initial call to create checkboxes
-    createCheckboxes(names);
+    createCheckboxes(eventNames);
 
     // Automatically apply filters on page load
     const initialFilters = getFilters();
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function handleTimeFilterChange() {
+    console.log("Changing time filter");
     const customTime = document.getElementById('custom-time');
     customTime.style.display = this.value === 'custom' ? 'flex' : 'none';
     const filters = getFilters();
@@ -327,8 +328,9 @@ function applyFilters(filters) {
     // Call the function to create or update the charts
     createMoreLineCharts();
 
-    zoomableMap.applyUpdates(filters.eventTypes);
+    
     lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
+    zoomableMap.applyUpdates(filters.eventTypes);
     updateTableWithFilteredData();
     updateHighlightedSubcharts();
 }

@@ -5,12 +5,8 @@ class LineChart {
         this.width = lineChartWidth - this.margin.left - this.margin.right;
         this.height = 100 - this.margin.top - this.margin.bottom;
         this.currentXDomain = null;
-        
         this.subLineCharts = [];
-        //this.tickValues = this.x.ticks(3);
-        // Flag to track programmatic brush moves
-        this.isProgrammaticBrushMove = false;
-        
+        this.isProgrammaticBrushMove = false; 
         this.initChart();
     }
 
@@ -72,6 +68,7 @@ class LineChart {
 
     updateColorScale(scale) {
         this.colorScale = d3.scaleSequential(scale);  // Update color scale
+        console.log("Recalculated domain " + dateSpan);
         this.colorScale.domain(dateSpan);  // Recalculate domain based on data
         this.updateGradientAndRedraw();  // Redraw the chart with the new color scale
     }
@@ -103,19 +100,15 @@ class LineChart {
     
 
     renderChart(data) {
-        //console.log("rendering main linechart");
         this.data = data;
-    
         // Set x domain to dateSpan rather than the data extent
-        //console.log("Datespan in renderChart:", dateSpan);
         this.x.domain(dateSpan);
-        //console.log("Domain in renderChart:", this.x.domain());
         this.xAxis.call(d3.axisBottom(this.x).ticks(3));  // Adjust the number of ticks as needed
         this.y.domain([0, d3.max(this.data, d => +d.value)]);  // Set y domain based on data values
     
         this.yAxis.call(d3.axisLeft(this.y).ticks(3));  // Fewer ticks on Y axis
     
-        this.colorScale.domain(d3.extent(this.data, d => d.date));  // Adjust color scale domain if needed
+        this.colorScale.domain(dateSpan);  // Adjust color scale domain if needed
     
         // Remove old gradient stops and recreate with updated color
         this.gradient.selectAll("stop").remove();
@@ -263,20 +256,17 @@ class LineChart {
     
     
     updateChartData(newData) {
-        //console.log("updating main linechart data");
-        //console.log(newData);
         this.data = newData;
-    
         // Set x domain to dateSpan instead of recalculating from data
         this.x.domain(dateSpan);
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
-        this.colorScale.domain(d3.extent(this.data, d => d.date));
+        this.colorScale.domain(dateSpan);
         this.updateGridlines();
         // Update gradient
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
             this.gradient.append("stop")
-                .attr("offset", `${(i / (this.data.length - 1)) * 100}%`)
+                .attr("offset", `${(i / (this.data.length-1)) * 100}%`)
                 .attr("stop-color", this.colorScale(d.date));
         });
     
@@ -343,12 +333,6 @@ class LineChart {
                 .attr("stroke-width", 1.5);  // Outline to define the highlighted area
         });
     }
-    
-    
-    
-    
-    
-    
     
 
     highlightDataInsideBrush(start, end) {

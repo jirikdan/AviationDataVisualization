@@ -9,7 +9,8 @@ function updateGlyphs() {
                 //.attr("fill", d => d3.select(this).attr("fill")) // Preserve original color
                 .attr("stroke", d => d.properties.highlighted ? "black" : "none")
                 .attr("stroke-width", d => d.properties.highlighted ? 2 : 0)
-                .attr("opacity", d => d.properties.selected ? 1 : 0.2);
+                .attr("display", d => d.properties.selected ? "auto" : "none");
+            //.attr("opacity", d => d.properties.selected ? 1 : 0.2); //set opacity to 0.2 to be visible slightly
         });
 }
 
@@ -61,7 +62,7 @@ class ZoomableMap {
         const svg = d3.selectAll("svg");
 
         const tile = d3.tile()
-            .extent([[0, 0], [width*3, height*3]])
+            .extent([[0, 0], [width * 3, height * 3]])
             .tileSize(512)
             .clampX(false);
 
@@ -91,62 +92,46 @@ class ZoomableMap {
             });
 
 
-            function zoomed(transform) {
-                // Log current translation and scale values
-                /*console.log("Current X Translation:", transform.x);
-                console.log("Current Y Translation:", transform.y);
-                console.log("Current Scale (Zoom Level):", transform.k);*/
-            
-                projection
-                    .scale(transform.k / tau)
-                    .translate([transform.x, transform.y]);
-            
-                // Copy of updateGlyphs function
-                updateGlyphs();
-            
-                regions.selectAll("polygon")
-                    .attr("points", function (d) {
-                        var newCoords = [];
-                        for (var i = 0; i < d.geometry.coordinates[0].length; i++) {
-                            newCoords.push(projection(d.geometry.coordinates[0][i]));
-                        }
-                        return newCoords.map(coord => coord.join(",")).join(" ");
-                    });
-            
-                rasterLevels.each(function (delta) {
-                    const tiles = tile.zoomDelta(delta)(transform);
-            
-                    d3.select(this)
-                        .selectAll("image")
-                        .data(tiles, d => d)
-                        .join("image")
-                        .attr("xlink:href", d => url(...d3.tileWrap(d)))
-                        .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
-                        .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
-                        .attr("width", tiles.scale)
-                        .attr("height", tiles.scale);
+        function zoomed(transform) {
+            // Log current translation and scale values
+            /*console.log("Current X Translation:", transform.x);
+            console.log("Current Y Translation:", transform.y);
+            console.log("Current Scale (Zoom Level):", transform.k);*/
+
+            projection
+                .scale(transform.k / tau)
+                .translate([transform.x, transform.y]);
+
+            // Copy of updateGlyphs function
+            updateGlyphs();
+
+            regions.selectAll("polygon")
+                .attr("points", function (d) {
+                    var newCoords = [];
+                    for (var i = 0; i < d.geometry.coordinates[0].length; i++) {
+                        newCoords.push(projection(d.geometry.coordinates[0][i]));
+                    }
+                    return newCoords.map(coord => coord.join(",")).join(" ");
                 });
-            }
-            
+
+            rasterLevels.each(function (delta) {
+                const tiles = tile.zoomDelta(delta)(transform);
+
+                d3.select(this)
+                    .selectAll("image")
+                    .data(tiles, d => d)
+                    .join("image")
+                    .attr("xlink:href", d => url(...d3.tileWrap(d)))
+                    .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
+                    .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
+                    .attr("width", tiles.scale)
+                    .attr("height", tiles.scale);
+            });
+        }
+
     }
 
     mapToSvg(data, glyphs) {
-        var svgPolygons = regions.selectAll("polygon").data(regionData, d => d.properties.name);
-        svgPolygons.exit().remove();
-        svgPolygons.enter()
-            .append("polygon")
-            .attr("id", (d, i) => "region_" + i)
-            .attr("display", "none")
-            .attr("points", function (d) {
-                var newCoords = [];
-                for (var i = 0; i < d.geometry.coordinates[0].length; i++) {
-                    newCoords.push(projection(d.geometry.coordinates[0][i]));
-                }
-                return newCoords.map(coord => coord.join(",")).join(" ");
-            })
-            .attr("fill", "rgba(0, 0, 255, 0.3)")
-            .style("pointer-events", "none");
-
         var svgPoints = glyphs.selectAll("path").data(data, d => d.properties.name);
         svgPoints.exit().remove();
         svgPoints.enter()
@@ -190,7 +175,7 @@ class ZoomableMap {
         const filteredData = data.filter(d => d.properties.selected === true);
 
         colorScale = d3.scaleSequential(this.currentColorScale)
-            .domain(d3.extent(filteredData, d => d.properties.date));
+            .domain(dateSpan);
 
         glyphs.selectAll("path")
             .attr("fill", d => colorScale(d.properties.date));
@@ -217,6 +202,7 @@ class ZoomableMap {
         //console.log("Applying updates");
         //console.log(this.currentColorVisualization);
         if (this.currentColorVisualization === "time") {
+            console.log("UpdatingByTime");
             this.updateColorsByTime();
         } else if (this.currentColorVisualization === "name") {
             this.updateColorsByName(names);
@@ -230,59 +216,93 @@ class ZoomableMap {
         const colorScaleDiv = document.getElementById("color-scale");
         colorScaleDiv.innerHTML = ""; // Clear existing content
 
-        const scaleData = d3.range(0, 1, 0.01).map(d => this.currentColorScale(d));
+        // Set the fixed width for the container div
+        const fixedWidth = 400; // Adjust this value as needed
+        colorScaleDiv.style.width = `${fixedWidth}px`;
+        colorScaleDiv.style.overflow = "hidden"; // Optional: to prevent overflow
+        colorScaleDiv.style.display = "flex"; // For horizontal layout
+
+        // Filter data based on the selected property
+        const selectedData = data.filter(d => d.properties.selected === true);
+
+        // Check if there is any selected data
+        if (selectedData.length === 0) {
+            console.warn("No selected data found.");
+            return;
+        }
+
+        // Format for displaying dates
         const formatDate = d3.timeFormat("%m/%d/%Y");
 
-        const [startDate, endDate] = d3.extent(data, d => d.properties.date).map(formatDate);
+        // Get the start and end dates from the global dateSpan
+        const startDate = new Date(dateSpan[0]);
+        const endDate = new Date(dateSpan[1]);
+        const startDateFormatted = formatDate(startDate);
+        const endDateFormatted = formatDate(endDate);
 
+        // Create and style the start and end date divs
         const startDateDiv = document.createElement("div");
-        startDateDiv.textContent = `${startDate}`;
+        startDateDiv.textContent = startDateFormatted;
         startDateDiv.style.marginLeft = "5px";
         startDateDiv.style.width = "auto";
         startDateDiv.style.height = "auto";
 
         const endDateDiv = document.createElement("div");
-        endDateDiv.textContent = `${endDate}`;
+        endDateDiv.textContent = endDateFormatted;
         endDateDiv.style.marginLeft = "5px";
         endDateDiv.style.width = "auto";
         endDateDiv.style.height = "auto";
 
+        // Append the start date div to the color scale container
         colorScaleDiv.appendChild(startDateDiv);
 
-        scaleData.forEach((color, i) => {
+        // Sort the selected data by date to ensure a continuous scale
+        const sortedData = selectedData.sort((a, b) => new Date(a.properties.date) - new Date(b.properties.date));
+
+        // Calculate dynamic width for each color segment div
+        const segmentWidth = Math.floor(fixedWidth / sortedData.length);
+
+        // Map each selected data entry to a normalized color within dateSpan
+        sortedData.forEach((d, i) => {
+            const date = new Date(d.properties.date);
+            // Normalize the date within the dateSpan range
+            const normalizedValue = (date - startDate) / (endDate - startDate);
+            const color = this.currentColorScale(normalizedValue); // Apply color scale
+
             const div = document.createElement("div");
             div.style.backgroundColor = color;
-            //div.style.height = "10px";
-            //div.style.width = "10px";
+            div.style.height = "10px"; // Adjust height as needed
+            div.style.width = `${segmentWidth}px`; // Set dynamic width for each segment
             div.addEventListener("mouseover", (event) => this.showColorScaleTooltip(event, color, i));
             div.addEventListener("mouseout", () => this.hideTooltip());
             colorScaleDiv.appendChild(div);
         });
 
+        // Append the end date div to the color scale container
         colorScaleDiv.appendChild(endDateDiv);
-
-        colorScaleDiv.style.display = "flex";
     }
+
+
 
 
 
     showColorScaleTooltip(event, color, i) {
         const tooltip = d3.select("#tooltip");
 
+        // Retrieve the date directly from the sortedData array
+        const selectedData = data.filter(d => d.properties.selected === true);
+        const sortedData = selectedData.sort((a, b) => new Date(a.properties.date) - new Date(b.properties.date));
+        const date = new Date(sortedData[i].properties.date); // Get the date of the current segment
+
         const format = d3.timeFormat("%m/%d/%Y %H:%M");
-
-
-        const date = d3.scaleLinear()
-            .domain([0, 1])
-            .range(d3.extent(data, d => d.properties.date))(i / 100);
-
-        const formattedDate = format(new Date(date));
+        const formattedDate = format(date);
 
         tooltip.style("display", "block")
             .html(`Date: ${formattedDate}`)
             .style("left", `${event.pageX + 5}px`)
             .style("top", `${event.pageY + 5}px`);
     }
+
 
     displayUniqueNames(colorMapping, uniqueNames) {
         const uniqueNamesDiv = document.getElementById("unique-names");
@@ -368,7 +388,7 @@ class ZoomableMap {
             d.properties.highlighted = !d.properties.highlighted;
             //d.properties.selected = d.properties.highlighted;
             this.highlightTableWithId(d.properties.id);
-            lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
+            //lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
             updateHighlightedSubcharts();
             updateGlyphs();
         }
