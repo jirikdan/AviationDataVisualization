@@ -279,8 +279,8 @@ class SubLineChart {
             .attr("y", 0)
             .attr("width", snappedExtent[1] - snappedExtent[0])
             .attr("height", this.height)
-            .attr("fill", "rgba(0, 0, 255, 0.2)")
-            .attr("stroke", "blue")
+            .attr("fill", dataHighlightBrushBackground)
+            .attr("stroke", dataBrushEdges)
             .attr("stroke-width", 1)
             .on("mouseover", function () {
                 tooltip.style("display", "block");
@@ -351,7 +351,7 @@ class SubLineChart {
                 .attr("class", "new-data-highlight")
                 .attr("clip-path", "url(#clip)")  // Apply clipping to restrict the area within chart bounds
                 .attr("d", dayAreaGenerator)
-                .attr("fill", "red")  // Fill color for the highlight
+                .attr("fill", dataHighlightBackground)  // Fill color for the highlight
                 .attr("fill-opacity", 0.5)  // Adjust opacity for visual effect
                 .attr("stroke", "red")
                 .attr("stroke-width", 1.5);  // Outline to define the highlighted area

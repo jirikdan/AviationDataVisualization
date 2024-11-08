@@ -16,6 +16,10 @@ var chartData = [];
 var linechart;
 var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
 
+const dataHighlightBackground = "rgb(236, 96, 96)";
+const dataHighlightBrushBackground = "rgb(84, 124, 255, 0.1)";
+const dataBrushEdges = "rgb(84, 124, 255)";
+
 const predefinedColors = d3.schemeCategory10;
 const colorMapping = {};
 
