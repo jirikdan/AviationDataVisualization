@@ -29,10 +29,13 @@ document.getElementById('toggleButton').addEventListener('click', function () {
 
         lineChart.xAxis.attr("class", "x-axis hidden-ticks");
         lineChart.xGrid.attr("class", "grid");
-        lineChart.updateGridlines();
         updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
         updateHighlightedSubcharts(); // Update the line charts based on the selected points
         //sortChartsByMaxYValue(); // Sort the charts by maximum Y value
+        lineChart.updateGridlines();
+        for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+            lineChart.subLineCharts[i].updateGridlines();
+        }
 
     } else {
         // Hide hidden charts and event selection

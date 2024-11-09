@@ -9,6 +9,7 @@ class LineChart {
         this.isProgrammaticBrushMove = false;
         this.initChart();
         this.dataProportions = [];
+        this.tickValues = [];
     }
 
     initChart() {
@@ -174,6 +175,7 @@ class LineChart {
 
 
     updateGridlines() {
+        const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
         this.xGrid.call(d3.axisBottom(this.x).ticks(lineChartNumberOfDashedLines).tickSize(-this.height).tickFormat(""));
     }
 
