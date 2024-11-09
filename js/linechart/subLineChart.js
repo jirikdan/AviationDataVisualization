@@ -74,6 +74,10 @@ class SubLineChart {
             .y1(d => this.y(d.value))
             .defined(d => d.value !== 0) // Only include non-zero points for the area fill
             .curve(d3.curveBasis);
+        this.zeroLineGenerator = d3.line()
+            .x(d => this.x(d.date))
+            .y(() => this.y(0)) // Fixed y-coordinate at y = 0
+            .curve(d3.curveBasis);
 
         // Add gridlines
         this.xGrid = this.linechartSvg.append("g")
@@ -118,7 +122,14 @@ class SubLineChart {
             .attr("stroke", d3.color(colorMapping[this.eventType]).darker(1)) // Use the color from colorMapping
             .attr("stroke-width", 1)
             .attr("d", this.areaGenerator);
-
+        this.area.append("line")
+            .attr("class", "zero-line")
+            .attr("x1", this.x(new Date(dateSpan[0]))) // Start of dateSpan
+            .attr("y1", this.y(0)+1) // y = 0
+            .attr("x2", this.x(new Date(dateSpan[1]))) // End of dateSpan
+            .attr("y2", this.y(0)+1) // y = 0
+            .attr("stroke", "black")
+            .attr("stroke-width", 2);
 
         // Attach the brush with updated selection
         this.area.selectAll(".brush").remove();
@@ -130,28 +141,17 @@ class SubLineChart {
         // Update gridlines based on the new x domain
         this.updateGridlines();
     }
-    /*updateGridlines() {
-       
-        const xAxis = d3.axisBottom(this.x).ticks(lineChartNumberOfDashedLines).tickSize(-this.height).tickFormat("");
-        this.xGrid.call(xAxis);
-
-    }*/
 
     updateGridlines() {
         this.isLastChart = false;
         // Clear any existing lines and labels to prevent overlap
-        //console.log(`Clearing previous lines and labels for chart: ${this.eventType}`);
         this.xGrid.selectAll("line").remove();
         this.labels.selectAll("text").remove();
 
-        // Manually generate tick positions including the start and end of the x-axis
-        // const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
         const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
-        //console.log(`Tick values for chart ${this.eventType}:`, tickValues);
-
+        //console.log("Sublinechart tickValues: " + tickValues);
         const start = this.x.domain()[0];
         const end = this.x.domain()[1];
-        //console.log(`X-axis start: ${start}, end: ${end} for chart ${this.eventType}`);
 
         // Calculate distance between grid lines
         const tickPositions = tickValues.map(tick => this.x(tick)); // Convert tick values to pixel positions
@@ -159,7 +159,6 @@ class SubLineChart {
         if (tickPositions.length > 1) {
             gridLineDistance = Math.abs(tickPositions[1] - tickPositions[0]); // Calculate the distance between the first two ticks
         }
-        //console.log(`Grid line distance for chart ${this.eventType}: ${gridLineDistance}`);
 
         // Set global grid line distance
         gridLineDistanceGlobal = gridLineDistance;
@@ -168,12 +167,10 @@ class SubLineChart {
         var fixedLabelsContainer = d3.select('#fixed-labels-container');
         fixedLabelsContainer.selectAll("div").remove(); // Remove previous divs to avoid overlaps
 
-        //console.log(`Appending grid lines and labels for chart: ${this.eventType}`);
 
         tickValues.concat(start, end).forEach((tickValue, i) => {
             const isStartOrEnd = (tickValue === start || tickValue === end);
             const xPosition = this.x(tickValue);
-            //console.log(`Tick value: ${tickValue}, X position: ${xPosition} for chart ${this.eventType}`);
 
             // Create the line and apply common attributes
             const line = this.xGrid.append("line")
@@ -187,7 +184,6 @@ class SubLineChart {
             // If the tick value is not the start or end, apply dashed stroke
             if (!isStartOrEnd) {
                 line.attr("stroke-dasharray", "2.5");
-                //console.log(`Dashed line applied for tick value: ${tickValue}, chart: ${this.eventType}`);
 
                 if (this.isLastChart) {
                     const labelClass = i === 0 ? "grid-label bottom-labels first-bottom-label" : "grid-label bottom-labels";
@@ -229,14 +225,24 @@ class SubLineChart {
                 }
             }
         });
-        //console.log(`Gridlines update complete for chart: ${this.eventType}`);
+    }
+
+
+    updateBrushFromMainChart(snappedExtent) {
+        // Clear existing brush selection
+        d3.select(this.selector).select(".brush").call(this.brush.move, null);
+
+        // Programmatically move the brush
+        this.isProgrammaticBrushMove = true;
+        d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
+        this.isProgrammaticBrushMove = false;
+
     }
 
 
 
+    updateChart(event, calledFromMainChart = false) {
 
-
-    updateChart(event) {
         const extent = event.selection;
 
         // If programmatically moving the brush, skip the rest of the update logic
@@ -253,23 +259,24 @@ class SubLineChart {
             return;
         }
 
-        // Define bin size, e.g., one day
-        const binSize = 24 * 60 * 60 * 1000; // One day in milliseconds
-
         // Convert brush pixel positions to date values
         let [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+        // add one day to end date to include the last day
+        end.setDate(end.getDate() + 1);
+        //console.log("Brush selection range:", start, end);
+        // Calculate the snapped pixel positions on the x scale using UTC dates
+        const snappedExtent = [this.x(start), this.x(end)];
 
-        // Snap `start` to the beginning of the bin and `end` to the end of the bin
-        const snappedStart = new Date(Math.floor(start.getTime() / binSize) * binSize);
-        const snappedEnd = new Date(Math.ceil(end.getTime() / binSize) * binSize - 1);
-
-        // Calculate the snapped pixel positions on the x scale
-        const snappedExtent = [this.x(snappedStart), this.x(snappedEnd)];
+        d3.select(this.selector).select(".brush").call(this.brush.move, null);
 
         // Programmatically move the brush to snap to bins
-        this.isProgrammaticBrushMove = true;  // Set flag to true
+        this.isProgrammaticBrushMove = true;
         d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
-        this.isProgrammaticBrushMove = false;  // Reset flag to false
+        this.isProgrammaticBrushMove = false;
+
+        //this.mainChart.updateBrushFromSubChart(snappedExtent);
 
         // Update the brush selection rectangle style
         this.area.selectAll(".selection-rectangle").remove();
@@ -282,35 +289,44 @@ class SubLineChart {
             .attr("fill", dataHighlightBrushBackground)
             .attr("stroke", dataBrushEdges)
             .attr("stroke-width", 1)
-            .on("mouseover", function () {
+            .on("mouseover", () => {
                 tooltip.style("display", "block");
             })
             .on("mousemove", (event) => {
-                // Get bounding box of the SVG container to determine proper coordinates for tooltip positioning
                 const containerElement = d3.select(this.selector).node();
                 const containerBox = containerElement.getBoundingClientRect();
 
-                // Calculate the midpoint of the brush selection and tooltip position
                 const midPoint = (snappedExtent[0] + snappedExtent[1]) / 2;
                 const tooltipX = midPoint + containerBox.left + this.margin.left;
                 const tooltipY = containerBox.top + this.margin.top;
 
-                // Update tooltip content and position it according to mouse position
-                tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M")(snappedStart)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M")(snappedEnd)}`)
+                // Use UTC date formatting
+                tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(start)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(end)}`)
                     .style("left", `${tooltipX - 60}px`)
                     .style("top", `${tooltipY - 40}px`)
                     .style("transform", "translateX(-50%)");
             })
-            .on("mouseout", function () {
+            .on("mouseout", () => {
                 tooltip.style("display", "none");
             });
 
-        // Highlight data inside the snapped brush selection
-        this.highlightDataInsideBrush(snappedStart, snappedEnd);
+        // Highlight data inside the snapped brush selection using UTC dates
+        if (!calledFromMainChart) {
+            this.highlightDataInsideBrush(start, end);
+            //updateHighlightedSubcharts();
+        }
+
+
+        //const adjustedEndUTC = new Date(end.getTime() + bufferDuration);
+        // Filter the data with the adjusted range in UTC
+        const selectedData = this.data.filter(d => d.date >= start && d.date <= end);
+        //console.log("Selected data (UTC range):", selectedData);
+
+        // Call `highlightNewDataPoints` with the selected data
+        this.highlightNewDataPoints(selectedData);
     }
 
     updateChartDataHighlight(newData) {
-        console.log("updating main linechart");
         // Keep track of previous data for comparison
         const previousData = this.data || [];
 
@@ -330,63 +346,102 @@ class SubLineChart {
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
 
+        // Remove any previous brush selection rectangle
+        this.area.selectAll(".selection-rectangle").remove();
+
+        // If there are new data points, create a programmatic brush selection
+        if (newDataPoints.length > 0) {
+            const minDate = d3.min(newDataPoints, d => d.date);
+            const maxDate = d3.max(newDataPoints, d => d.date);
+
+            // Set the brush extent based on the date range of newDataPoints
+            const snappedExtent = [this.x(minDate), this.x(maxDate)];
+
+            // Programmatically move the brush to cover the range of newDataPoints
+            this.isProgrammaticBrushMove = true;
+            d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
+            this.isProgrammaticBrushMove = false;
+
+            // Update the brush selection rectangle to match the manual selection style
+            this.area.append("rect")
+                .attr("class", "selection-rectangle")
+                .attr("x", snappedExtent[0])
+                .attr("y", 0)
+                .attr("width", snappedExtent[1] - snappedExtent[0])
+                .attr("height", this.height)
+                .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", dataBrushEdges)  // Use the same stroke color
+                .attr("stroke-width", 1.5);
+        }
+
         // Group newDataPoints by day
         const dailyData = d3.group(newDataPoints, d => d3.timeDay(d.date));
 
         // Loop through each day's data to create individual areas
-        dailyData.forEach((points, day) => {
-            // Sort points within each day by time to ensure proper order
+        dailyData.forEach((points) => {
             const sortedPoints = points.sort((a, b) => a.date - b.date);
 
             // Define an area generator for each day's points
             const dayAreaGenerator = d3.area()
                 .x(d => this.x(d.date))
-                .y0(this.y(0))  // Use y-axis baseline as the starting point
+                .y0(this.y(0))
                 .y1(d => this.y(d.value))
-                .curve(d3.curveBasis);  // Use a curve for smoothness
+                .curve(d3.curveBasis);
 
             // Append a new area path for the current day's data points
             this.area.append("path")
                 .datum(sortedPoints)
                 .attr("class", "new-data-highlight")
-                .attr("clip-path", "url(#clip)")  // Apply clipping to restrict the area within chart bounds
+                .attr("clip-path", "url(#clip)")
                 .attr("d", dayAreaGenerator)
-                .attr("fill", dataHighlightBackground)  // Fill color for the highlight
-                .attr("fill-opacity", 0.5)  // Adjust opacity for visual effect
-                .attr("stroke", "red")
-                .attr("stroke-width", 1.5);  // Outline to define the highlighted area
+                .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", "red")  // Use the same stroke color as the brush
+                .attr("stroke-width", 1.5);
         });
     }
 
+
+
+    clearBrush() {
+        console.log("Clearing brush selection from the LineChart.");
+        // Clear the brush selection by setting the extent to null
+        this.isProgrammaticBrushMove = true;
+        d3.select(this.selector).select(".brush").call(this.brush.move, null);
+        this.isProgrammaticBrushMove = false;
+
+        // Remove the selection rectangle and any highlights
+        this.area.selectAll(".selection-rectangle").remove();
+        this.area.selectAll(".new-data-highlight").remove();
+
+        // Reset highlighted property for all data points
+        this.data.forEach(point => {
+            point.highlighted = false;
+        });
+        updateGlyphs();
+    }
+
+
     highlightDataInsideBrush(start, end) {
-        // Adjust the start and end to the nearest bin boundaries
-        const binSize = 24 * 60 * 60 * 1000; // One day in milliseconds
-
-        // Round start to the beginning of the day (bin start)
-        const adjustedStart = new Date(Math.floor(start.getTime() / binSize) * binSize);
-
-        // Round end to the end of the day (bin end)
-        const adjustedEnd = new Date(Math.ceil(end.getTime() / binSize) * binSize - 1);
-
         // Iterate through the data and highlight points within the adjusted range
+        //console.log("Highlighting data inside brush range:", start, end);
         data.forEach(point => {
-            const dateMatches = point.properties.date >= adjustedStart && point.properties.date <= adjustedEnd;
-            const eventMatches = point.properties.name === this.eventType; // Check if event matches subchart
+            const dateMatches = point.properties.date >= start && point.properties.date <= end;
             const element = document.getElementById(point.properties.id);
 
-            if (element && eventMatches) {  // Only modify elements if the event matches
+            if (element) {  // Check if element is not null
                 if (dateMatches && point.properties.selected) {
                     point.properties.highlighted = true;
                     updateGlyphs();
                     element.classList.add("highlighted");
-                } else if (!dateMatches) {
-                    // Do not remove highlight if it belongs to another event
+                } else {
                     point.properties.highlighted = false;
                     updateGlyphs();
                     element.classList.remove("highlighted");
                 }
-            } else if (!element) {
-                console.warn(`Element with id ${point.properties.id} not found.`);
+            } else {
+                //console.warn(`Element with id ${point.properties.id} not found.`);
             }
         });
     }
@@ -478,38 +533,6 @@ class SubLineChart {
         }
     }
 
-
-    updateChartData(newData) {
-        //console.log("updating main linechart data");
-        //console.log(newData);
-        this.data = newData;
-
-        // Set x domain to dateSpan instead of recalculating from data
-        this.x.domain(dateSpan);
-        this.y.domain([0, d3.max(this.data, d => +d.value)]);
-        this.colorScale.domain(d3.extent(this.data, d => d.date));
-
-        // Update gradient
-        this.gradient.selectAll("stop").remove();
-        this.data.forEach((d, i) => {
-            this.gradient.append("stop")
-                .attr("offset", `${(i / (this.data.length - 1)) * 100}%`)
-                .attr("stop-color", this.colorScale(d.date));
-        });
-
-        // Transition the area path
-        this.area.select('.myArea')
-            .datum(this.data)
-            .transition()
-            .duration(1000)
-            .attr("d", this.areaGenerator);
-
-        // Transition the X-axis with dateSpan domain
-        this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(3));
-
-        // Transition the Y-axis
-        this.yAxis.transition().duration(1000).call(d3.axisLeft(this.y).ticks(3));
-    }
 
 
 

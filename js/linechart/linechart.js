@@ -8,6 +8,7 @@ class LineChart {
         this.subLineCharts = [];
         this.isProgrammaticBrushMove = false;
         this.initChart();
+        this.dataProportions = [];
     }
 
     initChart() {
@@ -68,7 +69,7 @@ class LineChart {
 
     updateColorScale(scale) {
         this.colorScale = d3.scaleSequential(scale);  // Update color scale
-        console.log("Recalculated domain " + dateSpan);
+        //console.log("Recalculated domain " + dateSpan);
         this.colorScale.domain(dateSpan);  // Recalculate domain based on data
         this.updateGradientAndRedraw();  // Redraw the chart with the new color scale
     }
@@ -173,30 +174,37 @@ class LineChart {
 
 
     updateGridlines() {
-        //console.log("updating sublinechart gridlines");
-        //console.log("linechartnumberofdashedlines: ", lineChartNumberOfDashedLines);
         this.xGrid.call(d3.axisBottom(this.x).ticks(lineChartNumberOfDashedLines).tickSize(-this.height).tickFormat(""));
     }
 
 
+    updateBrushFromSubChart(snappedExtent) {
+        this.isProgrammaticBrushMove = true;
+        d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
+        this.isProgrammaticBrushMove = false;
+    }
+
+
+
     updateChart(event) {
+        //console.log("Updating main chart with brush selection");
         
         const extent = event.selection;
-    
+        //this.updateGridlines();
         // If programmatically moving the brush, skip the rest of the update logic
         if (this.isProgrammaticBrushMove) {
             return;
         }
-    
+
         // Select the tooltip element
         const tooltip = d3.select("#brush-tooltip");
-    
+
         if (!extent) {
             // Hide tooltip if no selection
             tooltip.style("display", "none");
             return;
         }
-    
+
         // Convert brush pixel positions to date values
         let [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
         start.setHours(0, 0, 0, 0);
@@ -206,12 +214,16 @@ class LineChart {
         console.log("Brush selection range:", start, end);
         // Calculate the snapped pixel positions on the x scale using UTC dates
         const snappedExtent = [this.x(start), this.x(end)];
-    
+
+        d3.select(this.selector).select(".brush").call(this.brush.move, null);
+
         // Programmatically move the brush to snap to bins
         this.isProgrammaticBrushMove = true;
         d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
         this.isProgrammaticBrushMove = false;
-    
+
+
+
         // Update the brush selection rectangle style
         this.area.selectAll(".selection-rectangle").remove();
         this.area.append("rect")
@@ -229,11 +241,11 @@ class LineChart {
             .on("mousemove", (event) => {
                 const containerElement = d3.select(this.selector).node();
                 const containerBox = containerElement.getBoundingClientRect();
-    
+
                 const midPoint = (snappedExtent[0] + snappedExtent[1]) / 2;
                 const tooltipX = midPoint + containerBox.left + this.margin.left;
                 const tooltipY = containerBox.top + this.margin.top;
-    
+
                 // Use UTC date formatting
                 tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(start)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(end)}`)
                     .style("left", `${tooltipX - 60}px`)
@@ -243,24 +255,21 @@ class LineChart {
             .on("mouseout", () => {
                 tooltip.style("display", "none");
             });
-    
+
         // Highlight data inside the snapped brush selection using UTC dates
         this.highlightDataInsideBrush(start, end);
-    
-        
-        
-        //const adjustedEndUTC = new Date(end.getTime() + bufferDuration);
+
         // Filter the data with the adjusted range in UTC
         const selectedData = this.data.filter(d => d.date >= start && d.date <= end);
-        console.log("Selected data (UTC range):", selectedData);
-    
-        // Call `highlightNewDataPoints` with the selected data
+
+        // Propagate brush selection to subcharts
+        this.subLineCharts.forEach(subChart => {
+            subChart.updateBrushFromMainChart(snappedExtent);
+            subChart.updateChart(event, true);
+        });
+        
         this.highlightNewDataPoints(selectedData);
     }
-    
-
-
-
 
 
     updateChartData(newData) {
@@ -270,7 +279,7 @@ class LineChart {
         //this.x.domain(dateSpan);
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.colorScale.domain(dateSpan);
-        this.updateGridlines();
+        //this.updateGridlines();
         // Update gradient
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
@@ -312,18 +321,22 @@ class LineChart {
     }
 
     highlightNewDataPoints(newDataPoints) {
+        //console.log("Highlighting new data points:", newDataPoints);
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
     
         // Remove any previous brush selection rectangle
         this.area.selectAll(".selection-rectangle").remove();
     
-        // If there are new data points, create a programmatic brush selection
-        if (newDataPoints.length > 0) {
-            const minDate = d3.min(newDataPoints, d => d.date);
-            const maxDate = d3.max(newDataPoints, d => d.date);
+        // Check if there are new data points or if all data points are selected
+        const allDataSelected = newDataPoints.length === this.data.length;
     
-            // Set the brush extent based on the date range of newDataPoints
+        if (newDataPoints.length > 0 || allDataSelected) {
+            // Determine the date range for the highlight area
+            const minDate = d3.min(newDataPoints, d => d.date) || d3.min(this.data, d => d.date);
+            const maxDate = d3.max(newDataPoints, d => d.date) || d3.max(this.data, d => d.date);
+    
+            // Set the brush extent based on the date range of newDataPoints or all data
             const snappedExtent = [this.x(minDate), this.x(maxDate)];
     
             // Programmatically move the brush to cover the range of newDataPoints
@@ -332,20 +345,21 @@ class LineChart {
             this.isProgrammaticBrushMove = false;
     
             // Update the brush selection rectangle to match the manual selection style
+            //console.log("Highlighting new data points with brush selection:", snappedExtent);
             this.area.append("rect")
                 .attr("class", "selection-rectangle")
                 .attr("x", snappedExtent[0])
                 .attr("y", 0)
                 .attr("width", snappedExtent[1] - snappedExtent[0])
-                .attr("height", this.height)
-                .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
+                .attr("height", this.height-1)
+                .attr("fill", dataHighlightBrushBackground)
                 .attr("fill-opacity", 0.3)
-                .attr("stroke", dataBrushEdges)  // Use the same stroke color
+                .attr("stroke", dataBrushEdges)
                 .attr("stroke-width", 1.5);
         }
     
-        // Group newDataPoints by day
-        const dailyData = d3.group(newDataPoints, d => d3.timeDay(d.date));
+        // Group newDataPoints by day or use all data if all points are selected
+        const dailyData = allDataSelected ? d3.group(this.data, d => d3.timeDay(d.date)) : d3.group(newDataPoints, d => d3.timeDay(d.date));
     
         // Loop through each day's data to create individual areas
         dailyData.forEach((points) => {
@@ -364,13 +378,31 @@ class LineChart {
                 .attr("class", "new-data-highlight")
                 .attr("clip-path", "url(#clip)")
                 .attr("d", dayAreaGenerator)
-                .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
+                .attr("fill", dataHighlightBackground)
                 .attr("fill-opacity", 0.3)
-                .attr("stroke", "red")  // Use the same stroke color as the brush
+                .attr("stroke", "red")
                 .attr("stroke-width", 1.5);
         });
     }
     
+
+    clearBrush() {
+        console.log("Clearing brush selection from the LineChart.");
+        // Clear the brush selection by setting the extent to null
+        this.isProgrammaticBrushMove = true;
+        d3.select(this.selector).select(".brush").call(this.brush.move, null);
+        this.isProgrammaticBrushMove = false;
+    
+        // Remove the selection rectangle and any highlights
+        this.area.selectAll(".selection-rectangle").remove();
+        this.area.selectAll(".new-data-highlight").remove();
+    
+        // Reset highlighted property for all data points
+        this.data.forEach(point => {
+            point.highlighted = false;
+        });
+        updateGlyphs();
+    }
     
 
 
@@ -388,8 +420,8 @@ class LineChart {
                     element.classList.add("highlighted");
                 } else {
                     point.properties.highlighted = false;
-                    updateGlyphs();
-                    element.classList.remove("highlighted");
+                    //updateGlyphs();
+                    //element.classList.remove("highlighted");
                 }
             } else {
                 //console.warn(`Element with id ${point.properties.id} not found.`);

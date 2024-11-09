@@ -71,12 +71,13 @@ function toggleHighlightData(d) {
     //d.properties.selected = d.properties.highlighted;
     lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
     for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-        lineChart.subLineCharts[i].updateChartData(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+        lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
     }
     updateGlyphs();
 }
 
 function toggleHighlightRow(row) {
+    console.log("toggleHighlightRow");
     // Check if the row has the 'highlighted' class
     if (d3.select(row).classed('highlighted')) {
         // If it does, remove the 'highlighted' class
@@ -86,6 +87,25 @@ function toggleHighlightRow(row) {
         d3.select(row).classed('highlighted', true);
     }
 }
+
+function highlightTableRows() {
+    console.log("highlightTableRows");
+    const tbody = d3.select('table').select('tbody');
+    data.forEach(d => {
+        const rowId = d.properties.id;
+        const isHighlighted = d.properties.highlighted;
+        //select tr with id
+        const row = tbody.select(`tr[id="${rowId}"]`);
+
+        if (isHighlighted) {
+            row.classed('highlighted', true);
+        } else {
+            row.classed('highlighted', false);
+        }
+    });
+}
+
+
 
 function updateHighlightedPoints() {
     // Implement the logic to update the map visualization

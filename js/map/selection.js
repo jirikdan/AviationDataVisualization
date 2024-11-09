@@ -1,7 +1,7 @@
 function enableRectangleSelection(zoomableMap) {
     const svg = d3.select("#map");
     let startPoint, endPoint, selectionRect;
-
+    
     svg.on("mousedown", (event) => {
         if (event.button === 2) { // Check if right mouse button is pressed
             event.preventDefault();
@@ -44,55 +44,62 @@ function enableRectangleSelection(zoomableMap) {
             const y0 = Math.min(startPoint[1], endPoint[1]);
             const x1 = Math.max(startPoint[0], endPoint[0]);
             const y1 = Math.max(startPoint[1], endPoint[1]);
+    
             const filters = getFilters();
-            var somethingSelected = true;
-
-            glyphs.selectAll("path").each(function (d) {
-                const [gx, gy] = projection([d.geometry.coordinates[0], d.geometry.coordinates[1]]);
-                const element = document.getElementById(d.properties.id);
-                //console.log("Checking element for ID: ", d.properties.id);
-                //console.log("Element: ", element);
-                // Debugging the ID
-                //console.log("Checking element for ID: ", d.properties.id);
-
-                if (element) {
-                    if (gx >= x0 && gx <= x1 && gy >= y0 && gy <= y1) {
-                        if (checkIfPointPassesFilter(d)) {
-                            //console.log("in");
-                            d.properties.selected = true;
-                            if (!d.properties.highlighted) {
-                                d.properties.highlighted = true;
-                                // Toggle the highlighted class
-                                element.classList.toggle("highlighted");
+            let somethingSelected = true;
+            lineChart.clearBrush();
+            for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+                lineChart.subLineCharts[i].clearBrush();
+            }
+            // Check if it was a single right-click (no drag)
+            const isSingleClick = (x0 === x1 && y0 === y1);
+    
+            if (isSingleClick) {
+                // Unhighlight only the points that pass the filter (i.e., points that are selected)
+                glyphs.selectAll("path").each(function (d) {
+                    const element = document.getElementById(d.properties.id);
+                    if (element && d.properties.highlighted && d.properties.selected) {
+                        d.properties.highlighted = false;
+                        element.classList.remove("highlighted");
+                    }
+                });
+                console.log("linechart", lineChart);
+                
+                console.log("Unhighlighted filtered points due to single right-click.");
+            } else {
+                // Iterate over all glyphs for rectangle selection
+                glyphs.selectAll("path").each(function (d) {
+                    const [gx, gy] = projection([d.geometry.coordinates[0], d.geometry.coordinates[1]]);
+                    const element = document.getElementById(d.properties.id);
+    
+                    if (element) {
+                        // Check if the glyph is within the selection rectangle
+                        if (gx >= x0 && gx <= x1 && gy >= y0 && gy <= y1) {
+                            if (checkIfPointPassesFilter(d)) {
+                                d.properties.selected = true;
+                                // Add to highlights without overriding existing ones
+                                if (!d.properties.highlighted) {
+                                    d.properties.highlighted = true;
+                                    element.classList.add("highlighted");
+                                }
+                            }
+                        } else {
+                            // Unhighlight only if the point passes the filter (is selected)
+                            if (checkIfPointPassesFilter(d) && d.properties.highlighted && d.properties.selected) {
+                                //d.properties.highlighted = false;
+                                element.classList.remove("highlighted");
                             }
                         }
-                    } else {
-                        if (checkIfPointPassesFilter(d)) {
-                            if (d.properties.highlighted) {
-                                // Toggle the highlighted class
-                                element.classList.toggle("highlighted");
-                            }
-                            d.properties.selected = true;
-                            d.properties.highlighted = false;
-                        }
                     }
-                } else {
-                    //console.warn(`No element found for ID: ${d.properties.id}`);
-                }
-
-                // If none was selected, select all
-                if (x0 === x1 && y0 === y1) {
-                    if (checkIfPointPassesFilter(d)) {
-                        d.properties.selected = true;
-                    }
-                    somethingSelected = false;
-                }
-            });
-
+                });
+                console.log("Updated highlights based on rectangle selection.");
+            }
+    
+            // Update glyphs and subcharts
             updateGlyphs();
-
             updateHighlightedSubcharts();
-
+    
+            // Reset the selection rectangle and event handlers
             startPoint = null;
             if (selectionRect) {
                 selectionRect.remove();
@@ -100,13 +107,17 @@ function enableRectangleSelection(zoomableMap) {
             }
             svg.on("mousemove", null);
         }
+        highlightTableRows();
     });
+    
 
     // Prevent the default context menu from appearing
     svg.on("contextmenu", (event) => {
         event.preventDefault();
     });
+    
 }
+
 
 function checkIfPointPassesFilter(point) {
     const filters = getFilters();

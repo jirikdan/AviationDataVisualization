@@ -13,7 +13,7 @@ const seed = '12345';
 var dataHandler = new DataClass(300, eventNames, latitudeRange, longitudeRange, nameWeights, latLonWeights, seed);
 var data = dataHandler.getData();
 var chartData = [];
-var linechart;
+//var linechart;
 var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
 
 //these colors get overriden by the colors in the css

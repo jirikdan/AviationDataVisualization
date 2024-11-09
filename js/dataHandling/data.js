@@ -10,6 +10,7 @@ class DataClass {
         this.dateSpan = dateSpan; // Add dateSpan as a class property
         this.rng = new Math.seedrandom(this.seed); // Create a seeded random number generator
         this.data = generatedData;
+        console.log("generatedData: ", generatedData);
         //this.enrichData();
     }
 
@@ -48,11 +49,13 @@ class DataClass {
     }
 
     // Modified fillMissingDates to handle eventCounts directly
-    fillMissingDates(eventCounts) {
+    fillMissingDates(eventCounts, eventType, eventTypeProportions = null) {
         const dateRange = this.generateDateRange();
+        //console.log("eventCounts: ", eventCounts);
     
         const optimizedEventCounts = [];
         let previousValue = 0;
+        let previousEventTypeProportions = {};
     
         dateRange.forEach(date => {
             const dateString = date.toISOString().split('T')[0];
@@ -60,23 +63,47 @@ class DataClass {
     
             let currentTime = new Date(date);
             currentTime.setHours(0, 0, 0, 0); // Start at the beginning of the day
-            const eventValue = event ? event.value : 0;
     
-            // Check for transitions
-            if (eventValue !== previousValue) {
+            const eventValue = event ? event.value : 0;
+            const currentEventTypeProportions = eventTypeProportions ? eventTypeProportions.find(e => e.date.toISOString().split('T')[0] === dateString)?.types || {} : {};
+    
+            // Check for transitions in value or event type proportions
+            if (eventValue !== previousValue || JSON.stringify(currentEventTypeProportions) !== JSON.stringify(previousEventTypeProportions)) {
                 // Add a transition point right before the change for sharpness
-                optimizedEventCounts.push({ date: new Date(currentTime.getTime() - 1), value: previousValue });
-                optimizedEventCounts.push({ date: new Date(currentTime), value: eventValue });
+                optimizedEventCounts.push({
+                    date: new Date(currentTime.getTime() - 1),
+                    value: previousValue,
+                    eventType: eventType,
+                    eventTypeProportions: previousEventTypeProportions
+                });
+    
+                optimizedEventCounts.push({
+                    date: new Date(currentTime),
+                    value: eventValue,
+                    eventType: eventType,
+                    eventTypeProportions: currentEventTypeProportions
+                });
             }
     
             // Keep value the same throughout the day with start and end points
-            optimizedEventCounts.push({ date: new Date(currentTime), value: eventValue });
+            optimizedEventCounts.push({
+                date: new Date(currentTime),
+                value: eventValue,
+                eventType: eventType,
+                eventTypeProportions: currentEventTypeProportions
+            });
     
             let endOfDay = new Date(currentTime);
             endOfDay.setHours(23, 59, 59, 999);
-            optimizedEventCounts.push({ date: endOfDay, value: eventValue });
+            optimizedEventCounts.push({
+                date: endOfDay,
+                value: eventValue,
+                eventType: eventType,
+                eventTypeProportions: currentEventTypeProportions
+            });
     
             previousValue = eventValue;
+            previousEventTypeProportions = currentEventTypeProportions;
         });
     
         // Remove leading and trailing zero-value data points for cleaner output
@@ -90,51 +117,97 @@ class DataClass {
             end--;
         }
     
+        //console.log(`Optimized event counts for eventType "${eventType}":`, optimizedEventCounts);
         return optimizedEventCounts.slice(start, end + 1);
     }
+    
+    
     
 
     getSelectedEventCounts() {
         const selectedEvents = this.data.filter(event => event.properties.selected);
         const eventCounts = {};
-
+        const eventTypeCounts = {}; // Object to store counts per event type
+    
         selectedEvents.forEach(event => {
             const date = event.properties.date.toISOString().split('T')[0];
-            eventCounts[date] = (eventCounts[date] || 0) + 1;
+            const eventType = event.properties.name;
+    
+            // Initialize the count for the date if not already done
+            if (!eventCounts[date]) {
+                eventCounts[date] = 0;
+                eventTypeCounts[date] = {};
+            }
+    
+            // Increment the total count for the date
+            eventCounts[date]++;
+    
+            // Increment the count for the specific event type
+            eventTypeCounts[date][eventType] = (eventTypeCounts[date][eventType] || 0) + 1;
         });
-
+    
+        // Convert eventCounts and eventTypeCounts to arrays
         const eventCountsArray = Object.keys(eventCounts).map(date => ({
             date: new Date(date),
             value: eventCounts[date]
         }));
-
+    
+        const eventTypeProportions = Object.keys(eventTypeCounts).map(date => ({
+            date: new Date(date),
+            types: eventTypeCounts[date] // Contains counts for each event type
+        }));
+    
         return {
-            eventCounts: this.fillMissingDates(eventCountsArray),
+            eventCounts: this.fillMissingDates(eventCountsArray, "All events", eventTypeProportions),
+            eventTypeProportions: eventTypeProportions,
             activeEventTypes: Array.from(new Set(selectedEvents.map(event => event.properties.name)))
         };
     }
+    
 
    
 
     getHighlightedEventCounts() {
+        updateGlyphs();
         const highlightedEvents = this.data.filter(event => event.properties.highlighted);
         const eventCounts = {};
-
+        const eventTypeCounts = {}; // Object to store counts per event type
+    
         highlightedEvents.forEach(event => {
             const date = event.properties.date.toISOString().split('T')[0];
-            eventCounts[date] = (eventCounts[date] || 0) + 1;
+            const eventType = event.properties.name;
+    
+            // Initialize the count for the date if not already done
+            if (!eventCounts[date]) {
+                eventCounts[date] = 0;
+                eventTypeCounts[date] = {};
+            }
+    
+            // Increment the total count for the date
+            eventCounts[date]++;
+    
+            // Increment the count for the specific event type
+            eventTypeCounts[date][eventType] = (eventTypeCounts[date][eventType] || 0) + 1;
         });
-
+    
+        // Convert eventCounts and eventTypeCounts to arrays
         const eventCountsArray = Object.keys(eventCounts).map(date => ({
             date: new Date(date),
             value: eventCounts[date]
         }));
-
+    
+        const eventTypeProportions = Object.keys(eventTypeCounts).map(date => ({
+            date: new Date(date),
+            types: eventTypeCounts[date] // Contains counts for each event type
+        }));
+    
         return {
-            eventCounts: this.fillMissingDates(eventCountsArray),
+            eventCounts: this.fillMissingDates(eventCountsArray, "All events", eventTypeProportions),
+            eventTypeProportions: eventTypeProportions,
             activeEventTypes: Array.from(new Set(highlightedEvents.map(event => event.properties.name)))
         };
     }
+    
 
     getEventTypeData(eventType) {
         const filteredEvents = this.data.filter(event => event.properties.name === eventType);
@@ -156,7 +229,7 @@ class DataClass {
 
         eventCountsArray.sort((a, b) => a.date - b.date);
 
-        return this.fillMissingDates(eventCountsArray);
+        return this.fillMissingDates(eventCountsArray, eventType);
     }
 
 
@@ -184,7 +257,7 @@ class DataClass {
         eventCountsArray.sort((a, b) => a.date - b.date);
 
         return {
-            eventCounts: this.fillMissingDates(eventCountsArray),
+            eventCounts: this.fillMissingDates(eventCountsArray, eventType),
             activeEventTypes: Array.from(activeEventTypes)
         };
     }
@@ -212,7 +285,7 @@ class DataClass {
         eventCountsArray.sort((a, b) => a.date - b.date);
 
         return {
-            eventCounts: this.fillMissingDates(eventCountsArray),
+            eventCounts: this.fillMissingDates(eventCountsArray, eventType),
             activeEventTypes: Array.from(activeEventTypes)
         };
     }
