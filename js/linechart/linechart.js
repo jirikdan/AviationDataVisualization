@@ -197,9 +197,6 @@ class LineChart {
             return;
         }
     
-        // Define bin size (one day in milliseconds)
-        const binSize = 24 * 60 * 60 * 1000;
-    
         // Convert brush pixel positions to date values
         let [start, end] = [this.x.invert(extent[0]), this.x.invert(extent[1])];
         start.setHours(0, 0, 0, 0);
@@ -317,55 +314,64 @@ class LineChart {
     highlightNewDataPoints(newDataPoints) {
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
-
-        newDataPoints.forEach(d => {
-            const xValue = this.x(d.date);
-            //console.log(`Date: ${d.date}, X Value: ${xValue}`);
-        });
+    
+        // Remove any previous brush selection rectangle
+        this.area.selectAll(".selection-rectangle").remove();
+    
+        // If there are new data points, create a programmatic brush selection
+        if (newDataPoints.length > 0) {
+            const minDate = d3.min(newDataPoints, d => d.date);
+            const maxDate = d3.max(newDataPoints, d => d.date);
+    
+            // Set the brush extent based on the date range of newDataPoints
+            const snappedExtent = [this.x(minDate), this.x(maxDate)];
+    
+            // Programmatically move the brush to cover the range of newDataPoints
+            this.isProgrammaticBrushMove = true;
+            d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
+            this.isProgrammaticBrushMove = false;
+    
+            // Update the brush selection rectangle to match the manual selection style
+            this.area.append("rect")
+                .attr("class", "selection-rectangle")
+                .attr("x", snappedExtent[0])
+                .attr("y", 0)
+                .attr("width", snappedExtent[1] - snappedExtent[0])
+                .attr("height", this.height)
+                .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", dataBrushEdges)  // Use the same stroke color
+                .attr("stroke-width", 1.5);
+        }
+    
         // Group newDataPoints by day
         const dailyData = d3.group(newDataPoints, d => d3.timeDay(d.date));
-        //console.log("Daily data: ", dailyData);
+    
         // Loop through each day's data to create individual areas
         dailyData.forEach((points) => {
-            //console.log("Points: ", points);
-            // Sort points within each day by time to ensure proper order
             const sortedPoints = points.sort((a, b) => a.date - b.date);
-            //console.log("Sorted points: ", sortedPoints);
-            //console.log("D date ", points.date);
+    
             // Define an area generator for each day's points
             const dayAreaGenerator = d3.area()
-                .x(d => {
-                    const xValue = this.x(d.date);
-                    //console.log("x (date):", d.date, " => xValue:", xValue);
-                    return xValue;
-                })
-                .y0(d => {
-                    const y0Value = this.y(0);
-                    //console.log("y0 (baseline):", y0Value);
-                    return y0Value;
-                })
-                .y1(d => {
-                    const y1Value = this.y(d.value);
-                    //console.log("y1 (value):", d.value, " => y1Value:", y1Value);
-                    return y1Value;
-                })
-                .curve(d3.curveBasis); // Log this part if needed
-
-            //console.log("Area generator created:", dayAreaGenerator);
-
-
+                .x(d => this.x(d.date))
+                .y0(this.y(0))
+                .y1(d => this.y(d.value))
+                .curve(d3.curveBasis);
+    
             // Append a new area path for the current day's data points
             this.area.append("path")
                 .datum(sortedPoints)
                 .attr("class", "new-data-highlight")
-                .attr("clip-path", "url(#clip)")  // Apply clipping to restrict the area within chart bounds
+                .attr("clip-path", "url(#clip)")
                 .attr("d", dayAreaGenerator)
-                .attr("fill", dataHighlightBackground)  // Fill color for the highlight
-                .attr("fill-opacity", 0.5)  // Adjust opacity for visual effect
-                .attr("stroke", "red")
-                .attr("stroke-width", 1.5);  // Outline to define the highlighted area
+                .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", "red")  // Use the same stroke color as the brush
+                .attr("stroke-width", 1.5);
         });
     }
+    
+    
 
 
     highlightDataInsideBrush(start, end) {

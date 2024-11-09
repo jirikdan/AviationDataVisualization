@@ -1,0 +1,15 @@
+.brush .selection,
+.selection-rectangle {
+    fill: rgba(93, 221, 230, 0.241); /* Semi-transparent red background */
+    stroke: rgba(161, 182, 240, 0.629); /* Light blue stroke */
+    stroke-width: 1.5px;
+}
+.brush .handle {
+    fill: rgba(255, 0, 0, 0);
+    width: 8px;
+}
+
+.brush .overlay {
+    fill: none;
+    pointer-events: all;
+}

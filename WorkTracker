@@ -30,3 +30,7 @@ BUGS TO FIX
 - [ ] Add table filters and ordering
 - [ ] Dynamically change colorScale time indication
 - [ ] When changed to name visualization fix filter container size to be the same with time visualization.
+- [ ] Map selection creates according brush
+- [ ] SubCharts gotta work the same
+- [ ] 
+- [ ]
