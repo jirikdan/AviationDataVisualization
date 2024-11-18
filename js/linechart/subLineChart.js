@@ -328,7 +328,7 @@ class SubLineChart {
 
     updateChartDataHighlight(newData) {
         // Keep track of previous data for comparison
-        const previousData = this.data || [];
+       /* const previousData = this.data || [];
 
         // Identify new data points by checking if the new data contains points not in the previous data
         const newDataPoints = newData.filter(newPoint => {
@@ -336,8 +336,8 @@ class SubLineChart {
                 prevPoint.date.getTime() === newPoint.date.getTime() &&
                 prevPoint.value === newPoint.value
             );
-        });
-
+        });*/
+        const newDataPoints = newData; // Directly take the input as the data to highlight
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }
@@ -405,7 +405,7 @@ class SubLineChart {
 
 
     clearBrush() {
-        console.log("Clearing brush selection from the LineChart.");
+        //console.log("Clearing brush selection from the LineChart.");
         // Clear the brush selection by setting the extent to null
         this.isProgrammaticBrushMove = true;
         d3.select(this.selector).select(".brush").call(this.brush.move, null);
@@ -447,7 +447,8 @@ class SubLineChart {
     }
 
     updateChartDataHighlight(newData) {
-        //console.log("updating main linechart");
+        //console.log("updating sublinechart highlight");
+        //console.log("linechart type is " + this.eventType);
         // Keep track of previous data for comparison
         const previousData = this.data || [];
 

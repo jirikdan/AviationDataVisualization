@@ -10,7 +10,7 @@ class DataClass {
         this.dateSpan = dateSpan; // Add dateSpan as a class property
         this.rng = new Math.seedrandom(this.seed); // Create a seeded random number generator
         this.data = generatedData;
-        console.log("generatedData: ", generatedData);
+        // console.log("generatedData: ", generatedData);
         //this.enrichData();
     }
 

@@ -262,7 +262,7 @@ function createMoreLineCharts() {
     selectedTypes.forEach((eventType, index) => {
         //console.log('Creating chart for:', eventType);
         //console.log("linechart subLineCharts", lineChart.subLineCharts);
-        lineChart.subLineCharts = [];
+        //lineChart.subLineCharts = [];
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
 
@@ -302,6 +302,8 @@ function createMoreLineCharts() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         subLineChart.updateGridlines();
+        subLineChart.clearBrush();
+        //subLineChart.updateChartDataHighlight(subLineChart.data);
         // Transition the X-axis with dateSpan domain
         subLineChart.xAxis.transition().duration(1000).call(d3.axisBottom(subLineChart.x).ticks(3));
 
@@ -319,6 +321,7 @@ function createMoreLineCharts() {
         subLineChart.changeYAxisRange(maxYValue);*/
         changeMaxYBasedOnCurrentDatespan();
     });
+    console.log("sublinecharts after creating", lineChart.subLineCharts);
 
 }
 

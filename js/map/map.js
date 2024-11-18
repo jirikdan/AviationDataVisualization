@@ -202,7 +202,7 @@ class ZoomableMap {
         //console.log("Applying updates");
         //console.log(this.currentColorVisualization);
         if (this.currentColorVisualization === "time") {
-            console.log("UpdatingByTime");
+            //console.log("UpdatingByTime");
             this.updateColorsByTime();
         } else if (this.currentColorVisualization === "name") {
             this.updateColorsByName(names);

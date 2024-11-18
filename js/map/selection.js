@@ -147,7 +147,8 @@ function checkIfPointPassesFilter(point) {
 
 
 function updateHighlightedSubcharts() {
-    //console.log("Updating highlighted subcharts");
+    console.log("Updating highlighted subcharts");
+    console.log("available subcharts: ", lineChart.subLineCharts);
     populateEventSelection();
     //updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
     //go through data and see if any of them is selected and highlited at the same time if yes somethingSelected is true

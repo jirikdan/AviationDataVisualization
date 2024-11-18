@@ -395,7 +395,7 @@ class LineChart {
     
 
     clearBrush() {
-        console.log("Clearing brush selection from the LineChart.");
+        //console.log("Clearing brush selection from the LineChart.");
         // Clear the brush selection by setting the extent to null
         this.isProgrammaticBrushMove = true;
         d3.select(this.selector).select(".brush").call(this.brush.move, null);
