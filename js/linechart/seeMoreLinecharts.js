@@ -104,10 +104,17 @@ function populateEventSelection() {
         sortChartsByMaxYValue(); // Call the sorting function
     });
 
+    //if checkbox-container is not hidden, display the sort button
+    if (!isHidden) {
+        sortButton.style.display = 'block';
+    }
+
     hideAllContainer.appendChild(sortButton); // Append the sort button to the container
 
-    // Iterate over each active event type and display checkboxes
-    activeEventTypes.forEach((eventType, index) => {
+    const orderedEventTypes = eventOrder.length > 0 ? eventOrder : activeEventTypes;
+
+// Iterate over each event type in the determined order and display checkboxes
+orderedEventTypes.forEach((eventType, index) => {
         const checkboxContainer = document.createElement('div');
         checkboxContainer.classList.add('checkbox-container');
         checkboxContainer.dataset.eventType = eventType;
@@ -162,10 +169,13 @@ function populateEventSelection() {
             }
         },
         onEnd: function (evt) {
+            // Update the order of the checkboxes based on the manual drag order
             eventOrder = Array.from(eventSelection.children)
                 .filter(container => !container.classList.contains('hide-all-container'))
                 .map(container => container.dataset.eventType);
-            updateOrderOfLineCharts(); // Update charts when order changes
+            
+            // Persist the order and update charts accordingly
+            updateOrderOfLineCharts();
             updateHighlightedSubcharts();
         }
     });
