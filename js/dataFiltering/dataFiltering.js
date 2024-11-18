@@ -22,15 +22,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById("change-name-time").addEventListener("change", updateColorVisualization);
     document.getElementById('name').addEventListener('change', changeActiveSpanColor);
     document.getElementById('time').addEventListener('change', changeActiveSpanColor);
-    
-    
-    document.getElementById('time').addEventListener('change', function() {
+
+
+    document.getElementById('time').addEventListener('change', function () {
         document.getElementById('color-visualization').style.display = 'block';
         const selectedScale = d3[document.getElementById('colorScale').value];
         lineChart.updateColorScale(selectedScale);
     });
 
-    document.getElementById('name').addEventListener('change', function() {
+    document.getElementById('name').addEventListener('change', function () {
         document.getElementById('color-visualization').style.display = 'none';
         lineChart.updateColorScale("grayscale");
     });
@@ -159,10 +159,26 @@ function updateSelectAllButtonText() {
 
 function getFilters() {
     const timeFilter = document.getElementById('time-filter').value;
-    const startDate = document.getElementById('start-date').value;
-    const endDate = document.getElementById('end-date').value;
+    var startDate = document.getElementById('start-date').value;
+    var endDate = document.getElementById('end-date').value;
     const eventTypes = Array.from(document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked'))
         .map(checkbox => checkbox.value);
+
+    if (timeFilter === 'past-7-days') {
+        endDate = new Date();
+        startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+        dateSpan = [startDate, endDate];
+    } else if (timeFilter === 'past-30-days') {
+        endDate = new Date();
+        startDate = new Date();
+        startDate.setDate(endDate.getDate() - 30);
+        dateSpan = [startDate, endDate];
+    } else if (timeFilter === 'custom') {
+        startDate = startDate ? new Date(startDate) : null;
+        endDate = endDate ? new Date(endDate) : null;
+        dateSpan = [startDate, endDate];
+    }
     return {
         timeFilter,
         startDate,
@@ -282,6 +298,7 @@ function onFilterUpdate() {
 
 
 function applyFilters(filters) {
+    console.log('Applying filters:', filters);
     let startDate, endDate;
     //console.log('Applying filters:', filters);
 
@@ -328,8 +345,9 @@ function applyFilters(filters) {
     // Call the function to create or update the charts
     createMoreLineCharts();
 
-    
+
     lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
+    lineChart.deleteSelectionRectangle();
     zoomableMap.applyUpdates(filters.eventTypes);
     updateTableWithFilteredData();
     updateHighlightedSubcharts();
@@ -373,12 +391,12 @@ function removeEventType(eventType) {
     updateSelectAllButtonText();
     updateSelectedEvents();
     const filters = getFilters();
-    
+
     applyFilters(filters);
     showActiveFilters(filters);
     changeActiveSpanColor();
-    
-    
+
+
 }
 
 
@@ -411,7 +429,7 @@ function changeActiveSpanColor() {
             //console.log(element);
             //revert color of element to #237e32
             element.style.backgroundColor = "#237e32";
-            
+
         }
     }
 

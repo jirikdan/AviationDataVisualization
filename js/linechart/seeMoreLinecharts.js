@@ -252,6 +252,7 @@ function createMoreLineCharts() {
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
 
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
+    //console.log('Selected types:', selectedTypes);
 
     const container = document.getElementById('hiddenCharts');
     container.innerHTML = ''; // Clear the container before adding new charts
@@ -259,6 +260,9 @@ function createMoreLineCharts() {
 
 
     selectedTypes.forEach((eventType, index) => {
+        //console.log('Creating chart for:', eventType);
+        //console.log("linechart subLineCharts", lineChart.subLineCharts);
+        lineChart.subLineCharts = [];
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
 
@@ -289,7 +293,7 @@ function createMoreLineCharts() {
         subLineChart.renderChart(subChartData);
 
         lineChart.subLineCharts.push(subLineChart);
-        subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
+        //subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
         subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
         subLineChart.area
             .select('.myArea')
@@ -298,6 +302,17 @@ function createMoreLineCharts() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         subLineChart.updateGridlines();
+        // Transition the X-axis with dateSpan domain
+        subLineChart.xAxis.transition().duration(1000).call(d3.axisBottom(subLineChart.x).ticks(3));
+
+        // Transition the Y-axis
+        subLineChart.yAxis.transition().duration(1000).call(d3.axisLeft(subLineChart.y).ticks(3));
+        // Transition the area path
+        subLineChart.area.select('.myArea')
+            .datum(subLineChart.data)
+            .transition()
+            .duration(1000)
+            .attr("d", subLineChart.areaGenerator);
         /*if (subLineChart.y.domain()[1] > maxYValue) {
             maxYValue = subLineChart.y.domain()[1];
         }

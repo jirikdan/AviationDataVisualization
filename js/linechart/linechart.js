@@ -1,5 +1,6 @@
 class LineChart {
     constructor(selector) {
+        this.filters = getFilters();
         this.selector = selector;
         this.margin = { top: 20, right: 20, bottom: 20, left: 20 };
         this.width = lineChartWidth - this.margin.left - this.margin.right;
@@ -10,6 +11,7 @@ class LineChart {
         this.initChart();
         this.dataProportions = [];
         this.tickValues = [];
+        
     }
 
     initChart() {
@@ -187,6 +189,10 @@ class LineChart {
     }
 
 
+    //function to delete selection rectangle
+    deleteSelectionRectangle() {
+        this.clearBrush();
+    }
 
     updateChart(event) {
         //console.log("Updating main chart with brush selection");
@@ -277,8 +283,8 @@ class LineChart {
     updateChartData(newData) {
         this.data = newData;
         // Set x domain to dateSpan instead of recalculating from data
-        this.x.domain(d3.extent(newData, d => d.date));
-        //this.x.domain(dateSpan);
+        //this.x.domain(d3.extent(newData, d => d.date));
+        this.x.domain(dateSpan);
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.colorScale.domain(dateSpan);
         //this.updateGridlines();

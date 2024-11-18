@@ -149,7 +149,7 @@ class SubLineChart {
         this.labels.selectAll("text").remove();
 
         const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
-        console.log("Sublinechart tickValues: " + tickValues);
+        //console.log("Sublinechart tickValues: " + tickValues);
         const start = this.x.domain()[0];
         const end = this.x.domain()[1];
 
