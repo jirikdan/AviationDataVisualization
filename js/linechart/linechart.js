@@ -11,6 +11,7 @@ class LineChart {
         this.initChart();
         this.dataProportions = [];
         this.tickValues = [];
+        this.loaded = false;
         
     }
 
@@ -281,6 +282,8 @@ class LineChart {
 
 
     updateChartData(newData) {
+        console.log(this.data);
+        console.log(newData);
         this.data = newData;
         // Set x domain to dateSpan instead of recalculating from data
         //this.x.domain(d3.extent(newData, d => d.date));
@@ -314,81 +317,78 @@ class LineChart {
     updateChartDataHighlight(newData) {
         //console.log("updating main linechart");
         // Keep track of previous data for comparison
-        const previousData = this.data || [];
+        /*const previousData = this.data || [];
 
         // Identify new data points by checking if the new data contains points not in the previous data
-        const newDataPoints = newData.filter(newPoint => {
+        var newDataPoints = newData.filter(newPoint => {
             return !previousData.some(prevPoint =>
                 prevPoint.date.getTime() === newPoint.date.getTime() &&
                 prevPoint.value === newPoint.value
             );
-        });
-        //const newDataPoints = newData; // Directly take the input as the data to highlight
+        });*/
+        const newDataPoints = newData; // Directly take the input as the data to highlight
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }
 
     highlightNewDataPoints(newDataPoints) {
-        //console.log("Highlighting new data points:", newDataPoints);
+        //console.log("highlighting new data points");
+        //console.log(newDataPoints);
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
-    
+
         // Remove any previous brush selection rectangle
         this.area.selectAll(".selection-rectangle").remove();
-    
-        // Check if there are new data points or if all data points are selected
-        const allDataSelected = newDataPoints.length === this.data.length;
-    
-        if (newDataPoints.length > 0 || allDataSelected) {
-            // Determine the date range for the highlight area
-            const minDate = d3.min(newDataPoints, d => d.date) || d3.min(this.data, d => d.date);
-            const maxDate = d3.max(newDataPoints, d => d.date) || d3.max(this.data, d => d.date);
-    
-            // Set the brush extent based on the date range of newDataPoints or all data
+
+        // If there are new data points, create a programmatic brush selection
+        if (newDataPoints.length > 0) {
+            const minDate = d3.min(newDataPoints, d => d.date);
+            const maxDate = d3.max(newDataPoints, d => d.date);
+
+            // Set the brush extent based on the date range of newDataPoints
             const snappedExtent = [this.x(minDate), this.x(maxDate)];
-    
+
             // Programmatically move the brush to cover the range of newDataPoints
             this.isProgrammaticBrushMove = true;
             d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
             this.isProgrammaticBrushMove = false;
-    
+
             // Update the brush selection rectangle to match the manual selection style
-            //console.log("Highlighting new data points with brush selection:", snappedExtent);
             this.area.append("rect")
                 .attr("class", "selection-rectangle")
                 .attr("x", snappedExtent[0])
                 .attr("y", 0)
                 .attr("width", snappedExtent[1] - snappedExtent[0])
-                .attr("height", this.height-1)
-                .attr("fill", dataHighlightBrushBackground)
+                .attr("height", this.height)
+                .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
                 .attr("fill-opacity", 0.3)
-                .attr("stroke", dataBrushEdges)
+                .attr("stroke", dataBrushEdges)  // Use the same stroke color
                 .attr("stroke-width", 1.5);
         }
-    
-        // Group newDataPoints by day or use all data if all points are selected
-        const dailyData = allDataSelected ? d3.group(this.data, d => d3.timeDay(d.date)) : d3.group(newDataPoints, d => d3.timeDay(d.date));
-    
+
+        // Group newDataPoints by day
+        const dailyData = d3.group(newDataPoints, d => d3.timeDay(d.date));
+
         // Loop through each day's data to create individual areas
         dailyData.forEach((points) => {
             const sortedPoints = points.sort((a, b) => a.date - b.date);
-    
+
             // Define an area generator for each day's points
             const dayAreaGenerator = d3.area()
                 .x(d => this.x(d.date))
                 .y0(this.y(0))
                 .y1(d => this.y(d.value))
                 .curve(d3.curveBasis);
-    
+
             // Append a new area path for the current day's data points
             this.area.append("path")
                 .datum(sortedPoints)
                 .attr("class", "new-data-highlight")
                 .attr("clip-path", "url(#clip)")
                 .attr("d", dayAreaGenerator)
-                .attr("fill", dataHighlightBackground)
+                .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
                 .attr("fill-opacity", 0.6)
-                .attr("stroke", mainHighlightColor)
+                .attr("stroke", mainHighlightColor)  // Use the same stroke color as the brush
                 .attr("stroke-width", 1.5);
         });
     }

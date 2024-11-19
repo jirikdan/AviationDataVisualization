@@ -220,14 +220,18 @@ function validateDateRange(startDate, endDate) {
 function showActiveFilters(filters) {
     let timeFilterText;
     if (filters.timeFilter === 'past-7-days') {
-        timeFilterText = 'Past 7 Days';
+        timeFilterText = 'Last 7d';
     } else if (filters.timeFilter === 'past-30-days') {
-        timeFilterText = 'Past 30 Days';
+        timeFilterText = 'Last 30d';
     } else if (filters.timeFilter === 'custom') {
-        timeFilterText = `Custom (${filters.startDate} to ${filters.endDate})`;
+        // Assuming startDate and endDate are Date objects or strings in a standard format
+        const start = new Date(filters.startDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+        const end = new Date(filters.endDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+        timeFilterText = `Custom (${start}-${end})`;
     } else {
         timeFilterText = 'None';
     }
+    
 
     const eventTypesText = filters.eventTypes.length > 0 ? filters.eventTypes.join(', ') : 'None';
 
@@ -348,6 +352,7 @@ function applyFilters(filters) {
 
     lineChart.updateChartData(dataHandler.getSelectedEventCounts().eventCounts);
     lineChart.deleteSelectionRectangle();
+    lineChart.updateGridlines();
     zoomableMap.applyUpdates(filters.eventTypes);
     updateTableWithFilteredData();
     updateHighlightedSubcharts();

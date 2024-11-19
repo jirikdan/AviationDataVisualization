@@ -327,16 +327,6 @@ class SubLineChart {
     }
 
     updateChartDataHighlight(newData) {
-        // Keep track of previous data for comparison
-       /* const previousData = this.data || [];
-
-        // Identify new data points by checking if the new data contains points not in the previous data
-        const newDataPoints = newData.filter(newPoint => {
-            return !previousData.some(prevPoint =>
-                prevPoint.date.getTime() === newPoint.date.getTime() &&
-                prevPoint.value === newPoint.value
-            );
-        });*/
         const newDataPoints = newData; // Directly take the input as the data to highlight
         console.log("newDataPoints: " + newDataPoints);
         // Highlight the new data points in the chart
@@ -344,8 +334,8 @@ class SubLineChart {
     }
 
     highlightNewDataPoints(newDataPoints) {
-        console.log("highlighting new data points");
-        console.log(newDataPoints);
+        //console.log("highlighting new data points");
+        //console.log(newDataPoints);
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
 

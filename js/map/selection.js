@@ -156,19 +156,23 @@ function updateHighlightedSubcharts() {
 
 
     if (somethingIsHighlighted) {
+        lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         //updateOrderOfLineCharts();
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
             //console.log("Updating Max Y value: ", maxYValue);
+            lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
     } else {
+        lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             //console.log("Updating Max Y value: ", maxYValue);
+            lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
@@ -181,18 +185,22 @@ function updateHighlightedSubchartsAfterSort()
     var somethingIsHighlighted = dataHandler.isAnythingHighlighted();
 
     if (somethingIsHighlighted) {
+        lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         //updateOrderOfLineCharts();
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
+            lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             //console.log("Max Y value: ", maxYValue);
             
         }
     } else {
+        lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
+            lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }

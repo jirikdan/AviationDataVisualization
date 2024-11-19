@@ -341,7 +341,7 @@ function sortChartsByMaxYValue() {
 
         // Check if any points are highlighted to determine which data to use
         if (dataHandler.isAnythingHighlighted()) {
-            subChartData = dataHandler.getHighlightedEventCountsByType(eventType).eventCounts;
+            subChartData = dataHandler.getEventTypeData(eventType);
         } else {
             subChartData = dataHandler.getEventTypeData(eventType);
         }

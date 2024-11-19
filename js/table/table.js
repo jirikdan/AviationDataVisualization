@@ -120,6 +120,15 @@ function updateTableBody(data, columns) {
         }
         return 0;
     });
+    data.sort((a, b) => {
+        if (a.properties.date < b.properties.date) {
+            return -1;
+        }
+        if (a.properties.date > b.properties.date) {
+            return 1;
+        }
+        return 0;
+    });
 
     var tbody = d3.select('table').select('tbody');
 
