@@ -338,11 +338,14 @@ class SubLineChart {
             );
         });*/
         const newDataPoints = newData; // Directly take the input as the data to highlight
+        console.log("newDataPoints: " + newDataPoints);
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }
 
     highlightNewDataPoints(newDataPoints) {
+        console.log("highlighting new data points");
+        console.log(newDataPoints);
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
 
@@ -396,8 +399,8 @@ class SubLineChart {
                 .attr("clip-path", "url(#clip)")
                 .attr("d", dayAreaGenerator)
                 .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
-                .attr("fill-opacity", 0.3)
-                .attr("stroke", "red")  // Use the same stroke color as the brush
+                .attr("fill-opacity", 0.6)
+                .attr("stroke", mainHighlightColor)  // Use the same stroke color as the brush
                 .attr("stroke-width", 1.5);
         });
     }
@@ -450,7 +453,7 @@ class SubLineChart {
         //console.log("updating sublinechart highlight");
         //console.log("linechart type is " + this.eventType);
         // Keep track of previous data for comparison
-        const previousData = this.data || [];
+        /*const previousData = this.data || [];
 
         // Identify new data points by checking if the new data contains points not in the previous data
         const newDataPoints = newData.filter(newPoint => {
@@ -458,8 +461,8 @@ class SubLineChart {
                 prevPoint.date.getTime() === newPoint.date.getTime() &&
                 prevPoint.value === newPoint.value
             );
-        });
-
+        });*/
+        const newDataPoints = newData;
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }

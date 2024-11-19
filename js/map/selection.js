@@ -154,24 +154,6 @@ function updateHighlightedSubcharts() {
     //go through data and see if any of them is selected and highlited at the same time if yes somethingSelected is true
     var somethingIsHighlighted = dataHandler.isAnythingHighlighted();
 
-    if (somethingIsHighlighted) {
-        activeEventTypes = dataHandler.getHighlightedEventCounts().activeEventTypes;
-    } else {
-        activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
-    }
-
-    //console.log("Active event types: ", activeEventTypes);
-
-    for (var i = 0; i < activeEventTypes.length; i++) {
-        var eventType = activeEventTypes[i];
-
-        // Check if the subLineChart for this eventType already exists
-        var existingChart = lineChart.subLineCharts.find(function (chart) {
-            return chart.eventType === eventType;
-        });
-
-        //console.log("Existing chart: ", existingChart);
-    }
 
     if (somethingIsHighlighted) {
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
@@ -184,10 +166,10 @@ function updateHighlightedSubcharts() {
             
         }
     } else {
-        lineChart.updateChartDataHighlight(dataHandler.getSelectedEventCounts().eventCounts);
+        lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             //console.log("Updating Max Y value: ", maxYValue);
-            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
     }
@@ -197,25 +179,6 @@ function updateHighlightedSubcharts() {
 function updateHighlightedSubchartsAfterSort()
 {
     var somethingIsHighlighted = dataHandler.isAnythingHighlighted();
-
-    if (somethingIsHighlighted) {
-        activeEventTypes = dataHandler.getHighlightedEventCounts().activeEventTypes;
-    } else {
-        activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
-    }
-
-    //console.log("Active event types: ", activeEventTypes);
-
-    for (var i = 0; i < activeEventTypes.length; i++) {
-        var eventType = activeEventTypes[i];
-
-        // Check if the subLineChart for this eventType already exists
-        var existingChart = lineChart.subLineCharts.find(function (chart) {
-            return chart.eventType === eventType;
-        });
-
-        //console.log("Existing chart: ", existingChart);
-    }
 
     if (somethingIsHighlighted) {
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
@@ -228,9 +191,9 @@ function updateHighlightedSubchartsAfterSort()
             
         }
     } else {
-        lineChart.updateChartDataHighlight(dataHandler.getSelectedEventCounts().eventCounts);
+        lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getSelectedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
+            lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
         }
     }

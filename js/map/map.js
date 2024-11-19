@@ -6,13 +6,14 @@ function updateGlyphs() {
                 d.properties.highlighted = false;
             }
             d3.select(this)
-                //.attr("fill", d => d3.select(this).attr("fill")) // Preserve original color
-                .attr("stroke", d => d.properties.highlighted ? "black" : "none")
-                .attr("stroke-width", d => d.properties.highlighted ? 2 : 0)
+                .attr("fill", d3.select(this).attr("fill")) // Preserve the original fill color
+                .attr("stroke", d => d.properties.highlighted ? "rgba(255, 255, 0, 0.8)" : "none") // Halo stroke
+                .attr("stroke-width", d => d.properties.highlighted ? 3 : 0) // Halo thickness
+                .attr("stroke-linejoin", "round") // Smooth edges for the halo
                 .attr("display", d => d.properties.selected ? "auto" : "none");
-            //.attr("opacity", d => d.properties.selected ? 1 : 0.2); //set opacity to 0.2 to be visible slightly
         });
 }
+
 
 
 

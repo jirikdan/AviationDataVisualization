@@ -29,24 +29,20 @@ function formatCoordinates(coord) {
 }
 
 function tabulate(data, columns) {
-    //console.log("tabulate");
     var table = d3.select('table');
     var thead = table.select('thead');
     var tbody = table.select('tbody');
 
-    // clear existing table headers and rows
+    // Clear existing table headers and rows
     thead.selectAll('.firstTR').remove();
     thead.selectAll('.filter-row').remove();
     tbody.selectAll('tr').remove();
 
-    // add "Remove" column to columns array
-    var extendedColumns = columns.concat(["Remove"]);
-
-    // append the header row with meaningful names
+    // Append the header row with meaningful names
     thead.append('tr')
         .attr('class', 'firstTR')  // Add this line to assign the class
         .selectAll('th')
-        .data(extendedColumns).enter()
+        .data(columns).enter()
         .append('th')
         .text(function (column) {
             switch (column) {
@@ -58,10 +54,9 @@ function tabulate(data, columns) {
             }
         });
 
-    // append filter input row
-
     updateTableBody(data, columns);
 }
+
 
 function toggleHighlightData(d) {
     //console.log("toggleHighlight");
@@ -162,18 +157,13 @@ function updateTableBody(data, columns) {
     cells.append('td')
         .text(function (d) { return d.value; });
 
-    // Add a 'Remove' button to each row
-    addedRows.append('td').append("button")
-        .attr("onclick", function (d, i) { return `event.stopPropagation(); removeItem(${i});`; })
-        .text("Remove");
-
-    // Update the id attribute for existing rows and reassign event handlers
-    rows.attr('id', d => d && d.properties ? d.properties.id : null) // Make sure id is updated for existing rows
-        .select("button").attr("onclick", function (d, i) { return `event.stopPropagation(); removeItem(${i});`; }).text("Remove");
+    // Update the id attribute for existing rows
+    rows.attr('id', d => d && d.properties ? d.properties.id : null);
 
     // Apply the 'highlighted' class to rows based on the 'highlighted' property
     tbody.selectAll('tr').classed('highlighted', d => d && d.properties ? d.properties.highlighted : false);
 }
+
 
 function updateTableWithFilteredData() {
     // Filter the data to only include items where properties.selected is true

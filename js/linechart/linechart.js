@@ -323,7 +323,7 @@ class LineChart {
                 prevPoint.value === newPoint.value
             );
         });
-
+        //const newDataPoints = newData; // Directly take the input as the data to highlight
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }
@@ -387,8 +387,8 @@ class LineChart {
                 .attr("clip-path", "url(#clip)")
                 .attr("d", dayAreaGenerator)
                 .attr("fill", dataHighlightBackground)
-                .attr("fill-opacity", 0.3)
-                .attr("stroke", "red")
+                .attr("fill-opacity", 0.6)
+                .attr("stroke", mainHighlightColor)
                 .attr("stroke-width", 1.5);
         });
     }
