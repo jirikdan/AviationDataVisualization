@@ -11,7 +11,6 @@ class DataClass {
         this.rng = new Math.seedrandom(this.seed); // Create a seeded random number generator
         this.data = generatedData;
         // console.log("generatedData: ", generatedData);
-        //this.enrichData();
     }
 
     getData() {
@@ -44,9 +43,6 @@ class DataClass {
         return dates;
     }
 
-    enrichData() {
-        this.data = this.fillMissingDates(this.data);
-    }
 
     // Modified fillMissingDates to handle eventCounts directly
     fillMissingDates(eventCounts, eventType, eventTypeProportions = null) {

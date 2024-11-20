@@ -1,10 +1,13 @@
 
 const url = (x, y, z) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
 
+const numberOfDataPoints = 10;
+
+
 const eventNames = ["Trash", "Wildlife", "Vandalism", "Weather", "Damage", "Other", "Dirt", "Fuel"];
 const eventDatesWithHours = ["2024-10-18T12:00:00Z", "2024-10-15T12:00:00Z", "2024-10-12T12:00:00Z", "2024-10-17T12:00:00Z", "2024-10-11T12:00:00Z"];
 const tableInfo = ["properties.name", "properties.date", "geometry.coordinates[1]", "geometry.coordinates[0]"];
-var dateSpan = [new Date("2023-10-11T12:00:00Z"), new Date("2024-11-18T22:00:00Z")];
+var dateSpan = [new Date("2023-10-11T12:00:00Z"), new Date("2024-11-28T22:00:00Z")];
 const latitudeRange = [50.08, 50.12];
 const longitudeRange = [14.23, 14.28];
 const nameWeights = [0.1, 0.1, 0.5, 0.1, 0.05, 0.35, 0.05, 0.05];
@@ -12,6 +15,8 @@ const latLonWeights = [1, 0.3];
 const seed = '12345';
 var dataHandler = new DataClass(300, eventNames, latitudeRange, longitudeRange, nameWeights, latLonWeights, seed);
 var data = dataHandler.getData();
+console.log("Data from constants ");
+console.log(data);
 var chartData = [];
 //var linechart;
 var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
@@ -35,18 +40,18 @@ uniqueNames.forEach((name, index) => {
 var lineChartWidth = 0;
 if (window.innerWidth == 1920) {
     //console.log("Setting line chart width to 1150");
-    lineChartWidth = 1150;
+    lineChartWidth = 1200;
 }
 else if (window.innerWidth > 1920) {
     //console.log("Setting line chart width to 1010");
-    lineChartWidth = 1250;
+    lineChartWidth = 1500;
 }
 else if (window.innerWidth < 1750) {
     //console.log("Setting line chart width to 850");
-    lineChartWidth = 930;
+    lineChartWidth = 980;
 }
 else {
-    lineChartWidth = 950;
+    lineChartWidth = 1000;
 }
 
 

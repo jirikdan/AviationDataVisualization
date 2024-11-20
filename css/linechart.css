@@ -8,9 +8,8 @@
     margin-bottom: 0px;
     padding: 0px;
     background-color:#fff;
-    border-radius: 5px;
-    border: 1px solid #333;
-    margin: 10px;
+    border-top-left-radius: 5px; /* Bottom-left corner */
+    border-top-right-radius: 5px; /* Bottom-right corner */
     width: 100%;
     overflow: visible;
 }
@@ -39,26 +38,17 @@
 #hiddenCharts {
     max-height: 250px;
     overflow-y: scroll;
-    /* overflow-x: visible; */
     width: 100%;
     background-color: rgb(232, 231, 231);
-    border-radius: 5px;
-    margin-bottom: 10px;
-    margin-top: 20px;
-    border: 1px solid #333;
+    border-bottom-left-radius: 5px; /* Bottom-left corner */
+    border-bottom-right-radius: 5px; /* Bottom-right corner */
+
 }
-
-
-/* .bottom-labels{
-    margin-right: 200px;
-} */
 
 
 .chart-label, .mainChart-label {
     padding: 10px;
 }
-
-
 
 #hiddenCharts::-webkit-scrollbar {
     width: 8px; /* Width of the scrollbar */
@@ -78,18 +68,6 @@
 #hiddenCharts::-webkit-scrollbar-thumb:hover {
     background-color: #555; /* Darker thumb when hovered */
 }
-
-
-.column-2 .row-1 {
-    border: 2px solid #333;
-    /* Solid border with a custom color */
-    border-radius: 5px;
-    /* Rounded corners */
-    background-color: #d7d1d1;
-
-}
-
-
 
 .x-axis path,
 .y-axis path {
@@ -112,7 +90,6 @@
     
 }
 
-
 .myArea {
     stroke-width: 3;
 }
@@ -123,8 +100,6 @@
     margin-bottom: /*0px;*/ 0px;
     
 }
-
-
 
 .chart-label {
     margin-right: 15px;
@@ -175,9 +150,4 @@
 
 .label-div{
     white-space: nowrap;
-}
-
-.hide-all-container {
-    
-
 }

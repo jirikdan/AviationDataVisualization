@@ -1,7 +1,6 @@
 /* Basic Reset and Body Styling */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
     display: flex;
@@ -14,9 +13,9 @@ body {
 /* Main Content Container */
 .container {
     display: flex;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
     overflow: none;
+    height: 100vh;
+    width: 100%;
 }
 
 /* Column Layout */
@@ -33,9 +32,12 @@ body {
 .column-1 .table-row { flex: 3;}
 
 /* Column-2 Content */
-.column-2 .row-1, 
+.column-2 .row-1
+{
+    padding: 0px;
+} 
 .column-2 .row-2 {
-    padding: 20px;
+    padding: 0px;
 }
 .column-2 .row-1 { flex: 2;}
 .column-2 .row-2 { flex: 8;}
@@ -47,13 +49,15 @@ body {
     justify-content: flex-start; /* Align items to start from the top */
 }
 
+
+
 /* General Row Styling */
 .row {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid #ddd;
-    background-color: #fff;
     margin: 5px;
     border-radius: 5px;
 }
+
+

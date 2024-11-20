@@ -13,8 +13,7 @@
     <link rel="stylesheet" href="css/linechart.css">
     <link rel="stylesheet" href="css/toggleButton.css">
     <link rel="stylesheet" href="css/brush.css">
-
-    <!-- <link rel="stylesheet" href="css/newCSS.css"> -->
+    <link rel="stylesheet" href="css/colors.css">
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-tile@1"></script>
@@ -24,8 +23,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 
     
-    <script src="js/dataHandling/data.js"></script>
     
+    <script src="js/dataHandling/data.js"></script>
     <script src="js/linechart/positionLabels.js"></script>
     <script src="js/linechart/linechart.js"></script>
     <script src="js/linechart/subLineChart.js"></script>
@@ -121,14 +120,16 @@
 
             <div class="row table-row block">
                 <div class="table-container">
-                    <!-- set max height based on display size -->
-                    <script>adjustTableHeight() </script>
                     <table>
                         <thead></thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <script>tabulate(data, tableInfo);</script>
+                <script>
+                
+                console.log("Data for the table");
+                console.log(data);
+                tabulate(data, tableInfo);</script>
             </div>
 
         </div>

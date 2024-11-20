@@ -129,7 +129,13 @@ function updateTableBody(data, columns) {
         }
         return 0;
     });
-
+    var count = 0;
+    
+    data.forEach(d => {
+        // console.log(d.properties.id);
+        count++;
+    });
+    console.log("Count is " + count);
     var tbody = d3.select('table').select('tbody');
 
     // Bind data to rows, using the unique 'properties.id' as the key
@@ -182,27 +188,4 @@ function updateTableWithFilteredData() {
     updateTableBody(filteredData, tableInfo);
     //console.log("Updating");
     updateHighlightedSubcharts();
-}
-
-function adjustTableHeight() {
-    //console.log("Adjusting table height");
-    //console.log(window.innerHeight);
-    var newHeight = 0;
-    if (window.innerWidth == 1920) {
-        //console.log("Setting newheight 280");
-        newHeight = '230px';
-    }
-    else if (window.innerWidth > 1920) {
-        //console.log("Setting newheight 230");
-        newHeight = '280px';
-    }
-    else if (window.innerWidth < 1750) {
-        //console.log("Setting newheight 200");
-        newHeight = '200px';
-    }
-    else {
-        newHeight = '100px';
-    }
-    //const newHeight = window.innerHeight < 1000 ? '230px' : '280px';
-    document.documentElement.style.setProperty('--table-max-height', newHeight);
 }

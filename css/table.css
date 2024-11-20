@@ -1,18 +1,18 @@
 .table-container {
-    max-height: var(--table-max-height); /* Use the CSS variable */
+    max-height: 30vh; /* Ensures it doesn’t exceed the viewport height */
     overflow-y: scroll;
-    border-radius: 2px;
     width: 100%;
+    border-radius: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 0;
 }
-
 
 
 table {
     width: 100%;
     border-collapse: collapse;
     font-family: 'Arial', sans-serif;
+    overflow: none;
 }
 
 /* Header styling */
@@ -42,9 +42,7 @@ table tbody tr {
     border-bottom: 1px solid #dddddd;
 }
 
-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-}
+
 
 table tbody tr:last-of-type {
     border-bottom: 2px solid #4CAF50;
@@ -52,32 +50,7 @@ table tbody tr:last-of-type {
 
 table tbody td {
     padding: 12px 15px;
-}
-
-/* Button styling */
-table tbody td button {
-    padding: 5px 10px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-table tbody td button:hover {
-    background-color: #d32f2f;
-}
-
-/* Filter styling */
-.filter-row th {
-    padding: 5px;
-}
-
-.filter-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 5px;
+    text-align: center;
 }
 
 table tbody tr.highlighted {
@@ -89,7 +62,6 @@ table tbody tr.highlighted {
     border: 2px solid #333;
     border-radius: 5px;
 }
-
 
 
 .table-container::-webkit-scrollbar {

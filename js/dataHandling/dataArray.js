@@ -97,8 +97,8 @@ function generateGeoJsonData({
             : getRandomTime(normalTimes, totalNormalTimeWeight);
 
         const eventDate = new Date(eventTime);
-        const selected = allSelected || getRandomBool();
-        const highlighted = allHighlighted || getRandomBool();
+        const selected = true;
+        const highlighted = allHighlighted;
 
         let coordinates = [];
         if (shouldBeInHotspot) {
@@ -122,7 +122,7 @@ function generateGeoJsonData({
                 coordinates
             }
         };
-
+        console.log("Pushing feature I -> " + feature.properties.selected);
         data.push(feature);
     }
 
@@ -169,30 +169,30 @@ const generatedData = generateGeoJsonData({
         Fuel: 1
     },
     hotspotTimeWeights: {
-        "2024-10-11T00:00:00Z": 1,
-        "2024-10-12T00:00:00Z": 1,
-        "2024-10-15T00:00:00Z": 5,
-        "2024-10-17T00:00:00Z": 1,
-        "2024-10-18T00:00:00Z": 1
+        "2024-11-12T00:00:00Z": 1,
+        "2024-11-11T00:00:00Z": 1,
+        "2024-11-15T00:00:00Z": 5,
+        "2024-11-17T00:00:00Z": 1,
+        "2024-11-18T00:00:00Z": 1
     },
     normalTimeWeights: {
-        "2024-10-11T00:00:00Z": 1,
-        "2024-10-12T00:00:00Z": 1,
+        "2024-11-11T00:00:00Z": 1,
+        "2024-11-12T00:00:00Z": 1,
         "2024-11-15T00:00:00Z": 1,
         "2024-11-17T00:00:00Z": 1,
         "2024-11-17T12:00:00Z": 1,
         "2024-10-27T00:00:00Z": 1,
         "2024-10-30T12:00:00Z": 1,
-        "2024-10-23T00:00:00Z": 1,
-        "2024-10-20T00:00:00Z": 1,
+        "2024-11-23T00:00:00Z": 1,
+        "2024-10-28T00:00:00Z": 1,
         "2024-11-02T12:00:00Z": 1,
         "2024-11-05T12:00:00Z": 1,
         "2024-10-31T12:00:00Z": 1,
         "2024-11-08T12:00:00Z": 1,
-        "2024-10-18T00:00:00Z": 1
+        "2024-10-26T00:00:00Z": 1
     },
-    totalPoints: 250,
-    hotspotProbability: 0.2 // 40% of points will be in hotspots, 60% spread within the specified area
+    totalPoints: 80,
+    hotspotProbability: 0.5 // 40% of points will be in hotspots, 60% spread within the specified area
 });
 
-//console.log(generatedData);
+console.log(generatedData);

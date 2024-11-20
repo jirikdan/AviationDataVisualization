@@ -1,0 +1,17 @@
+/* Color of the page background */
+body {
+    background-color: #eaeaea;
+}
+
+/* Color for gap in filters */
+.row {
+    background-color: #c4c4c4;
+}
+
+table tbody tr:nth-of-type(odd) {
+    background-color: #969696;
+}
+
+table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}

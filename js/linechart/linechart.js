@@ -4,7 +4,7 @@ class LineChart {
         this.selector = selector;
         this.margin = { top: 20, right: 20, bottom: 20, left: 20 };
         this.width = lineChartWidth - this.margin.left - this.margin.right;
-        this.height = 100 - this.margin.top - this.margin.bottom;
+        this.height = 240 - this.margin.top - this.margin.bottom;
         this.currentXDomain = null;
         this.subLineCharts = [];
         this.isProgrammaticBrushMove = false;
@@ -420,6 +420,7 @@ class LineChart {
         data.forEach(point => {
             const dateMatches = point.properties.date >= start && point.properties.date <= end;
             const element = document.getElementById(point.properties.id);
+            console.log(element);
 
             if (element) {  // Check if element is not null
                 if (dateMatches && point.properties.selected) {
@@ -432,7 +433,7 @@ class LineChart {
                     //element.classList.remove("highlighted");
                 }
             } else {
-                //console.warn(`Element with id ${point.properties.id} not found.`);
+                console.warn(`Element with id ${point.properties.id} not found.`);
             }
         });
     }

@@ -2,15 +2,11 @@
 .row.data-filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
-    background-color: #d7d1d1;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 2px solid #333;
+    gap: 2px;
     align-items: normal;
     justify-content: center;
 }
+
 
 /* Individual filter container */
 .filter {
