@@ -22,8 +22,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 
-    
-    
+
+
     <script src="js/dataHandling/data.js"></script>
     <script src="js/linechart/positionLabels.js"></script>
     <script src="js/linechart/linechart.js"></script>
@@ -34,7 +34,7 @@
     <script src="js/map/map.js"></script>
     <script src="js/map/selection.js"></script>
     <script src="js/table/table.js"></script>
-    
+
 </head>
 
 <body>
@@ -120,16 +120,17 @@
 
             <div class="row table-row block">
                 <div class="table-container">
+
                     <table>
                         <thead></thead>
                         <tbody></tbody>
                     </table>
                 </div>
                 <script>
-                
-                console.log("Data for the table");
-                console.log(data);
-                tabulate(data, tableInfo);</script>
+
+                    // console.log("Data for the table");
+                    // console.log(data);
+                    tabulate(data, tableInfo);</script>
             </div>
 
         </div>
@@ -137,31 +138,31 @@
             <div class="row row-1 block">
                 <div id="brush-tooltip" class="brush-tooltip"></div>
                 <div id="my_dataviz"><span class="mainChart-label">
-                <div class="toggleButtonWrapper">
-                    <button id="toggleButton">See More</button>
-                    <div id="eventSelection">
-                        <!-- Dynamically populated checkboxes will go here -->
-                    </div>
+                        <div class="toggleButtonWrapper">
+                            <button id="toggleButton">See More</button>
+                            <div id="eventSelection">
+                                <!-- Dynamically populated checkboxes will go here -->
+                            </div>
+                        </div>
+                    </span>
                 </div>
-                </span>
-            </div>
 
-            <div id="hiddenCharts" class="hidden">
-                <div class="text-block">Text Block 1</div>
-                <div class="text-block">Text Block 2</div>
-                <div class="text-block">Text Block 3</div>
+                <div id="hiddenCharts" class="hidden">
+                    <div class="text-block">Text Block 1</div>
+                    <div class="text-block">Text Block 2</div>
+                    <div class="text-block">Text Block 3</div>
+                </div>
+                <div id="fixed-labels-container" class="hidden"></div>
             </div>
-            <div id="fixed-labels-container" class="hidden"></div>
-        </div>
-        <div class="row row-2 block">
+            <div class="row row-2 block">
 
-            <svg id="map"></svg>
-            <div id="tooltip"></div>
-            <script>
-                zoomableMap = new ZoomableMap();
-            </script>
+                <svg id="map"></svg>
+                <div id="tooltip"></div>
+                <script>
+                    zoomableMap = new ZoomableMap();
+                </script>
+            </div>
         </div>
-    </div>
     </div>
     <script src="js/linechart/seeMoreLinecharts.js"></script>
     <!-- <script src="js/linechart/popup.js"></script> -->

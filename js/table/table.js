@@ -8,6 +8,7 @@ const get = (obj, ...selectors) =>
     );
 
 
+
 function removeItem(index) {
     //console.log(index);
     data.splice(index, 1);
@@ -29,9 +30,9 @@ function formatCoordinates(coord) {
 }
 
 function tabulate(data, columns) {
-    var table = d3.select('table');
-    var thead = table.select('thead');
-    var tbody = table.select('tbody');
+    const table = d3.select('table');
+    const thead = table.select('thead');
+    const tbody = table.select('tbody');
 
     // Clear existing table headers and rows
     thead.selectAll('.firstTR').remove();
@@ -39,12 +40,14 @@ function tabulate(data, columns) {
     tbody.selectAll('tr').remove();
 
     // Append the header row with meaningful names
-    thead.append('tr')
-        .attr('class', 'firstTR')  // Add this line to assign the class
+    const headerRow = thead.append('tr')
+        .attr('class', 'firstTR')
         .selectAll('th')
-        .data(columns).enter()
+        .data(columns)
+        .enter()
         .append('th')
-        .text(function (column) {
+        .attr('data-column', column => column)
+        .text(column => {
             switch (column) {
                 case "properties.name": return "Name";
                 case "properties.date": return "Date";
@@ -52,10 +55,78 @@ function tabulate(data, columns) {
                 case "geometry.coordinates[1]": return "Latitude";
                 default: return column;
             }
+        })
+        .on('click', function (event, column) {
+            sortTableByColumn(column);
         });
+
+    // Add empty sort icons initially
+    headerRow.append('span')
+        .attr('class', 'sort-icon')
+        .text('');
 
     updateTableBody(data, columns);
 }
+
+let sortOrder = {}; // Track sort order for each column
+
+function sortTableByColumn(column) {
+    console.log(`Sorting by column: ${column}`);
+
+    // Determine the current sort order for the column
+    if (!sortOrder[column]) {
+        sortOrder[column] = 'asc'; // Default to ascending if not sorted before
+    } else {
+        sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
+    }
+
+    console.log(`Sort order for column "${column}": ${sortOrder[column]}`);
+
+    // Remove previous highlights and icons
+    d3.selectAll('th')
+        .classed('sorted', false)
+        .select('.sort-icon')
+        .text('');
+
+    // Highlight the active column and update the icon
+    d3.select(`th[data-column="${column}"]`)
+        .classed('sorted', true)
+        .select('.sort-icon')
+        .text(sortOrder[column] === 'asc' ? ' ▲' : ' ▼'); // Unicode for up/down arrows
+
+    // Sort the data based on the selected column and order
+    data.sort((a, b) => {
+        const aValue = get(a, column);
+        const bValue = get(b, column);
+
+        let aComparable = aValue;
+        let bComparable = bValue;
+
+        // Check if the column is the "properties.date" column and parse the date
+        if (column === "properties.date") {
+            aComparable = new Date(aValue);
+            bComparable = new Date(bValue);
+        }
+
+        console.log(`Comparing values: a="${aComparable}", b="${bComparable}"`);
+
+        if (aComparable < bComparable) {
+            return sortOrder[column] === 'asc' ? -1 : 1;
+        }
+        if (aComparable > bComparable) {
+            return sortOrder[column] === 'asc' ? 1 : -1;
+        }
+        return 0;
+    });
+
+    console.log('Sorted data:', data);
+
+    updateTableBody(data, tableInfo);
+}
+
+
+
+
 
 
 function toggleHighlightData(d) {
@@ -110,52 +181,36 @@ function updateHighlightedPoints() {
 }
 
 function updateTableBody(data, columns) {
-    // Sort the filtered data by a specific property, e.g., by "properties.name"
-    data.sort((a, b) => {
-        if (a.properties.name < b.properties.name) {
-            return -1;
-        }
-        if (a.properties.name > b.properties.name) {
-            return 1;
-        }
-        return 0;
-    });
-    data.sort((a, b) => {
-        if (a.properties.date < b.properties.date) {
-            return -1;
-        }
-        if (a.properties.date > b.properties.date) {
-            return 1;
-        }
-        return 0;
-    });
-    var count = 0;
-    
-    data.forEach(d => {
-        // console.log(d.properties.id);
-        count++;
-    });
-    console.log("Count is " + count);
-    var tbody = d3.select('table').select('tbody');
+    console.log("Updating table body...");
+    console.log("Data to render:", data);
+
+    const tbody = d3.select('table').select('tbody');
 
     // Bind data to rows, using the unique 'properties.id' as the key
-    var rows = tbody.selectAll('tr')
-        .data(data, d => d && d.properties ? d.properties.id : null); // Use properties.id as key
+    const rows = tbody.selectAll('tr')
+        .data(data, d => d && d.properties ? d.properties.id : null);
 
     // Remove any rows that no longer have matching data
     rows.exit().remove();
 
     // Append new rows for incoming data
-    var addedRows = rows.enter().append('tr')
-        .attr('id', d => d && d.properties ? d.properties.id : null) // Set the id attribute correctly
-        .on('click', function (event, d) { // Correctly capture event and data
+    const addedRows = rows.enter().append('tr')
+        .attr('id', d => d && d.properties ? d.properties.id : null)
+        .on('click', function (event, d) {
             toggleHighlightData(d);
             toggleHighlightRow(this);
             updateHighlightedSubcharts();
         });
 
-    // Create cells for each row and column
-    var cells = addedRows.selectAll('td')
+    // Merge new and existing rows and reorder them in the DOM
+    const allRows = addedRows.merge(rows)
+        .order() // Ensure rows are rendered in the order of the bound data
+        .attr('id', d => d && d.properties ? d.properties.id : null);
+
+    console.log("Rows after merge:", allRows);
+
+    // Update the cells within each row
+    const cells = allRows.selectAll('td')
         .data(function (row) {
             return columns.map(function (column) {
                 let value = get(row, column);
@@ -166,17 +221,21 @@ function updateTableBody(data, columns) {
                 }
                 return { column: column, value: value };
             });
-        })
-        .enter();
+        });
 
-    cells.append('td')
-        .text(function (d) { return d.value; });
+    // Remove any old cells
+    cells.exit().remove();
 
-    // Update the id attribute for existing rows
-    rows.attr('id', d => d && d.properties ? d.properties.id : null);
+    // Append new cells for incoming data
+    cells.enter()
+        .append('td')
+        .merge(cells) // Merge with existing cells
+        .text(d => d.value);
 
     // Apply the 'highlighted' class to rows based on the 'highlighted' property
-    tbody.selectAll('tr').classed('highlighted', d => d && d.properties ? d.properties.highlighted : false);
+    allRows.classed('highlighted', d => d && d.properties ? d.properties.highlighted : false);
+
+    console.log("Table body updated.");
 }
 
 

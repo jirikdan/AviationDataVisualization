@@ -282,8 +282,8 @@ class LineChart {
 
 
     updateChartData(newData) {
-        console.log(this.data);
-        console.log(newData);
+        // console.log(this.data);
+        // console.log(newData);
         this.data = newData;
         // Set x domain to dateSpan instead of recalculating from data
         //this.x.domain(d3.extent(newData, d => d.date));

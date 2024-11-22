@@ -44,10 +44,6 @@ table tbody tr {
 
 
 
-table tbody tr:last-of-type {
-    border-bottom: 2px solid #4CAF50;
-}
-
 table tbody td {
     padding: 12px 15px;
     text-align: center;
@@ -81,4 +77,44 @@ table tbody tr.highlighted {
 
 .table-container::-webkit-scrollbar-thumb:hover {
     background-color: #555; /* Darker thumb when hovered */
+}
+
+/* Table headers */
+th {
+    cursor: pointer;
+    position: relative;
+    padding: 10px;
+    background-color: #f8f9fa; /* Light gray background */
+    user-select: none; /* Prevent text selection */
+    text-align: left;
+    font-size: 15px;
+    color: #000000; /* Darker text color for readability */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+    text-align: center;
+}
+
+/* Hover effect for column headers */
+th:hover {
+    /* background-color: #e9ecef; Slightly darker gray on hover */
+    color: #212529; /* Darker text on hover */
+}
+
+/* Highlight the sorted column */
+th.sorted {
+    
+    filter: brightness(1.2);
+    color: white; /* White text for contrast */
+    font-weight: bold;
+}
+
+/* Sort icon styling */
+th .sort-icon {
+    margin-left: 8px;
+    font-size: 0.9em;
+    color: #ffffff; /* White icon for sorted column */
+    transition: color 0.3s ease; /* Smooth transition for icon color */
+}
+
+th:hover .sort-icon {
+    color: #dee2e6; /* Subtle change for icon color on hover */
 }

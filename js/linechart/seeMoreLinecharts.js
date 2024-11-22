@@ -330,7 +330,7 @@ function createMoreLineCharts() {
         subLineChart.changeYAxisRange(maxYValue);*/
         changeMaxYBasedOnCurrentDatespan();
     });
-    console.log("sublinecharts after creating", lineChart.subLineCharts);
+    // console.log("sublinecharts after creating", lineChart.subLineCharts);
 
 }
 

@@ -302,7 +302,7 @@ function onFilterUpdate() {
 
 
 function applyFilters(filters) {
-    console.log('Applying filters:', filters);
+    // console.log('Applying filters:', filters);
     let startDate, endDate;
     //console.log('Applying filters:', filters);
 

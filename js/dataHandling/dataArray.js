@@ -122,7 +122,7 @@ function generateGeoJsonData({
                 coordinates
             }
         };
-        console.log("Pushing feature I -> " + feature.properties.selected);
+        // console.log("Pushing feature I -> " + feature.properties.selected);
         data.push(feature);
     }
 
@@ -195,4 +195,4 @@ const generatedData = generateGeoJsonData({
     hotspotProbability: 0.5 // 40% of points will be in hotspots, 60% spread within the specified area
 });
 
-console.log(generatedData);
+// console.log(generatedData);
