@@ -24,12 +24,14 @@ body {
     flex-direction: column;
 }
 
-.column-1 { flex: 3; } /* Narrow Column */
+.column-1 { flex: 3; height: 100vh;} /* Narrow Column */
 .column-2 { flex: 7; } /* Wide Column */
 
 /* Column-1 Content */
-.column-1 .data-filters { flex: 7;}
-.column-1 .table-row { flex: 3;}
+.column-1 .data-filters { flex: 7; max-height: 70vh; overflow: none;} 
+.column-1 .table-row { flex: 3; max-height: 30vh;}
+
+
 
 /* Column-2 Content */
 .column-2 .row-1

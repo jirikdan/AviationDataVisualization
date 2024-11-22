@@ -16,14 +16,14 @@ BUGS TO FIX
         - subLineChartSet same timespan for every subchart, you have to move tags accordingly
         - uncomment sublinechart and linechart //this.x.domain(dateSpan); and change computeFirstOffset() accordingly so its centered
         - fix the correct labels when double clicked on x, when zoom is reset 
-- [ ] Sort button does not rename to close correctly when opened with see more and the state is visible
+- [X] Sort button does not rename to close correctly when opened with see more and the state is visible
 - [X] Fix max Y when point is removed
-- [ ] Sort max Y button is not visible when reopening main linechart
-- [ ] Zoom of main linechart gets reset when reopening main linechart
-- [ ] Fix issue of missalignement when data do not have the earliest and latest data point date.
-- [ ] Fix visibility for single data or multiple data of single type/date
-- [ ] Fix possible offset of grid labels
-- [ ] Time visualization does not have gray points when filtered by custom time
+- [X] Sort max Y button is not visible when reopening main linechart
+- [X] Zoom of main linechart gets reset when reopening main linechart
+- [X] Fix issue of missalignement when data do not have the earliest and latest data point date.
+- [X] Fix visibility for single data or multiple data of single type/date
+- [X] Fix possible offset of grid labels
+- [X] Time visualization does not have gray points when filtered by custom time
 - [ ] Get rid of brush selection by some mechanism
 - [ ] Add the brush selection and highlight mechanism to sublinecharts
 - [ ] Optimize the selection speed, highlights are slowingit down quite a bit
