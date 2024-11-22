@@ -189,17 +189,28 @@ orderedEventTypes.forEach((eventType, index) => {
 
 
 
-
 function updateOrderOfLineCharts() {
     console.log('Updating order of line charts');
-    const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
 
-    const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
+    // Use the current event order to update the charts
+    const allCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]'));
+    const orderedTypes = eventOrder.length > 0 
+        ? eventOrder 
+        : allCheckboxes.map(checkbox => checkbox.value);
 
     const container = document.getElementById('hiddenCharts');
     container.innerHTML = ''; // Clear the container before adding new charts
 
-    selectedTypes.forEach((eventType, index) => {
+    orderedTypes.forEach((eventType, index) => {
+        // Check if the corresponding checkbox is checked
+        const isChecked = selectedEventTypes[eventType] !== undefined 
+            ? selectedEventTypes[eventType] 
+            : true;
+
+        if (!isChecked) {
+            return; // Skip rendering this chart if unchecked
+        }
+
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
 
@@ -223,9 +234,10 @@ function updateOrderOfLineCharts() {
         container.appendChild(chartContainer);
 
         const subChartData = dataHandler.getEventTypeData(eventType);
-        const isLastChart = index === selectedTypes.length - 1;
+        const isLastChart = index === orderedTypes.length - 1;
         const subLineChart = new SubLineChart(`#linechart_${index}`, eventType, lineChart, isLastChart);
         subLineChart.renderChart(subChartData);
+
         lineChart.subLineCharts.push(subLineChart);
         subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
         subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
@@ -235,15 +247,12 @@ function updateOrderOfLineCharts() {
             .attr("d", subLineChart.areaGenerator)
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
-        //subLineChart.updateGridlines();
-        /*if (subLineChart.y.domain()[1] > maxYValue) {
-            maxYValue = subLineChart.y.domain()[1];
-        }
-        //console.log('Max Y value sort:', maxYValue);
-        subLineChart.changeYAxisRange(maxYValue);*/
+
         changeMaxYBasedOnCurrentDatespan();
     });
 }
+
+
 
 
 function createMoreLineCharts() {
@@ -329,8 +338,9 @@ function createMoreLineCharts() {
 function sortChartsByMaxYValue() {
     console.log('Sorting charts and checkboxes by maximum Y value within the current date span');
 
-    const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
-    const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
+    const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]'));
+
+    var selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
 
     var start = dateSpan[0];
     var end = dateSpan[1];
@@ -368,6 +378,9 @@ function sortChartsByMaxYValue() {
 
     console.log('Sorted event types:', sortedEventTypes);
 
+    // Update the eventOrder variable with the sorted order
+    eventOrder = [...sortedEventTypes];
+
     // Sort the checkboxes based on the sorted event types
     const eventSelection = document.getElementById('eventSelection');
     const checkboxContainers = Array.from(eventSelection.querySelectorAll('.checkbox-container:not(.hide-all-container)'));
@@ -387,6 +400,13 @@ function sortChartsByMaxYValue() {
 
     // Re-render the sorted charts
     sortedEventTypes.forEach((eventType, index) => {
+        // Check if the corresponding checkbox is selected
+        const checkbox = selectedCheckboxes.find(cb => cb.value === eventType);
+        if (!checkbox || !checkbox.checked) {
+            // Skip rendering this chart if the checkbox is unchecked
+            return;
+        }
+
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
 
@@ -424,11 +444,15 @@ function sortChartsByMaxYValue() {
             .style("fill", colorMapping[eventType]) // Apply color to the chart area
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
 
+        // Set display based on checkbox state
+        chartContainer.style.display = checkbox.checked ? 'flex' : 'none';
+
         // Update max Y-axis range for consistency based on the current date span
         changeMaxYBasedOnCurrentDatespan();
         updateHighlightedSubchartsAfterSort(); // Update the line charts based on the selected points
     });
 }
+
 
 
 function changeMaxYBasedOnCurrentDatespan() {
