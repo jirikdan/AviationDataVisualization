@@ -92,6 +92,10 @@ svg {
     font-size: 1em;  /* Increases the font size for better readability */
     font-weight: bold;  /* Makes the text bold */
     margin-right: 5px;
+    margin-bottom: 5px;
+}
+#colorScale {
+    margin-bottom: 5px;
 }
 
 

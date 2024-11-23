@@ -246,7 +246,9 @@ function showActiveFilters(filters) {
 
         //change color of eventTypeSpan background
 
-        //eventTypeSpan.style.backgroundColor = colorMapping[filters.eventTypes[i]];
+        if (document.getElementById('name').checked) {
+            eventTypeSpan.style.backgroundColor = colorMapping[filters.eventTypes[i]];
+        }
 
 
 

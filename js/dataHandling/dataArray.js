@@ -25,16 +25,25 @@ function generateGeoJsonData({
     hotspotTimeWeights = { "2024-10-08T12:00:00Z": 2, "2024-10-05T12:00:00Z": 1 },
     normalTimeWeights = { "2024-10-02T12:00:00Z": 2, "2024-10-07T12:00:00Z": 1 },
     totalPoints = 50,
-    hotspotProbability = 0.4
+    hotspotProbability = 0.4,
+    seed = 123456
 }) {
-    // Original data generation logic
+    // Seeded random number generator
+    let currentSeed = seed;
+    const rng = () => {
+        const a = 1664525;
+        const c = 1013904223;
+        const m = 2 ** 32;
+        currentSeed = (a * currentSeed + c) % m;
+        return currentSeed / m;
+    };
+
     const minLat = 50.08615648561272;
     const maxLat = 50.11815590532789;
     const minLng = 14.225240518215271;
     const maxLng = 14.288241809867836;
 
-    const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const getRandomBool = () => Math.random() < 0.5;
+    const getRandomInt = (min, max) => Math.floor(rng() * (max - min + 1)) + min;
 
     const eventWeights = Object.entries(eventOccurrenceConfig).map(([key, weight]) => ({ name: key, weight }));
     const totalWeight = eventWeights.reduce((acc, item) => acc + item.weight, 0);
@@ -49,7 +58,7 @@ function generateGeoJsonData({
     const totalNormalTimeWeight = normalTimes.reduce((acc, item) => acc + item.weight, 0);
 
     const getRandomEventName = (weights, totalWeight) => {
-        const randomValue = Math.random() * totalWeight;
+        const randomValue = rng() * totalWeight;
         let cumulativeWeight = 0;
         for (const { name, weight } of weights) {
             cumulativeWeight += weight;
@@ -61,7 +70,7 @@ function generateGeoJsonData({
     };
 
     const getRandomTime = (weights, totalWeight) => {
-        const randomValue = Math.random() * totalWeight;
+        const randomValue = rng() * totalWeight;
         let cumulativeWeight = 0;
         for (const { time, weight } of weights) {
             cumulativeWeight += weight;
@@ -73,20 +82,20 @@ function generateGeoJsonData({
     };
 
     const getRandomCoordsWithinBounds = () => {
-        const randomLat = minLat + Math.random() * (maxLat - minLat);
-        const randomLng = minLng + Math.random() * (maxLng - minLng);
+        const randomLat = minLat + rng() * (maxLat - minLat);
+        const randomLng = minLng + rng() * (maxLng - minLng);
         return [parseFloat(randomLng.toFixed(5)), parseFloat(randomLat.toFixed(5))];
     };
 
     const getRandomCoordsNear = (lat, lng, radius) => {
-        const randomLat = lat + (Math.random() - 0.5) * radius * 2;
-        const randomLng = lng + (Math.random() - 0.5) * radius * 2;
+        const randomLat = lat + (rng() - 0.5) * radius * 2;
+        const randomLng = lng + (rng() - 0.5) * radius * 2;
         return [parseFloat(randomLng.toFixed(5)), parseFloat(randomLat.toFixed(5))];
     };
 
     const data = [];
     for (let i = 0; i < totalPoints; i++) {
-        const shouldBeInHotspot = Math.random() < hotspotProbability && proximityConfig.hotspots && proximityConfig.hotspots.length > 0;
+        const shouldBeInHotspot = rng() < hotspotProbability && proximityConfig.hotspots && proximityConfig.hotspots.length > 0;
 
         const eventName = shouldBeInHotspot
             ? getRandomEventName(hotspotWeights, totalHotspotWeight)
@@ -122,12 +131,12 @@ function generateGeoJsonData({
                 coordinates
             }
         };
-        // console.log("Pushing feature I -> " + feature.properties.selected);
         data.push(feature);
     }
 
-    return data; // Generate data without filling missing dates initially
+    return data;
 }
+
 
 // Example usage
 const generatedData = generateGeoJsonData({

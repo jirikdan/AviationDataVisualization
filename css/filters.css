@@ -5,6 +5,33 @@
     gap: 2px;
     align-items: normal;
     justify-content: center;
+    background-color: black;
+    overflow-y: auto; /* Enable scrolling only if necessary */
+}
+
+/* Hide scrollbar when there's no overflow */
+.row.data-filters:not(:has(:overflow))::-webkit-scrollbar {
+    display: none; /* Hides the scrollbar when there is no overflow */
+}
+
+/* Styling for the scrollbar when it's visible */
+.row.data-filters::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.row.data-filters::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background of the scrollbar track */
+    border-radius: 10px; /* Rounded corners on the scrollbar track */
+}
+
+.row.data-filters::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners on the scrollbar thumb */
+    border: 2px solid #f1f1f1; /* Adds a border around the thumb */
+}
+
+.row.data-filters::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker thumb when hovered */
 }
 
 
@@ -13,7 +40,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     flex: 1;
     min-width: 300px;
     padding: 0px;
@@ -221,13 +248,13 @@
 }
 
 .active-filters {
-    flex: 1 100%;
+    
     margin: 5px;
-    padding: 0px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 90%;
+    padding: 20px;
 }
 
 .filterBox {

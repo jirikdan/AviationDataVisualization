@@ -1,5 +1,6 @@
 .table-container {
-    max-height: 30vh; /* Ensures it doesn’t exceed the viewport height */
+    max-height: 35vh; /* Ensures it doesn’t exceed the viewport height */
+    min-height: 35vh;
     overflow-y: scroll;
     width: 100%;
     border-radius: 2px;
@@ -17,7 +18,7 @@ table {
 
 /* Header styling */
 table thead tr.firstTR, table thead tr.filter-row {
-    background-color: #175819;
+    
     color: white;
     font-weight: bold;
     position: sticky;

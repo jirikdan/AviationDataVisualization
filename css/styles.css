@@ -28,8 +28,8 @@ body {
 .column-2 { flex: 7; } /* Wide Column */
 
 /* Column-1 Content */
-.column-1 .data-filters { flex: 7; max-height: 70vh; overflow: none;} 
-.column-1 .table-row { flex: 3; max-height: 30vh;}
+.column-1 .data-filters { flex: 6.5; max-height: 65vh;} 
+.column-1 .table-row { flex: 3.5; max-height: 35vh;}
 
 
 
