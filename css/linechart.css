@@ -13,18 +13,7 @@
     width: 100%;
     overflow: visible;
 }
-.brush-tooltip {
-    position: absolute;
-    pointer-events: none;  /* Tooltip won't capture mouse events */
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 5px;
-    border-radius: 3px;
-    font-family: Arial, sans-serif;
-    font-size: 22px;
-    display: none;  /* Tooltip is hidden initially */
-    transition: opacity 0.2s;  /* Smooth transition for appearance */
-}
+
 
 
 .hidden-ticks .tick text {
@@ -143,11 +132,12 @@
 }
 
 
-.myArea:hover {
-    filter: brightness(1);
-}
-
-
 .label-div{
     white-space: nowrap;
+}
+
+.zero-line
+{
+    /*Draw over other elements*/
+    z-index: 100;
 }

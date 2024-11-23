@@ -7,10 +7,12 @@ function updateGlyphs() {
             }
             d3.select(this)
                 .attr("fill", d3.select(this).attr("fill")) // Preserve the original fill color
-                .attr("stroke", d => d.properties.highlighted ? "rgba(255, 255, 0, 0.8)" : "none") // Halo stroke
-                .attr("stroke-width", d => d.properties.highlighted ? 3 : 0) // Halo thickness
+                // .attr("stroke", d => d.properties.highlighted ? haloStroke : "none") // Halo stroke
+                // .attr("stroke-width", d => d.properties.highlighted ? 3 : 0) // Halo thickness
                 .attr("stroke-linejoin", "round") // Smooth edges for the halo
-                .attr("display", d => d.properties.selected ? "auto" : "none");
+                .attr("display", d => d.properties.selected ? "auto" : "none")
+                //add class highlighted
+                .classed("highlighted point", d => d.properties.highlighted);
         });
 }
 

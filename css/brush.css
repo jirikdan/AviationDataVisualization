@@ -3,12 +3,12 @@
     fill: rgba(93, 221, 230, 0.241); /* Semi-transparent red background */
     stroke: rgba(161, 182, 240, 0.629); /* Light blue stroke */
     stroke-width: 1.5px;
+    pointer-events: all;
 
 }
 .brush .handle {
     fill: rgba(255, 0, 0, 0);
-    width: 8px;
-   
+    width: 15px;
 }
 
 .brush .overlay {
@@ -26,3 +26,9 @@
 #hiddenCharts .brush .selection {
     pointer-events: none; /* Disable selection rectangle interactions */
 }
+.selection-rectangle {
+    pointer-events: all; /* Ensure mouse events are captured */
+}
+
+
+

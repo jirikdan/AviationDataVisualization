@@ -20,11 +20,7 @@ var chartData = [];
 //var linechart;
 var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
 
-//these colors get overriden by the colors in the css
-const dataHighlightBackground = "rgb(255, 255, 0)";
-const dataHighlightBrushBackground = "rgb(84, 124, 255, 0.5)";
-const dataBrushEdges = "rgb(84, 124, 255, 0.1)";
-const mainHighlightColor = "rgb(255, 0, 0, 0.8)";
+
 
 const predefinedColors = d3.schemeCategory10;
 const colorMapping = {};

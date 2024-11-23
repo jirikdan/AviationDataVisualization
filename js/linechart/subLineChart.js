@@ -125,9 +125,9 @@ class SubLineChart {
         this.area.append("line")
             .attr("class", "zero-line")
             .attr("x1", this.x(new Date(dateSpan[0]))) // Start of dateSpan
-            .attr("y1", this.y(0)+1) // y = 0
+            .attr("y1", this.y(0) + 1) // y = 0
             .attr("x2", this.x(new Date(dateSpan[1]))) // End of dateSpan
-            .attr("y2", this.y(0)+1) // y = 0
+            .attr("y2", this.y(0) + 1) // y = 0
             .attr("stroke", "black")
             .attr("stroke-width", 2);
 
@@ -278,10 +278,27 @@ class SubLineChart {
 
         //this.mainChart.updateBrushFromSubChart(snappedExtent);
 
+
+
+        // Highlight data inside the snapped brush selection using UTC dates
+        if (!calledFromMainChart) {
+            this.highlightDataInsideBrush(start, end);
+            //updateHighlightedSubcharts();
+        }
+
+
+        //const adjustedEndUTC = new Date(end.getTime() + bufferDuration);
+        // Filter the data with the adjusted range in UTC
+        const selectedData = this.data.filter(d => d.date >= start && d.date <= end);
+        //console.log("Selected data (UTC range):", selectedData);
+
+        // Call `highlightNewDataPoints` with the selected data
+        this.highlightNewDataPoints(selectedData);
+
         // Update the brush selection rectangle style
-        this.area.selectAll(".selection-rectangle").remove();
+        this.area.selectAll(".selection-rectangle-subchart").remove();
         this.area.append("rect")
-            .attr("class", "selection-rectangle")
+            .attr("class", "selection-rectangle-subchart")
             .attr("x", snappedExtent[0])
             .attr("y", 0)
             .attr("width", snappedExtent[1] - snappedExtent[0])
@@ -290,6 +307,7 @@ class SubLineChart {
             .attr("stroke", dataBrushEdges)
             .attr("stroke-width", 1)
             .on("mouseover", () => {
+                console.log("mouseover");
                 tooltip.style("display", "block");
             })
             .on("mousemove", (event) => {
@@ -310,20 +328,6 @@ class SubLineChart {
                 tooltip.style("display", "none");
             });
 
-        // Highlight data inside the snapped brush selection using UTC dates
-        if (!calledFromMainChart) {
-            this.highlightDataInsideBrush(start, end);
-            //updateHighlightedSubcharts();
-        }
-
-
-        //const adjustedEndUTC = new Date(end.getTime() + bufferDuration);
-        // Filter the data with the adjusted range in UTC
-        const selectedData = this.data.filter(d => d.date >= start && d.date <= end);
-        //console.log("Selected data (UTC range):", selectedData);
-
-        // Call `highlightNewDataPoints` with the selected data
-        this.highlightNewDataPoints(selectedData);
     }
 
     updateChartDataHighlight(newData) {
@@ -337,10 +341,10 @@ class SubLineChart {
         //console.log("highlighting new data points");
         //console.log(newDataPoints);
         // Remove any previous highlights
-        this.area.selectAll(".new-data-highlight").remove();
+        this.area.selectAll(".new-data-highlight-subchart").remove();
 
         // Remove any previous brush selection rectangle
-        this.area.selectAll(".selection-rectangle").remove();
+        this.area.selectAll(".selection-rectangle-subchart").remove();
 
         // If there are new data points, create a programmatic brush selection
         if (newDataPoints.length > 0) {
@@ -354,10 +358,13 @@ class SubLineChart {
             this.isProgrammaticBrushMove = true;
             d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
             this.isProgrammaticBrushMove = false;
-
+            // Select the tooltip element
+            const tooltip = d3.select("#brush-tooltip");
+            const snappedStart = this.x.invert(snappedExtent[0]);
+        const snappedEnd = this.x.invert(snappedExtent[1]);
             // Update the brush selection rectangle to match the manual selection style
             this.area.append("rect")
-                .attr("class", "selection-rectangle")
+                .attr("class", "selection-rectangle-subchart")
                 .attr("x", snappedExtent[0])
                 .attr("y", 0)
                 .attr("width", snappedExtent[1] - snappedExtent[0])
@@ -365,7 +372,28 @@ class SubLineChart {
                 .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
                 .attr("fill-opacity", 0.3)
                 .attr("stroke", dataBrushEdges)  // Use the same stroke color
-                .attr("stroke-width", 1.5);
+                .attr("stroke-width", 1.5)
+                .on("mouseover", () => {
+                    console.log("mouseover");
+                    tooltip.style("display", "block");
+                })
+                .on("mousemove", (event) => {
+                    const containerElement = d3.select(this.selector).node();
+                    const containerBox = containerElement.getBoundingClientRect();
+
+                    const midPoint = (snappedExtent[0] + snappedExtent[1]) / 2;
+                    const tooltipX = midPoint + containerBox.left + this.margin.left;
+                    const tooltipY = containerBox.top + this.margin.top;
+
+                    // Use UTC date formatting
+                    tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(snappedStart)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(snappedEnd)}`)
+                        .style("left", `${tooltipX - 60}px`)
+                        .style("top", `${tooltipY - 40}px`)
+                        .style("transform", "translateX(-50%)");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("display", "none");
+                });
         }
 
         // Group newDataPoints by day
@@ -375,24 +403,31 @@ class SubLineChart {
         dailyData.forEach((points) => {
             const sortedPoints = points.sort((a, b) => a.date - b.date);
 
-            // Define an area generator for each day's points
-            const dayAreaGenerator = d3.area()
-                .x(d => this.x(d.date))
-                .y0(this.y(0))
-                .y1(d => this.y(d.value))
-                .curve(d3.curveBasis);
+            // Filter out points where the value (y) is 0
+            const filteredPoints = sortedPoints.filter(d => d.value !== 0);
 
-            // Append a new area path for the current day's data points
-            this.area.append("path")
-                .datum(sortedPoints)
-                .attr("class", "new-data-highlight")
-                .attr("clip-path", "url(#clip)")
-                .attr("d", dayAreaGenerator)
-                .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
-                .attr("fill-opacity", 0.6)
-                .attr("stroke", mainHighlightColor)  // Use the same stroke color as the brush
-                .attr("stroke-width", 1.5);
+            // Only proceed if there are points remaining after filtering
+            if (filteredPoints.length > 0) {
+                // Define an area generator for each day's points
+                const dayAreaGenerator = d3.area()
+                    .x(d => this.x(d.date))
+                    .y0(this.y(0) - 1)
+                    .y1(d => this.y(d.value))
+                    .curve(d3.curveBasis);
+
+                // Append a new area path for the current day's data points
+                this.area.append("path")
+                    .datum(filteredPoints) // Use filtered points
+                    .attr("class", "new-data-highlight-subchart")
+                    .attr("clip-path", "url(#clip)")
+                    .attr("d", dayAreaGenerator)
+                    .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
+                    .attr("fill-opacity", 0.6)
+                    .attr("stroke", mainHighlightColor)  // Use the same stroke color as the brush
+                    .attr("stroke-width", 1.5);
+            }
         });
+
     }
 
 
@@ -405,8 +440,8 @@ class SubLineChart {
         this.isProgrammaticBrushMove = false;
 
         // Remove the selection rectangle and any highlights
-        this.area.selectAll(".selection-rectangle").remove();
-        this.area.selectAll(".new-data-highlight").remove();
+        this.area.selectAll(".selection-rectangle-subchart").remove();
+        this.area.selectAll(".new-data-highlight-subchart").remove();
 
         // Reset highlighted property for all data points
         this.data.forEach(point => {

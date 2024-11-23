@@ -15,3 +15,66 @@ table tbody tr:nth-of-type(even) {
 .firstTR {
     background-color: rgb(35, 126, 50);
 }
+
+.highlighted.point{
+    stroke-width: 2px;
+    stroke: #a7e337;
+}
+
+table tbody tr.highlighted {
+    background-color: rgb(236, 236, 88) !important; /* Ensures the highlighted color overrides other styles */
+}
+
+.new-data-highlight {
+    fill: #29f516;
+    stroke: none;
+    fill-opacity: 0.8;
+}
+
+.new-data-highlight-subchart {
+    fill: #29f516;
+    stroke: none;
+    fill-opacity: 0.8;
+}
+
+.selection-rectangle
+{
+    fill: #e5f0ff48;
+    fill-opacity: 0.3;
+    stroke: #65a5ff;
+    stroke-width: 2px;
+    z-index: 1;
+}
+
+
+.selection-rectangle-subchart
+{
+    fill: #e5f0ff48;
+    fill-opacity: 0.3;
+    stroke: none;
+    z-index: 1;
+}
+
+/* Tooltip for map point */
+#tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    pointer-events: none;
+    display: none;
+}
+
+/* Tool tip for selection */
+.brush-tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    font-family: Arial, sans-serif;
+    font-size: 22px;
+    display: none;  /* Tooltip is hidden initially */
+    transition: opacity 0.2s;  /* Smooth transition for appearance */
+}

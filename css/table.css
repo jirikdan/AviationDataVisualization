@@ -50,9 +50,7 @@ table tbody td {
     text-align: center;
 }
 
-table tbody tr.highlighted {
-    background-color: yellow !important; /* Ensures the highlighted color overrides other styles */
-}
+
 
 .row {
     background-color: #d7d1d1;
