@@ -46,9 +46,9 @@ table tbody tr.highlighted {
 /* Color of the selection rectangle in the main linechart */
 .selection-rectangle
 {
-    fill: #e5f0ff48;
+    fill: #51ceff48;
     fill-opacity: 0.3;
-    stroke: #65a5ff;
+    stroke: #9ea8b8;
     stroke-width: 2px;
     z-index: 1;
 }

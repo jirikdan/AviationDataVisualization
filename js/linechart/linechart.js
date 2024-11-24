@@ -330,7 +330,7 @@ class LineChart {
         this.area.selectAll(".new-data-highlight").remove();
 
         // Remove any previous brush selection rectangle
-        this.area.selectAll(".selection-rectangle-subchart").remove();
+        this.area.selectAll(".selection-rectangle").remove();
 
         // If there are new data points, create a programmatic brush selection
         if (newDataPoints.length > 0) {
@@ -349,7 +349,7 @@ class LineChart {
         const snappedEnd = this.x.invert(snappedExtent[1]);
             // Update the brush selection rectangle to match the manual selection style
             this.area.append("rect")
-                .attr("class", "selection-rectangle-subchart")
+                .attr("class", "selection-rectangle")
                 .attr("x", snappedExtent[0])
                 .attr("y", 0)
                 .attr("width", snappedExtent[1] - snappedExtent[0])
