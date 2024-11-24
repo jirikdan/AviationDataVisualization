@@ -303,9 +303,6 @@ class SubLineChart {
             .attr("y", 0)
             .attr("width", snappedExtent[1] - snappedExtent[0])
             .attr("height", this.height)
-            .attr("fill", dataHighlightBrushBackground)
-            .attr("stroke", dataBrushEdges)
-            .attr("stroke-width", 1)
             .on("mouseover", () => {
                 console.log("mouseover");
                 tooltip.style("display", "block");
@@ -369,10 +366,6 @@ class SubLineChart {
                 .attr("y", 0)
                 .attr("width", snappedExtent[1] - snappedExtent[0])
                 .attr("height", this.height)
-                .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
-                .attr("fill-opacity", 0.3)
-                .attr("stroke", dataBrushEdges)  // Use the same stroke color
-                .attr("stroke-width", 1.5)
                 .on("mouseover", () => {
                     console.log("mouseover");
                     tooltip.style("display", "block");
@@ -411,7 +404,7 @@ class SubLineChart {
                 // Define an area generator for each day's points
                 const dayAreaGenerator = d3.area()
                     .x(d => this.x(d.date))
-                    .y0(this.y(0) - 1)
+                    .y0(this.y(0))
                     .y1(d => this.y(d.value))
                     .curve(d3.curveBasis);
 
@@ -420,11 +413,7 @@ class SubLineChart {
                     .datum(filteredPoints) // Use filtered points
                     .attr("class", "new-data-highlight-subchart")
                     .attr("clip-path", "url(#clip)")
-                    .attr("d", dayAreaGenerator)
-                    .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
-                    .attr("fill-opacity", 0.6)
-                    .attr("stroke", mainHighlightColor)  // Use the same stroke color as the brush
-                    .attr("stroke-width", 1.5);
+                    .attr("d", dayAreaGenerator);
             }
         });
 

@@ -259,9 +259,6 @@ class LineChart {
             .attr("y", 0)
             .attr("width", snappedExtent[1] - snappedExtent[0])
             .attr("height", this.height)
-            .attr("fill", dataHighlightBrushBackground)
-            .attr("stroke", dataBrushEdges)
-            .attr("stroke-width", 1.5)
             .on("mouseover", () => {
                 console.log("mouseover");
                 tooltip.style("display", "block");
@@ -333,7 +330,7 @@ class LineChart {
         this.area.selectAll(".new-data-highlight").remove();
 
         // Remove any previous brush selection rectangle
-        this.area.selectAll(".selection-rectangle").remove();
+        this.area.selectAll(".selection-rectangle-subchart").remove();
 
         // If there are new data points, create a programmatic brush selection
         if (newDataPoints.length > 0) {
@@ -347,7 +344,6 @@ class LineChart {
             this.isProgrammaticBrushMove = true;
             d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
             this.isProgrammaticBrushMove = false;
-
             const tooltip = d3.select("#brush-tooltip");
             const snappedStart = this.x.invert(snappedExtent[0]);
         const snappedEnd = this.x.invert(snappedExtent[1]);
@@ -358,10 +354,6 @@ class LineChart {
                 .attr("y", 0)
                 .attr("width", snappedExtent[1] - snappedExtent[0])
                 .attr("height", this.height)
-                .attr("fill", dataHighlightBrushBackground)  // Use the same background color as the manual selection
-                .attr("fill-opacity", 0.3)
-                .attr("stroke", dataBrushEdges)  // Use the same stroke color
-                .attr("stroke-width", 1.5)
                 .on("mouseover", () => {
                     console.log("mouseover");
                     tooltip.style("display", "block");
@@ -376,8 +368,8 @@ class LineChart {
 
                     // Use UTC date formatting
                     tooltip.html(`From: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(snappedStart)}<br>To: ${d3.timeFormat("%B %d, %Y %H:%M GMT")(snappedEnd)}`)
-                        .style("left", `${tooltipX - 60}px`)
-                        .style("top", `${tooltipY - 40}px`)
+                        .style("left", `${tooltipX - 40}px`)
+                        .style("top", `${tooltipY - 20}px`)
                         .style("transform", "translateX(-50%)");
                 })
                 .on("mouseout", () => {
@@ -409,11 +401,7 @@ class LineChart {
                     .datum(filteredPoints) // Use filtered points
                     .attr("class", "new-data-highlight")
                     .attr("clip-path", "url(#clip)")
-                    .attr("d", dayAreaGenerator)
-                    .attr("fill", dataHighlightBackground)  // Use the same color as the brush background
-                    .attr("fill-opacity", 0.6)
-                    .attr("stroke", mainHighlightColor)  // Use the same stroke color as the brush
-                    .attr("stroke-width", 1.5);
+                    .attr("d", dayAreaGenerator);
             }
         });
     }
