@@ -20,8 +20,8 @@ table tbody tr:nth-of-type(even) {
 
 /* Color of highlight around the point */
 .highlighted.point{
-    stroke-width: 2px;
-    stroke: #a7e337;
+    stroke-width: 3px;
+    stroke: #dbf516c9;
 }
 
 /* Color of table row highlight when point is selected */
@@ -31,14 +31,14 @@ table tbody tr.highlighted {
 
 /* Color of the fill for the bins for highlighted data*/
 .new-data-highlight {
-    fill: #29f516;
+    fill: #dbf516c9;
     stroke: none;
     fill-opacity: 0.8;
 }
 
 /* Color of the fill for the bins for highlighted data in subcharts */
 .new-data-highlight-subchart {
-    fill: #29f516;
+    fill: #dbf516c9;
     stroke: none;
     fill-opacity: 0.8;
 }
