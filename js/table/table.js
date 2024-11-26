@@ -49,7 +49,7 @@ function tabulate(data, columns) {
         .attr('data-column', column => column)
         .text(column => {
             switch (column) {
-                case "properties.name": return "Name";
+                case "properties.name": return "Type";
                 case "properties.date": return "Date";
                 case "geometry.coordinates[0]": return "Longitude";
                 case "geometry.coordinates[1]": return "Latitude";

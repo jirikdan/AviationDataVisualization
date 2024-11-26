@@ -21,24 +21,26 @@ table tbody tr:nth-of-type(even) {
 /* Color of highlight around the point */
 .highlighted.point{
     stroke-width: 3px;
-    stroke: #dbf516c9;
+    stroke: #ff0;
+    filter: drop-shadow(3px 3px 2px rgb(142, 142, 142));
 }
 
 /* Color of table row highlight when point is selected */
 table tbody tr.highlighted {
-    background-color: rgb(236, 236, 88) !important; /* Ensures the highlighted color overrides other styles */
+    background-color: #ff0 !important; /* Ensures the highlighted color overrides other styles */
 }
 
 /* Color of the fill for the bins for highlighted data*/
 .new-data-highlight {
-    fill: #dbf516c9;
+    fill: #ff0;
     stroke: none;
     fill-opacity: 0.8;
+    
 }
 
 /* Color of the fill for the bins for highlighted data in subcharts */
 .new-data-highlight-subchart {
-    fill: #dbf516c9;
+    fill: #ff0;
     stroke: none;
     fill-opacity: 0.8;
 }
