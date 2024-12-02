@@ -1,20 +1,38 @@
 function updateGlyphs() {
     glyphs.selectAll("path")
-        .attr("d", d3.geoPath().projection(projection))
+        .attr("d", d3.geoPath().projection(projection)) // Update the path data based on the projection
         .each(function (d) {
             if (!d.properties.selected) {
-                d.properties.highlighted = false;
+                d.properties.highlighted = false; // Ensure highlighted is false if not selected
             }
-            d3.select(this)
-                .attr("fill", d3.select(this).attr("fill")) // Preserve the original fill color
-                // .attr("stroke", d => d.properties.highlighted ? haloStroke : "none") // Halo stroke
-                // .attr("stroke-width", d => d.properties.highlighted ? 3 : 0) // Halo thickness
-                .attr("stroke-linejoin", "round") // Smooth edges for the halo
-                .attr("display", d => d.properties.selected ? "auto" : "none")
-                //add class highlighted
-                .classed("highlighted point", d => d.properties.highlighted);
+
+            const currentPath = d3.select(this); // Select the current path element
+
+            // Calculate the centroid of the path for scaling
+            const pathCentroid = d3.geoPath().projection(projection).centroid(d);
+
+            currentPath
+                .attr("fill", currentPath.attr("fill")) // Preserve the original fill color
+                //.attr("stroke-linejoin", "round") // Smooth edges for the halo effect
+                .attr("display", d => d.properties.selected ? "auto" : "none") // Control visibility based on selection
+                .attr("transform", d => {
+                    if (d.properties.highlighted) {
+                        // Apply scaling relative to the centroid
+                        return `translate(${pathCentroid[0]}, ${pathCentroid[1]}) scale(1.6) translate(${-pathCentroid[0]}, ${-pathCentroid[1]})`;
+                    } else {
+                        return null; // Reset transform if not highlighted
+                    }
+                })
+                .classed("mapPoint", true) // Always add "mapPoint"
+                .classed("highlighted point", d => d.properties.highlighted); // Add "highlighted" and "point" only if highlighted
+
+            if (d.properties.highlighted) {
+                currentPath.raise(); // Move the element to the end
+            }
         });
 }
+
+
 
 
 
@@ -74,7 +92,9 @@ class ZoomableMap {
             .selectAll("g")
             .data(deltas)
             .join("g")
-            .style("opacity", showlayers ? 0.3 : null);
+            .style("opacity", showlayers ? 0.3 : null)
+            // .style("filter", "grayscale(100%)")
+            .classed("raster", true);
 
         glyphs = svg.append("g");
         regions = svg.append("g");

@@ -138,18 +138,60 @@ function generateGeoJsonData({
 }
 
 
+// Random number generator with seed
+let currentSeed = 12345;  // Use your desired seed value
+const rng = () => {
+    const a = 1664525;
+    const c = 1013904223;
+    const m = 2 ** 32;
+    currentSeed = (a * currentSeed + c) % m;
+    return currentSeed / m;
+};
+
+// Helper function to generate random dates within the last 30 days using rng
+// Ensure dates are at full hours (minute, second, and millisecond set to 0)
+function generateRandomDates(count) {
+    const currentDate = new Date();
+    const last30DaysTimestamp = currentDate.getTime() - (30 * 24 * 60 * 60 * 1000);  // Timestamp for 30 days ago
+    
+    const randomDates = [];
+    
+    // Generate 'count' number of random dates
+    for (let i = 0; i < count; i++) {
+        const randomTime = last30DaysTimestamp + rng() * (currentDate.getTime() - last30DaysTimestamp);  // Random time within the last 30 days
+        const randomDate = new Date(randomTime);
+        
+        // Adjust the date to the top of the hour (set minutes, seconds, and milliseconds to 0)
+        randomDate.setMinutes(0);
+        randomDate.setSeconds(0);
+        randomDate.setMilliseconds(0);
+        
+        randomDates.push(randomDate.toISOString());  // Convert to ISO string format
+    }
+    
+    return randomDates;
+}
+
+// Helper function to generate random weights using rng
+function generateRandomWeights(count, min = 1, max = 5) {
+    const weights = [];
+    for (let i = 0; i < count; i++) {
+        const randomWeight = Math.floor(rng() * (max - min + 1)) + min;
+        weights.push(randomWeight);
+    }
+    return weights;
+}
+
 // Example usage
 const generatedData = generateGeoJsonData({
     eventNames: ["Trash", "Wildlife", "Vandalism", "Weather", "Damage", "Other", "Dirt", "Fuel"],
-    eventDatesWithHours: [
-        "2024-10-08T12:00:00Z",
-        "2024-10-05T12:00:00Z",
-        "2024-10-02T12:00:00Z",
-        "2024-10-07T12:00:00Z",
-        "2024-10-01T12:00:00Z"
-    ],
+    
+    // Generate dates in the last 30 days using rng and ensure full hours
+    eventDatesWithHours: generateRandomDates(50),
+
     allSelected: false,
     allHighlighted: false,
+    
     proximityConfig: {
         hotspots: [
             { lat: 50.108958845453124, lng: 14.265167657637676, radius: 0.001, density: 15 },
@@ -157,6 +199,7 @@ const generatedData = generateGeoJsonData({
             { lat: 50.11, lng: 14.24, radius: 0.001, density: 10 }
         ]
     },
+    
     eventOccurrenceConfig: {
         Trash: 0.5,
         Wildlife: 1,
@@ -167,6 +210,7 @@ const generatedData = generateGeoJsonData({
         Dirt: 1,
         Fuel: 1
     },
+    
     hotspotEventWeights: {
         Trash: 0.5,
         Wildlife: 1,
@@ -177,31 +221,22 @@ const generatedData = generateGeoJsonData({
         Dirt: 1,
         Fuel: 1
     },
-    hotspotTimeWeights: {
-        "2024-11-12T00:00:00Z": 1,
-        "2024-11-11T00:00:00Z": 1,
-        "2024-11-15T00:00:00Z": 5,
-        "2024-11-17T00:00:00Z": 1,
-        "2024-11-18T00:00:00Z": 1
-    },
-    normalTimeWeights: {
-        "2024-11-11T00:00:00Z": 1,
-        "2024-11-12T00:00:00Z": 1,
-        "2024-11-15T00:00:00Z": 1,
-        "2024-11-17T00:00:00Z": 1,
-        "2024-11-17T12:00:00Z": 1,
-        "2024-10-27T00:00:00Z": 1,
-        "2024-10-30T12:00:00Z": 1,
-        "2024-11-23T00:00:00Z": 1,
-        "2024-10-28T00:00:00Z": 1,
-        "2024-11-02T12:00:00Z": 1,
-        "2024-11-05T12:00:00Z": 1,
-        "2024-10-31T12:00:00Z": 1,
-        "2024-11-08T12:00:00Z": 1,
-        "2024-10-26T00:00:00Z": 1
-    },
-    totalPoints: 80,
-    hotspotProbability: 0.5 // 40% of points will be in hotspots, 60% spread within the specified area
+    
+    // Generate random dates for hotspot time weights using rng (same as event dates)
+    hotspotTimeWeights: generateRandomDates(3).reduce((acc, date, index) => {
+        const weight = Math.floor(rng() * 5) + 1;
+        acc[date] = weight;
+        return acc;
+    }, {}),
+    
+    // Generate random dates for normal time weights (same as hotspotTimeWeights logic)
+    normalTimeWeights: generateRandomDates(10).reduce((acc, date, index) => {
+        const weight = Math.floor(rng() * 2) + 1;
+        acc[date] = weight;
+        return acc;
+    }, {}),
+    
+    totalPoints: 150,
+    hotspotProbability: 0.25
 });
 
-// console.log(generatedData);

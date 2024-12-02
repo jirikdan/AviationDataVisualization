@@ -31,7 +31,6 @@
     <script src="js/dataHandling/dataArray.js"></script>
     <script src="js/dataFiltering/dataFiltering.js"></script>
     <script src="js/constants/constants.js"></script>
-    <script src="js/constants/colors.js"></script>
     <script src="js/map/map.js"></script>
     <script src="js/map/selection.js"></script>
     <script src="js/table/table.js"></script>
@@ -58,16 +57,16 @@
                         <div class="color-scale-selector">
                             <div class="center-label">Choose Color Scale:</div>
                             <select id="colorScale">
-                                <option value="interpolateViridis">Viridis</option>
                                 <option value="interpolateInferno">Inferno</option>
+                                <option value="interpolateViridis">Viridis</option>   
                                 <option value="interpolateMagma">Magma</option>
                                 <option value="interpolatePlasma">Plasma</option>
                                 <option value="interpolateCividis">Cividis</option>
                                 <option value="interpolateCool">Cool</option>
                                 <option value="interpolateWarm">Warm</option>
                                 <option value="interpolateCubehelixDefault">Cubehelix</option>
-                                <option value="interpolateRainbow">Rainbow</option>
-                                <option value="interpolateSinebow">Sinebow</option>
+                                <!-- <option value="interpolateRainbow">Rainbow</option>
+                                <option value="interpolateSinebow">Sinebow</option> -->
                             </select>
                         </div>
                     </div>
@@ -161,6 +160,7 @@
                 <div id="tooltip"></div>
                 <script>
                     zoomableMap = new ZoomableMap();
+                    sortTableByColumn("properties.name");
                 </script>
             </div>
         </div>

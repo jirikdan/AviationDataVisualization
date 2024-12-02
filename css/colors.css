@@ -18,21 +18,33 @@ table tbody tr:nth-of-type(even) {
     background-color: rgb(35, 126, 50);
 }
 
+/*Map grayscale*/
+.raster
+{
+    filter : saturate(20%);
+}
+
+
 /* Color of highlight around the point */
 .highlighted.point{
-    stroke-width: 3px;
-    stroke: #ff0;
-    filter: drop-shadow(3px 3px 2px rgb(142, 142, 142));
+    /* In map.js in updateGlyph function, glyphs have applied size change when selected */
+    stroke-width: 2px;
+    stroke: #FF0; /*rgb(217, 0, 255)*/
+    /* Filter makes the app slow */
+    /* filter: 
+        drop-shadow(0 0 5px rgba(255, 255, 0, 0.5));*/
+        /*drop-shadow(0 0 10px rgba(255, 255, 0, 0.3))
+        drop-shadow(0 0 15px rgba(255, 255, 0, 0.2));*/
 }
 
 /* Color of table row highlight when point is selected */
 table tbody tr.highlighted {
-    background-color: #ff0 !important; /* Ensures the highlighted color overrides other styles */
+    background-color: #FF0 !important; /* Ensures the highlighted color overrides other styles */
 }
 
 /* Color of the fill for the bins for highlighted data*/
 .new-data-highlight {
-    fill: #ff0;
+    fill: #FF0;
     stroke: none;
     fill-opacity: 0.8;
     
@@ -40,7 +52,7 @@ table tbody tr.highlighted {
 
 /* Color of the fill for the bins for highlighted data in subcharts */
 .new-data-highlight-subchart {
-    fill: #ff0;
+    fill: #FF0;
     stroke: none;
     fill-opacity: 0.8;
 }

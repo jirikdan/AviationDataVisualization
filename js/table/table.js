@@ -80,7 +80,7 @@ function sortTableByColumn(column) {
         sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
     }
 
-    console.log(`Sort order for column "${column}": ${sortOrder[column]}`);
+    //console.log(`Sort order for column "${column}": ${sortOrder[column]}`);
 
     // Remove previous highlights and icons
     d3.selectAll('th')
@@ -108,7 +108,7 @@ function sortTableByColumn(column) {
             bComparable = new Date(bValue);
         }
 
-        console.log(`Comparing values: a="${aComparable}", b="${bComparable}"`);
+        //console.log(`Comparing values: a="${aComparable}", b="${bComparable}"`);
 
         if (aComparable < bComparable) {
             return sortOrder[column] === 'asc' ? -1 : 1;
@@ -119,7 +119,7 @@ function sortTableByColumn(column) {
         return 0;
     });
 
-    console.log('Sorted data:', data);
+    //console.log('Sorted data:', data);
 
     updateTableBody(data, tableInfo);
 }
@@ -248,3 +248,5 @@ function updateTableWithFilteredData() {
     //console.log("Updating");
     updateHighlightedSubcharts();
 }
+
+
