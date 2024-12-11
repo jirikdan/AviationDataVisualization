@@ -18,7 +18,7 @@ function updateGlyphs() {
                 .attr("transform", d => {
                     if (d.properties.highlighted) {
                         // Apply scaling relative to the centroid
-                        return `translate(${pathCentroid[0]}, ${pathCentroid[1]}) scale(1.6) translate(${-pathCentroid[0]}, ${-pathCentroid[1]})`;
+                        return `translate(${pathCentroid[0]}, ${pathCentroid[1]}) scale(1.4) translate(${-pathCentroid[0]}, ${-pathCentroid[1]})`;
                     } else {
                         return null; // Reset transform if not highlighted
                     }
@@ -114,43 +114,63 @@ class ZoomableMap {
                 console.log(`Latitude: ${lat}, Longitude: ${lon}`);
             });
 
-
         function zoomed(transform) {
-            // Log current translation and scale values
-            /*console.log("Current X Translation:", transform.x);
-            console.log("Current Y Translation:", transform.y);
-            console.log("Current Scale (Zoom Level):", transform.k);*/
-
+            // Update the projection with the current zoom transform
             projection
                 .scale(transform.k / tau)
                 .translate([transform.x, transform.y]);
 
-            // Copy of updateGlyphs function
+            // Update glyphs (assuming the function is defined elsewhere)
             updateGlyphs();
 
-            regions.selectAll("polygon")
-                .attr("points", function (d) {
-                    var newCoords = [];
-                    for (var i = 0; i < d.geometry.coordinates[0].length; i++) {
-                        newCoords.push(projection(d.geometry.coordinates[0][i]));
-                    }
-                    return newCoords.map(coord => coord.join(",")).join(" ");
-                });
-
+            // Tile loading logic with data caching and logs
             rasterLevels.each(function (delta) {
                 const tiles = tile.zoomDelta(delta)(transform);
 
                 d3.select(this)
                     .selectAll("image")
                     .data(tiles, d => d)
-                    .join("image")
-                    .attr("xlink:href", d => url(...d3.tileWrap(d)))
-                    .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
-                    .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
-                    .attr("width", tiles.scale)
-                    .attr("height", tiles.scale);
+                    .join(
+                        enter => enter.append("image")
+                            .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
+                            .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
+                            .attr("width", tiles.scale)
+                            .attr("height", tiles.scale)
+                            .each(async function (d) {
+                                const tileKey = `${d[0]}_${d[1]}_${d[2]}`; // Create a unique key for each tile
+
+                                if (loadedTileData[tileKey]) {
+                                    // Tile found in cache
+                                    d3.select(this).attr("xlink:href", loadedTileData[tileKey]);
+                                } else {
+                                    // Tile not in cache, fetching online
+                                    try {
+                                        const response = await fetch(url(...d3.tileWrap(d)));
+                                        if (response.ok) {
+                                            const blob = await response.blob();
+                                            const objectURL = URL.createObjectURL(blob);
+                                            loadedTileData[tileKey] = objectURL; // Store in cache
+                                            d3.select(this).attr("xlink:href", objectURL);
+                                        } else {
+                                            console.error(`Failed to fetch tile ${tileKey}:`, response.status);
+                                        }
+                                    } catch (error) {
+                                        console.error(`Error fetching tile ${tileKey}:`, error);
+                                    }
+                                }
+                            }),
+                        update => update
+                            .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
+                            .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
+                            .attr("width", tiles.scale)
+                            .attr("height", tiles.scale),
+                        exit => exit.remove()
+                    );
             });
         }
+
+
+
 
     }
 

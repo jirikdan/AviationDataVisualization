@@ -1,34 +1,12 @@
 class DataClass {
-    constructor(N, nameArray, latRange, lonRange, nameWeights = null, latLonWeights = null, seed = null) {
-        this.N = N;
-        this.nameArray = nameArray;
-        this.latRange = latRange;
-        this.lonRange = lonRange;
-        this.nameWeights = nameWeights || new Array(nameArray.length).fill(1); // Default equal weighting if none provided
-        this.latLonWeights = latLonWeights || [1, 1]; // Default equal weight for lat/lon ranges
-        this.seed = seed || Math.random().toString(); // Generate random seed if not provided
+    constructor() {
         this.dateSpan = dateSpan; // Add dateSpan as a class property
-        this.rng = new Math.seedrandom(this.seed); // Create a seeded random number generator
         this.data = generatedData;
-        // console.log("generatedData: ", generatedData);
     }
 
     getData() {
         return this.data;
     }
-
-    getNames() {
-        return this.nameArray;
-    }
-
-    getLatitudeRange() {
-        return this.latRange;
-    }
-
-    getLongitudeRange() {
-        return this.lonRange;
-    }
-
 
     generateDateRange() {
         const dates = [];

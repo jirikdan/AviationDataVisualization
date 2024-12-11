@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('confirm-selection').addEventListener('click', confirmSelection);
     window.addEventListener('click', closeDropdownOnOutsideClick);
     document.getElementById('search-event-types').addEventListener('input', filterEventTypes);
-    // document.getElementById('apply-filters').addEventListener('click', applyFiltersOnClick);
     document.getElementById('reset-filters').addEventListener('click', resetFilters);
     document.getElementById("change-name-time").addEventListener("change", updateColorVisualization);
     document.getElementById('name').addEventListener('change', changeActiveSpanColor);
@@ -146,8 +145,6 @@ function updateSelectedEvents() {
         .filter(i => i.checked)
         .map(i => `<span class="tag">${i.parentElement.textContent.trim()}</span>`)
         .join(' ');
-
-    //console.log('Selected Event Types updated:', selectedOptions);
 }
 
 function updateSelectAllButtonText() {

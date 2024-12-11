@@ -2,26 +2,21 @@
 const url = (x, y, z) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
 
 const numberOfDataPoints = 10;
+// Define a hash map to store loaded tiles globally or within the class
+var loadedTileData = {};
 
-
+//All possible event names
 const eventNames = ["Trash", "Wildlife", "Vandalism", "Weather", "Damage", "Other", "Dirt", "Fuel"];
-const eventDatesWithHours = ["2024-10-18T12:00:00Z", "2024-10-15T12:00:00Z", "2024-10-12T12:00:00Z", "2024-10-17T12:00:00Z", "2024-10-11T12:00:00Z"];
+//Table columns data
 const tableInfo = ["properties.name", "properties.date", "geometry.coordinates[1]", "geometry.coordinates[0]"];
+//Initial date spam
 var dateSpan = [new Date("2023-10-11T12:00:00Z"), new Date("2025-11-28T22:00:00Z")];
-const latitudeRange = [50.08, 50.12];
-const longitudeRange = [14.23, 14.28];
-const nameWeights = [0.1, 0.1, 0.5, 0.1, 0.05, 0.35, 0.05, 0.05];
-const latLonWeights = [1, 0.3];
-var dataHandler = new DataClass(300, eventNames, latitudeRange, longitudeRange, nameWeights, latLonWeights);
+
+//Generate data
+var dataHandler = new DataClass();
 var data = dataHandler.getData();
-//console.log("Data from constants ");
-// console.log(data);
-var chartData = [];
-//var linechart;
-var chartName = dataHandler.getSelectedEventCounts().activeEventTypes;
 
-
-
+//Colors mapped to event types
 const predefinedColors = d3.schemeCategory10;
 const colorMapping = {};
 
@@ -31,7 +26,7 @@ uniqueNames.forEach((name, index) => {
 });
 
 
-
+//Setting linechart width for different resolutions
 var lineChartWidth = 0;
 if (window.innerWidth == 1920) {
     //console.log("Setting line chart width to 1150");
@@ -50,11 +45,11 @@ else {
 }
 
 
-
+//grid lines set up
 const lineChartNumberOfDashedLines = 5;
 var gridLineDistanceGlobal = 0;
 
-
+//deltas for loading map tiles in different quality to fix white tile glitching
 const deltas = [-3, -1, 0, 1];
 
 
@@ -76,10 +71,10 @@ var path = d3.geoPath().projection(projection);
 var projection = d3.geoMercator()
     .scale(1 / tau)
     .translate([0, 0]);
-var featureId = 6;
 
+
+//Constants for time color scale
 const startColor = "#ff0000";
 const endColor = "#00ff00";
-
 var colorScale = d3.scaleSequential(d3.interpolateHcl(startColor, endColor))
     .domain(dateSpan);
