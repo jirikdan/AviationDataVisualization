@@ -13,7 +13,6 @@ function updateGlyphs() {
 
             currentPath
                 .attr("fill", currentPath.attr("fill")) // Preserve the original fill color
-                //.attr("stroke-linejoin", "round") // Smooth edges for the halo effect
                 .attr("display", d => d.properties.selected ? "auto" : "none") // Control visibility based on selection
                 .attr("transform", d => {
                     if (d.properties.highlighted) {
@@ -40,11 +39,8 @@ function updateGlyphs() {
 class ZoomableMap {
     constructor() {
         this.initialTransform = d3.zoomIdentity.translate(initX, initY).scale(initScale);
-        //console.log("Client width: " + document.getElementById("map").clientWidth);
-        //console.log("Client height: " + document.getElementById("map").clientHeight);
         //get width and height of the svg element
         this.svgWidth = document.getElementById("map").clientWidth;
-
         this.width = document.getElementById("map").clientWidth;
         this.height = document.getElementById("map").clientHeight;
         this.showlayers = false;
@@ -111,7 +107,6 @@ class ZoomableMap {
             .on("click", (event) => {
                 const [x, y] = d3.pointer(event);
                 const [lon, lat] = projection.invert([x, y]);
-                console.log(`Latitude: ${lat}, Longitude: ${lon}`);
             });
 
         function zoomed(transform) {
@@ -168,10 +163,6 @@ class ZoomableMap {
                     );
             });
         }
-
-
-
-
     }
 
     mapToSvg(data, glyphs) {
@@ -201,8 +192,6 @@ class ZoomableMap {
                 .style("top", `${event.pageY + 5}px`);
         }
     }
-
-
     hideTooltip() {
         d3.select("#tooltip").style("display", "none");
     }
@@ -227,25 +216,12 @@ class ZoomableMap {
     }
 
     updateColorsByName(names) {
-        //const predefinedColors = d3.schemeCategory10;
-        /*const colorMapping = {};
-
-        const uniqueNames = [...new Set(data.map(d => d.properties.name))];
-        uniqueNames.forEach((name, index) => {
-            colorMapping[name] = predefinedColors[index % predefinedColors.length];
-        });
-*/
         glyphs.selectAll("path")
             .attr("fill", d => colorMapping[d.properties.name] || "black");
-
-        //this.displayUniqueNames(colorMapping, names);
     }
 
     applyUpdates(names) {
-        //console.log("Applying updates");
-        //console.log(this.currentColorVisualization);
         if (this.currentColorVisualization === "time") {
-            //console.log("UpdatingByTime");
             this.updateColorsByTime();
         } else if (this.currentColorVisualization === "name") {
             this.updateColorsByName(names);
@@ -270,7 +246,6 @@ class ZoomableMap {
 
         // Check if there is any selected data
         if (selectedData.length === 0) {
-            console.warn("No selected data found.");
             return;
         }
 
@@ -358,7 +333,6 @@ class ZoomableMap {
             nameDiv.style.position = "relative";
             nameDiv.style.display = "inline-block";
             nameDiv.style.padding = "5px";
-            //nameDiv.style.margin = "5px";
             nameDiv.style.marginLeft = "5px";
             nameDiv.style.borderRadius = "5px";
             nameDiv.style.cursor = "pointer";
@@ -421,7 +395,6 @@ class ZoomableMap {
             uniqueNamesDiv.appendChild(div);
         }
 
-        //document.getElementById("color-scale").style.display = "none";
         uniqueNamesDiv.style.display = "block";
     }
 
@@ -429,23 +402,17 @@ class ZoomableMap {
     onGlyphClick(event, d) {
         if (checkIfPointPassesFilter(d)) {
             d.properties.highlighted = !d.properties.highlighted;
-            //d.properties.selected = d.properties.highlighted;
             this.highlightTableWithId(d.properties.id);
-            //lineChart.updateChartData(dataHandler.getHighlightedEventCounts().eventCounts);
             updateHighlightedSubcharts();
             updateGlyphs();
         }
     }
 
-    // Placeholder function to be called with glyph id
     highlightTableWithId(id) {
-        //console.log(`Function called with id: ${id}`);
-        // Add your custom logic here
-        //find a html element with the id
+        //find a html element with the id[]
         var element = document.getElementById(id);
         //toggle class highlighted
         element.classList.toggle("highlighted");
     }
-
 
 }

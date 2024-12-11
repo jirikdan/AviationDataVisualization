@@ -3,19 +3,16 @@ class SubLineChart {
         this.selector = selector;
         this.margin = { top: 20, right: 20, bottom: 0, left: 20 };
         this.width = lineChartWidth - this.margin.left - this.margin.right;
-        //console.log("Width of " + eventType + " is " + this.width);
         this.height = 40 - this.margin.top - this.margin.bottom;
         this.eventType = eventType;
         this.mainChart = mainChart;
         this.isLastChart = isLastChart;
         if (isLastChart) {
             this.margin.bottom = 20;
-            //console.log("Last chart");
             this.height = this.height + 0;
         }
         this.initChart();
         this.yTicks = 2;
-        //this.updateGridlines();
         this.isProgrammaticBrushMove = false;
     }
 
@@ -149,7 +146,6 @@ class SubLineChart {
         this.labels.selectAll("text").remove();
 
         const tickValues = this.x.ticks(lineChartNumberOfDashedLines);
-        //console.log("Sublinechart tickValues: " + tickValues);
         const start = this.x.domain()[0];
         const end = this.x.domain()[1];
 
@@ -221,7 +217,6 @@ class SubLineChart {
                         .text(this.formatDate(tickValue))
                         .style("overflow", "visible"); // Ensure overflow is visible
 
-                    //console.log(`Label created for tick value: ${tickValue}, text: ${this.formatDate(tickValue)}, chart: ${this.eventType}`);
                 }
             }
         });
@@ -265,7 +260,6 @@ class SubLineChart {
         end.setHours(0, 0, 0, 0);
         // add one day to end date to include the last day
         end.setDate(end.getDate() + 1);
-        //console.log("Brush selection range:", start, end);
         // Calculate the snapped pixel positions on the x scale using UTC dates
         const snappedExtent = [this.x(start), this.x(end)];
 
@@ -276,21 +270,14 @@ class SubLineChart {
         d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
         this.isProgrammaticBrushMove = false;
 
-        //this.mainChart.updateBrushFromSubChart(snappedExtent);
-
-
-
         // Highlight data inside the snapped brush selection using UTC dates
         if (!calledFromMainChart) {
             this.highlightDataInsideBrush(start, end);
-            //updateHighlightedSubcharts();
         }
 
 
-        //const adjustedEndUTC = new Date(end.getTime() + bufferDuration);
         // Filter the data with the adjusted range in UTC
         const selectedData = this.data.filter(d => d.date >= start && d.date <= end);
-        //console.log("Selected data (UTC range):", selectedData);
 
         // Call `highlightNewDataPoints` with the selected data
         this.highlightNewDataPoints(selectedData);
@@ -335,8 +322,6 @@ class SubLineChart {
     }
 
     highlightNewDataPoints(newDataPoints) {
-        //console.log("highlighting new data points");
-        //console.log(newDataPoints);
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight-subchart").remove();
 
@@ -422,7 +407,6 @@ class SubLineChart {
 
 
     clearBrush() {
-        //console.log("Clearing brush selection from the LineChart.");
         // Clear the brush selection by setting the extent to null
         this.isProgrammaticBrushMove = true;
         d3.select(this.selector).select(".brush").call(this.brush.move, null);
@@ -442,7 +426,6 @@ class SubLineChart {
 
     highlightDataInsideBrush(start, end) {
         // Iterate through the data and highlight points within the adjusted range
-        //console.log("Highlighting data inside brush range:", start, end);
         data.forEach(point => {
             const dateMatches = point.properties.date >= start && point.properties.date <= end;
             const element = document.getElementById(point.properties.id);
@@ -457,25 +440,11 @@ class SubLineChart {
                     updateGlyphs();
                     element.classList.remove("highlighted");
                 }
-            } else {
-                //console.warn(`Element with id ${point.properties.id} not found.`);
             }
         });
     }
 
     updateChartDataHighlight(newData) {
-        //console.log("updating sublinechart highlight");
-        //console.log("linechart type is " + this.eventType);
-        // Keep track of previous data for comparison
-        /*const previousData = this.data || [];
-
-        // Identify new data points by checking if the new data contains points not in the previous data
-        const newDataPoints = newData.filter(newPoint => {
-            return !previousData.some(prevPoint =>
-                prevPoint.date.getTime() === newPoint.date.getTime() &&
-                prevPoint.value === newPoint.value
-            );
-        });*/
         const newDataPoints = newData;
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
@@ -494,9 +463,6 @@ class SubLineChart {
             .transition()
             .duration(1000)
             .attr("d", this.areaGenerator);
-
-        // Update gridlines and labels
-        //this.updateGridlineLabels();
     }
 
 
@@ -566,19 +532,18 @@ class SubLineChart {
     }
 
     changeYAxisRange(maxYValue) {
-        //console.log("redrawing y with - " + maxYValue);
         // Update the y scale with new min and max values
         this.y.domain([0, maxYValue]);
 
         // Update the y-axis with new domain
-        this.yAxis.transition()  // Add a transition for smoother updates, optional
-            .duration(0)       // Adjust duration as needed
-            .call(d3.axisLeft(this.y).ticks(this.yTicks));  // Ensure ticks are based on updated domain
+        this.yAxis.transition()
+            .duration(0)
+            .call(d3.axisLeft(this.y).ticks(this.yTicks)); // Ensure ticks are based on updated domain
 
         // Redraw the chart area with the updated y scale
         this.area.select('.myArea')
             .transition()
-            .duration(0)  // Optional, you can control the transition duration
+            .duration(0) 
             .attr("d", this.areaGenerator);  // Update the path with the new Y-domain
 
     }
@@ -587,6 +552,4 @@ class SubLineChart {
     getMaxYValue() {
         return d3.max(this.data, d => +d.value);
     }
-
-
 }

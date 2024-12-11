@@ -73,7 +73,6 @@ class LineChart {
 
     updateColorScale(scale) {
         this.colorScale = d3.scaleSequential(scale);  // Update color scale
-        //console.log("Recalculated domain " + dateSpan);
         this.colorScale.domain(dateSpan);  // Recalculate domain based on data
         this.updateGradientAndRedraw();  // Redraw the chart with the new color scale
     }
@@ -143,7 +142,6 @@ class LineChart {
             .call(this.brush);
 
         // Update gridlines based on the new x domain
-        //console.log("Domain before updateGridlines:", this.x.domain());
         this.updateGridlines();
     }
 
@@ -196,10 +194,7 @@ class LineChart {
     }
 
     updateChart(event) {
-        //console.log("Updating main chart with brush selection");
-
         const extent = event.selection;
-        //this.updateGridlines();
         // If programmatically moving the brush, skip the rest of the update logic
         if (this.isProgrammaticBrushMove) {
             return;
@@ -232,11 +227,6 @@ class LineChart {
         d3.select(this.selector).select(".brush").call(this.brush.move, snappedExtent);
         this.isProgrammaticBrushMove = false;
 
-
-
-        
-
-
         // Highlight data inside the snapped brush selection using UTC dates
         this.highlightDataInsideBrush(start, end);
 
@@ -267,7 +257,6 @@ class LineChart {
                 console.log("mousemove");
                 const containerElement = d3.select(this.selector).node();
                 const containerBox = containerElement.getBoundingClientRect();
-
                 const midPoint = (snappedExtent[0] + snappedExtent[1]) / 2;
                 const tooltipX = midPoint + containerBox.left + this.margin.left;
                 const tooltipY = containerBox.top + this.margin.top;
@@ -285,15 +274,11 @@ class LineChart {
 
 
     updateChartData(newData) {
-        // console.log(this.data);
-        // console.log(newData);
         this.data = newData;
         // Set x domain to dateSpan instead of recalculating from data
-        //this.x.domain(d3.extent(newData, d => d.date));
         this.x.domain(dateSpan);
         this.y.domain([0, d3.max(this.data, d => +d.value)]);
         this.colorScale.domain(dateSpan);
-        //this.updateGridlines();
         // Update gradient
         this.gradient.selectAll("stop").remove();
         this.data.forEach((d, i) => {
@@ -318,14 +303,12 @@ class LineChart {
 
 
     updateChartDataHighlight(newData) {
-        const newDataPoints = newData; // Directly take the input as the data to highlight
+        const newDataPoints = newData;
         // Highlight the new data points in the chart
         this.highlightNewDataPoints(newDataPoints);
     }
 
     highlightNewDataPoints(newDataPoints) {
-        //console.log("highlighting new data points");
-        //console.log(newDataPoints);
         // Remove any previous highlights
         this.area.selectAll(".new-data-highlight").remove();
 
@@ -346,7 +329,7 @@ class LineChart {
             this.isProgrammaticBrushMove = false;
             const tooltip = d3.select("#brush-tooltip");
             const snappedStart = this.x.invert(snappedExtent[0]);
-        const snappedEnd = this.x.invert(snappedExtent[1]);
+            const snappedEnd = this.x.invert(snappedExtent[1]);
             // Update the brush selection rectangle to match the manual selection style
             this.area.append("rect")
                 .attr("class", "selection-rectangle")
@@ -408,7 +391,6 @@ class LineChart {
 
 
     clearBrush() {
-        //console.log("Clearing brush selection from the LineChart.");
         // Clear the brush selection by setting the extent to null
         this.isProgrammaticBrushMove = true;
         d3.select(this.selector).select(".brush").call(this.brush.move, null);
@@ -429,11 +411,9 @@ class LineChart {
 
     highlightDataInsideBrush(start, end) {
         // Iterate through the data and highlight points within the adjusted range
-        //console.log("Highlighting data inside brush range:", start, end);
         data.forEach(point => {
             const dateMatches = point.properties.date >= start && point.properties.date <= end;
             const element = document.getElementById(point.properties.id);
-            //console.log(element);
 
             if (element) {  // Check if element is not null
                 if (dateMatches && point.properties.selected) {
@@ -442,8 +422,6 @@ class LineChart {
                     element.classList.add("highlighted");
                 } else {
                     point.properties.highlighted = false;
-                    //updateGlyphs();
-                    //element.classList.remove("highlighted");
                 }
             } else {
                 console.warn(`Element with id ${point.properties.id} not found.`);
@@ -462,7 +440,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     chartData = dataHandler.getSelectedEventCounts().eventCounts;
     lineChart = new LineChart("#my_dataviz");
     lineChart.renderChart(chartData);
-    //console.log(zoomableMap);
     zoomableMap.setLinechart(lineChart);
 
 

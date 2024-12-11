@@ -45,8 +45,6 @@ function enableRectangleSelection(zoomableMap) {
             const x1 = Math.max(startPoint[0], endPoint[0]);
             const y1 = Math.max(startPoint[1], endPoint[1]);
     
-            const filters = getFilters();
-            let somethingSelected = true;
             lineChart.clearBrush();
             for (var i = 0; i < lineChart.subLineCharts.length; i++) {
                 lineChart.subLineCharts[i].clearBrush();
@@ -63,9 +61,6 @@ function enableRectangleSelection(zoomableMap) {
                         element.classList.remove("highlighted");
                     }
                 });
-                console.log("linechart", lineChart);
-                
-                console.log("Unhighlighted filtered points due to single right-click.");
             } else {
                 // Iterate over all glyphs for rectangle selection
                 glyphs.selectAll("path").each(function (d) {
@@ -92,7 +87,6 @@ function enableRectangleSelection(zoomableMap) {
                         }
                     }
                 });
-                console.log("Updated highlights based on rectangle selection.");
             }
     
             // Update glyphs and subcharts
@@ -147,22 +141,16 @@ function checkIfPointPassesFilter(point) {
 
 
 function updateHighlightedSubcharts() {
-    // console.log("Updating highlighted subcharts");
-    // console.log("available subcharts: ", lineChart.subLineCharts);
     populateEventSelection();
-    //updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
-    //go through data and see if any of them is selected and highlited at the same time if yes somethingSelected is true
     var somethingIsHighlighted = dataHandler.isAnythingHighlighted();
 
 
     if (somethingIsHighlighted) {
         lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
-        //updateOrderOfLineCharts();
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
-            //console.log("Updating Max Y value: ", maxYValue);
             lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
@@ -171,7 +159,6 @@ function updateHighlightedSubcharts() {
         lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-            //console.log("Updating Max Y value: ", maxYValue);
             lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
             
@@ -187,13 +174,11 @@ function updateHighlightedSubchartsAfterSort()
     if (somethingIsHighlighted) {
         lineChart.clearBrush();
         lineChart.updateChartDataHighlight(dataHandler.getHighlightedEventCounts().eventCounts);
-        //updateOrderOfLineCharts();
         // Update subLineCharts
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             
             lineChart.subLineCharts[i].clearBrush();
             lineChart.subLineCharts[i].updateChartDataHighlight(dataHandler.getHighlightedEventCountsByType(lineChart.subLineCharts[i].eventType).eventCounts);
-            //console.log("Max Y value: ", maxYValue);
             
         }
     } else {
@@ -211,22 +196,13 @@ function updateHighlightedSubchartsAfterSort()
 //recalculate and change max y value for all subcharts
 function updateMaxYValue()
 {
-    //console.log("Updating max y value");
-
     maxYValue = 0;
     for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-        //console.log("Tadzy");
-        //console.log(lineChart.subLineCharts[i].getMaxYValue());
         if (lineChart.subLineCharts[i].getMaxYValue() > maxYValue) {
-            //console.log("Actually updating max y value");
             maxYValue = lineChart.subLineCharts[i].getMaxYValue();
         }
     }
-    //console.log("Max Y value: ", maxYValue);
     //change max y value for all subcharts
     changeMaxYBasedOnCurrentDatespan()
-    /*for (var i = 0; i < lineChart.subLineCharts.length; i++) {
-        lineChart.subLineCharts[i].changeYAxisRange(maxYValue);
-    }*/
 }
 

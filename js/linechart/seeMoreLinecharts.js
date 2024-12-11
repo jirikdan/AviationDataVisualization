@@ -12,7 +12,7 @@ eventSelection.classList.add('hidden');
 
 
 document.getElementById('toggleButton').addEventListener('click', function () {
-    
+
     var hiddenTexts = document.getElementById('hiddenCharts');
     var eventSelection = document.getElementById('eventSelection');
     var fixedLabelContainer = document.getElementById('fixed-labels-container');
@@ -31,7 +31,6 @@ document.getElementById('toggleButton').addEventListener('click', function () {
         lineChart.xGrid.attr("class", "grid");
         updateOrderOfLineCharts(); // Update the line charts based on the selected checkboxes
         updateHighlightedSubcharts(); // Update the line charts based on the selected points
-        //sortChartsByMaxYValue(); // Sort the charts by maximum Y value
         lineChart.updateGridlines();
         for (var i = 0; i < lineChart.subLineCharts.length; i++) {
             lineChart.subLineCharts[i].updateGridlines();
@@ -64,7 +63,6 @@ function populateEventSelection() {
     } else {
         activeEventTypes = dataHandler.getSelectedEventCounts().activeEventTypes;
     }
-    //console.log('Active event types:', activeEventTypes);
 
     const eventSelection = document.getElementById('eventSelection');
     eventSelection.innerHTML = ''; // Clear previous selections
@@ -113,8 +111,8 @@ function populateEventSelection() {
 
     const orderedEventTypes = eventOrder.length > 0 ? eventOrder : activeEventTypes;
 
-// Iterate over each event type in the determined order and display checkboxes
-orderedEventTypes.forEach((eventType, index) => {
+    // Iterate over each event type in the determined order and display checkboxes
+    orderedEventTypes.forEach((eventType, index) => {
         const checkboxContainer = document.createElement('div');
         checkboxContainer.classList.add('checkbox-container');
         checkboxContainer.dataset.eventType = eventType;
@@ -137,7 +135,7 @@ orderedEventTypes.forEach((eventType, index) => {
 
         const label = document.createElement('label');
         label.htmlFor = `eventCheckbox_${index}`;
-        label.textContent = " ";//eventType; // Display only the event type (no count)
+        label.textContent = " ";
 
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
@@ -173,14 +171,14 @@ orderedEventTypes.forEach((eventType, index) => {
             eventOrder = Array.from(eventSelection.children)
                 .filter(container => !container.classList.contains('hide-all-container'))
                 .map(container => container.dataset.eventType);
-            
+
             // Persist the order and update charts accordingly
             updateOrderOfLineCharts();
             updateHighlightedSubcharts();
         }
     });
-    
-    
+
+
 }
 
 
@@ -190,12 +188,10 @@ orderedEventTypes.forEach((eventType, index) => {
 
 
 function updateOrderOfLineCharts() {
-    console.log('Updating order of line charts');
-
     // Use the current event order to update the charts
     const allCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]'));
-    const orderedTypes = eventOrder.length > 0 
-        ? eventOrder 
+    const orderedTypes = eventOrder.length > 0
+        ? eventOrder
         : allCheckboxes.map(checkbox => checkbox.value);
 
     const container = document.getElementById('hiddenCharts');
@@ -203,8 +199,8 @@ function updateOrderOfLineCharts() {
 
     orderedTypes.forEach((eventType, index) => {
         // Check if the corresponding checkbox is checked
-        const isChecked = selectedEventTypes[eventType] !== undefined 
-            ? selectedEventTypes[eventType] 
+        const isChecked = selectedEventTypes[eventType] !== undefined
+            ? selectedEventTypes[eventType]
             : true;
 
         if (!isChecked) {
@@ -257,21 +253,15 @@ function updateOrderOfLineCharts() {
 
 function createMoreLineCharts() {
     populateEventSelection(); // Update the event selection div with the current state
-    //console.log('Creating more line charts');
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]:checked'));
 
     const selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
-    //console.log('Selected types:', selectedTypes);
-
     const container = document.getElementById('hiddenCharts');
     container.innerHTML = ''; // Clear the container before adding new charts
 
 
 
     selectedTypes.forEach((eventType, index) => {
-        //console.log('Creating chart for:', eventType);
-        //console.log("linechart subLineCharts", lineChart.subLineCharts);
-        //lineChart.subLineCharts = [];
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
 
@@ -302,7 +292,6 @@ function createMoreLineCharts() {
         subLineChart.renderChart(subChartData);
 
         lineChart.subLineCharts.push(subLineChart);
-        //subLineChart.x.domain([lineChart.x.domain()[0], lineChart.x.domain()[1]]);
         subLineChart.xAxis.call(d3.axisBottom(subLineChart.x).ticks(5));
         subLineChart.area
             .select('.myArea')
@@ -312,7 +301,6 @@ function createMoreLineCharts() {
             .style("stroke", colorMapping[eventType]); // Apply color to the chart line
         subLineChart.updateGridlines();
         subLineChart.clearBrush();
-        //subLineChart.updateChartDataHighlight(subLineChart.data);
         // Transition the X-axis with dateSpan domain
         subLineChart.xAxis.transition().duration(1000).call(d3.axisBottom(subLineChart.x).ticks(3));
 
@@ -324,20 +312,12 @@ function createMoreLineCharts() {
             .transition()
             .duration(1000)
             .attr("d", subLineChart.areaGenerator);
-        /*if (subLineChart.y.domain()[1] > maxYValue) {
-            maxYValue = subLineChart.y.domain()[1];
-        }
-        subLineChart.changeYAxisRange(maxYValue);*/
         changeMaxYBasedOnCurrentDatespan();
     });
-    // console.log("sublinecharts after creating", lineChart.subLineCharts);
-
 }
 
 
 function sortChartsByMaxYValue() {
-    console.log('Sorting charts and checkboxes by maximum Y value within the current date span');
-
     const selectedCheckboxes = Array.from(document.querySelectorAll('#eventSelection input[type="checkbox"]'));
 
     var selectedTypes = selectedCheckboxes.map(checkbox => checkbox.value);
@@ -364,19 +344,13 @@ function sortChartsByMaxYValue() {
         return { eventType, maxY };
     });
 
-    console.log('Max Y values before filtering:', maxYValues);
-
     // Filter out any eventTypes where maxY is undefined
     const filteredMaxYValues = maxYValues.filter(d => d.maxY !== undefined);
-
-    console.log('Max Y values after filtering:', filteredMaxYValues);
 
     // Sort the event types by their maxY value in descending order
     const sortedEventTypes = filteredMaxYValues
         .sort((a, b) => b.maxY - a.maxY)
         .map(d => d.eventType);
-
-    console.log('Sorted event types:', sortedEventTypes);
 
     // Update the eventOrder variable with the sorted order
     eventOrder = [...sortedEventTypes];
@@ -476,7 +450,6 @@ function changeMaxYBasedOnCurrentDatespan() {
             maxYValueDatespan = maxYForCurrentChart;
         }
     }
-    //console.log("Calculated maxY " + maxYValueDatespan);
     // Change the max Y-axis range for each subLineChart to the calculated maxYValueDatespan
     for (var i = 0; i < lineChart.subLineCharts.length; i++) {
         lineChart.subLineCharts[i].changeYAxisRange(maxYValueDatespan);
