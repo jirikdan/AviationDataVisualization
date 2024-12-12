@@ -140,7 +140,10 @@ class ZoomableMap {
                                 } else {
                                     // Tile not in cache, fetching online
                                     try {
-                                        const response = await fetch(url(...d3.tileWrap(d)));
+                                        
+                                        const wrappedURL = url(...d3.tileWrap(d));
+                                        const response = await fetch(wrappedURL);
+
                                         if (response.ok) {
                                             const blob = await response.blob();
                                             const objectURL = URL.createObjectURL(blob);

@@ -24,8 +24,13 @@ table tbody tr:nth-of-type(even) {
     filter : saturate(20%);
 }
 
+/* Basic map points styling */
+.mapPoint {
+    filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.6));
+}
 
-/* Color of highlight around the point */
+
+/* Color of highlight around the highlighted point */
 .highlighted.point{
     /* In map.js in updateGlyph function, glyphs have applied size change when selected */
     stroke-width: 2px;
