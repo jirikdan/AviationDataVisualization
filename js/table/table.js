@@ -161,12 +161,14 @@ function updateHighlightedPoints() {
 }
 
 function updateTableBody(data, columns) {
+    // Filter data to only include items where properties.selected is true
+    const filteredData = data.filter(d => d.properties && d.properties.selected);
 
     const tbody = d3.select('table').select('tbody');
 
-    // Bind data to rows, using the unique 'properties.id' as the key
+    // Bind filtered data to rows, using the unique 'properties.id' as the key
     const rows = tbody.selectAll('tr')
-        .data(data, d => d && d.properties ? d.properties.id : null);
+        .data(filteredData, d => d && d.properties ? d.properties.id : null);
 
     // Remove any rows that no longer have matching data
     rows.exit().remove();
@@ -184,7 +186,6 @@ function updateTableBody(data, columns) {
     const allRows = addedRows.merge(rows)
         .order() // Ensure rows are rendered in the order of the bound data
         .attr('id', d => d && d.properties ? d.properties.id : null);
-
 
     // Update the cells within each row
     const cells = allRows.selectAll('td')
@@ -212,6 +213,7 @@ function updateTableBody(data, columns) {
     // Apply the 'highlighted' class to rows based on the 'highlighted' property
     allRows.classed('highlighted', d => d && d.properties ? d.properties.highlighted : false);
 }
+
 
 
 function updateTableWithFilteredData() {

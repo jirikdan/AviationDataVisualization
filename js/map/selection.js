@@ -14,9 +14,10 @@ function enableRectangleSelection(zoomableMap) {
                 .attr("y", startPoint[1])
                 .attr("width", 0)
                 .attr("height", 0)
-                .attr("fill", "rgba(0, 0, 255, 0.3)")
+                // .attr("fill", "rgba(0, 0, 255, 0.3)")
                 .attr("stroke", "blue")
-                .attr("stroke-width", 1);
+                .attr("stroke-width", 1)
+                .classed("selection-rectangle", true);
 
             svg.on("mousemove", mousemoveHandler);
         }
