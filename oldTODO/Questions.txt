@@ -1,3 +1,0 @@
-Brush na linechartu selectuje z již highlighted? Pokud žádné nejsou tak ze všeho? Kolik tabulek naskládat pod sebe?
-Dodatečný filter na lineChartu by měl fungovat jen na hlavním grafu?
-Nechat to takto, nebo udělat vyskakovací okno?

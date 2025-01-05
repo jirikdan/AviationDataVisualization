@@ -1,3 +1,0 @@
-Pokud resetuju filtery, chce to resetovat i tu tabulku. - to žlutý osvícení nefunguje úplně správně.
-Možná by velikost osy Y na podosách měla vždy být rovna maximu ze všech podos, aby bylo jasné, které podosy přispívají nejvíce.
-Bylo by dobré seřadit body v tabulce podle typu a pak podle místa aby bylo vidět, že vybrané body u sebe na mapě rozsvítí skupiny bodů u sebe v tabulce.
